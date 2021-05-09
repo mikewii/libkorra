@@ -1,10 +1,14 @@
 #include "Tools/ARC.hpp"
+#include <string.h>
 
-ARC::ARC(CContainer& _data)
+ARC::ARC(CContainer& _data, std::vector<Pairs>* _list)
 {
     header = reinterpret_cast<ARC_s*>(&_data.as_u8(0));
+    __inList = _list;
 
     isARCFile();
+
+    if (b.BE) FixBE_Header();
 
     PrintHeader();
 
@@ -52,15 +56,27 @@ void ARC::PrintFileInfo(ARC_File_s* f, u32 n)
 void ARC::PushFile(CContainer& _data, u32 n)
 {
     Pairs pair;
-    ARC_File_s* file = reinterpret_cast<ARC_File_s*>
-            ( &_data.as_u8(0) + sizeof(ARC_s) + (sizeof(ARC_File_s) * n) );
+    u32 padding = 0;
+    ARC_File_s* file;
+
+    padding = _data.as_u32(2) == 0 ? 4 : 0;
+
+    file = reinterpret_cast<ARC_File_s*>
+            ( &_data.as_u8(0) + sizeof(ARC_s) + padding + (sizeof(ARC_File_s) * n) );
+
+    if (b.BE) FixBE_ARC_File_s(file);
 
     file->DecompressedSize &= ~(1 << 30); // i.m. no file be this big anyway
+    file->DecompressedSize &= ~(1 << 29);
 
+    // copy and set things
+    for (u32 i = 0; i < ARC_File_s::FNAME_SIZE; i++) pair.Filename[i] = file->Filename[i];
     pair.f = file;
-    files.push_back(pair);
+    pair.ResourceHash = file->ResourceHash;
+    pair.FixPath();
 
-    PrintFileInfo(file, n);
+
+    __inList->push_back(pair);
 }
 
 void ARC::Read(CContainer& _data)
@@ -71,35 +87,120 @@ void ARC::Read(CContainer& _data)
     }
 }
 
-void ARC::Extract(u32 n, bool writeToFile)
+void ARC::ExtractAll(void)
 {
-    Pairs& p = files.at(n);
-    Bytef* data = nullptr;
+    for(int i = 0; i < header->FilesNum; i++)
+    {
+        Decompress(i);
+    }
+}
+
+void ARC::Decompress(u32 n)
+{
+    Pairs& p = __inList->at(n);
+    Bytef* source = nullptr;
     uLongf decSize = 0;
 
     decSize = p.f->DecompressedSize;
     p.cc.resize(decSize);
 
-    data = reinterpret_cast<Bytef*>( reinterpret_cast<u64>(&header[0]) + p.f->pZData );
+    source = reinterpret_cast<Bytef*>( reinterpret_cast<u64>(&header[0]) + p.f->pZData );
 
-    uncompress(p.cc.data(), &decSize, data, p.f->CompressedSize);
-
-    p.FixPath();
-
-    if ( p.f->DecompressedSize == decSize && writeToFile)
+    if ( uncompress(p.cc.data(), &decSize, source, p.f->CompressedSize) == Z_OK )
     {
-        std::string path = "/run/media/mw/data2/test";
-        std::string ext = ".test";
-        path += '/' + this->filename + ext + '/' + p.f->Filename;
-
-        p.cc.writeToFile(path.c_str(), true);
+        p.DecSize = decSize;
+        p.decompressed = true;
     }
+}
+
+int ARC::Decompress(Pairs& sourcePair, Pairs& destPair)
+{
+    CContainer temp;
+    Bytef* pTemp = nullptr;
+    Bytef* pSrc = nullptr;
+    uLongf decSize = 0;
+    int err = Z_OK;
+
+    /* prepare temp bufer */
+    decSize = sourcePair.DecSize;
+    temp.resize(decSize);
+    pTemp = reinterpret_cast<Bytef*>( temp.data() );
+
+    /* prepare source */
+    pSrc = reinterpret_cast<Bytef*>( sourcePair.cc.data() );
+
+    err = uncompress(pTemp, &decSize, pSrc, sourcePair.cc.size());
+    if ( err == Z_OK )
+    {
+        destPair.DecSize = decSize;
+        destPair.decompressed = true;
+        destPair.cc.resize(decSize);
+#ifdef __linux__
+        memcpy(destPair.cc.data(), temp.data(), decSize);
+#else
+        // for 3ds
+        memmove(destPair.cc.data(), temp.data(), decSize);
+#endif
+
+        return err;
+    }
+
+    return err;
+
+}
+
+int ARC::Compress(Pairs& sourcePair, Pairs& destPair)
+{
+    CContainer temp;
+    Bytef* pTemp = nullptr;
+    Bytef* pSrc = nullptr;
+    uLongf compSize = 0;
+    int err = Z_OK;
+
+    /* prepare temp buffer */
+    compSize = compressBound(sourcePair.cc.size());
+    temp.resize(compSize);
+    pTemp = reinterpret_cast<Bytef*>( temp.data() );
+
+    /* prepare source */
+    pSrc = reinterpret_cast<Bytef*>( sourcePair.cc.data() );
+
+    err = compress(pTemp, &compSize, pSrc, sourcePair.cc.size());
+    if ( err == Z_OK )
+    {
+        destPair.DecSize = sourcePair.DecSize;
+        destPair.cc.resize(compSize);
+#ifdef __linux__
+        memcpy(destPair.cc.data(), temp.data(), compSize);
+#else
+        // for 3ds
+        memmove(destPair.cc.data(), temp.data(), compSize);
+#endif
+
+        return err;
+    }
+
+    return err;
 }
 
 void ARC::Pairs::FixPath(void)
 {
-    for (auto& c : this->f->Filename)
+    for (auto& c : this->Filename)
         if (c == '\\') c = '/';
+}
+
+void ARC::FixBE_Header(void)
+{
+    swap_endian<u16>(header->Version);
+    swap_endian<u16>(header->FilesNum);
+}
+
+void ARC::FixBE_ARC_File_s(ARC_File_s* f)
+{
+    swap_endian<u32>(f->ResourceHash);
+    swap_endian<u32>(f->CompressedSize);
+    swap_endian<u32>(f->DecompressedSize);
+    swap_endian<u32>(f->pZData);
 }
 
 void ARC::GetPWD(void)

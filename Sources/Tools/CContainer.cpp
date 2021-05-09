@@ -1,9 +1,13 @@
-#include "Tools/Container.hpp"
+#include "Tools/CContainer.hpp"
 
-#include <stdio.h>
-#include <unistd.h>
-#include <sys/stat.h>
-#include <string.h>
+#ifdef __linux__
+    #include <stdio.h>
+    #include <unistd.h>
+    #include <sys/stat.h>
+    #include <string.h>
+#else
+//
+#endif
 
 CContainer::CContainer(const char* fname)
 {
@@ -20,6 +24,8 @@ bool CContainer::allocate(u32 _size)
 
     this->__root          = static_cast<u8*>( malloc(sizeof(u8) * _size + extra ));
     this->__data          = this->__root + this->RESERVED_Before;
+
+    this->mallocUsed = true;
 
     return true;
 }
@@ -104,9 +110,10 @@ bool CContainer::readFromFile(const char* fname)
     u32 fsize = 0;
     u32 rsize = 0;
 
+#ifdef __linux__
+
     if ( access(fname, F_OK | R_OK ) == 0 )
     {
-        this->flags.isFile = true;
         f = fopen(fname, "rb");
 
         fseek(f, 0, SEEK_END);
@@ -118,6 +125,10 @@ bool CContainer::readFromFile(const char* fname)
         rsize = fread(this->__data, sizeof(u8), fsize, f);
         fclose(f);
     }
+
+#else
+    //
+#endif
 
     if (rsize > 0) return true;
     return false;
@@ -152,6 +163,7 @@ bool CContainer::makedir(const char* dir)
     int res = 0;
 
 #ifdef __linux__
+
     char tmp[256];
     char *p = NULL;
     int perm = S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH; // 0755

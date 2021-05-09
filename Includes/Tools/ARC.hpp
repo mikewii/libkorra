@@ -1,6 +1,6 @@
 #pragma once
 #include "types.h"
-#include "Tools/Container.hpp"
+#include "Tools/CContainer.hpp"
 
 #include <vector>
 #include <zlib.h>
@@ -12,7 +12,9 @@ class ARC
 {
 private:
     struct ARC_File_s {
-        char    Filename[64];
+        static const u32 FNAME_SIZE = 64;
+
+        u8    Filename[FNAME_SIZE];
         u32     ResourceHash;
         u32 	CompressedSize;
         u32     DecompressedSize; // xor 20000000 + 40000000 if version is 17
@@ -25,14 +27,6 @@ private:
         u16  FilesNum;
     };
 
-    struct Pairs
-    {
-        ARC_File_s* f;
-        CContainer cc{};
-
-        void FixPath(void);
-    };
-
     union {
         u32 bitfield{0};
         struct{
@@ -43,7 +37,6 @@ private:
     } b;
 
     ARC_s* header = nullptr;
-    std::vector<Pairs> files;
     std::string filename, path;
 
 
@@ -56,15 +49,42 @@ private:
     bool isCRA(void);
     void isARCFile(void);
 
+    void FixBE_Header(void);
+    void FixBE_ARC_File_s(ARC_File_s* f);
+
 public:
-    ARC(CContainer& _data);
+
+    struct Pairs
+    {
+        char    Filename[64];
+        u32     ResourceHash;
+        u32     DecSize = 0;
+
+        bool    decompressed = false;
+
+        CContainer cc{};
+        ARC_File_s* f; // only in scope of class
+
+        void FixPath(void);
+    };
+
+    ARC(){};
+    ARC(CContainer& _data, std::vector<Pairs>* _list);
     ~ARC();
 
-    void Extract(u32 n, bool writeToFile = false);
+    void Decompress(u32 n);
+    int     Decompress(Pairs& sourcePair, Pairs& destPair);
+    int     Compress(Pairs& sourcePair, Pairs& destPair);
+
+    void ExtractAll(void);
 
     void PrintHeader(void);
     void PrintFileInfo(ARC_File_s* f, u32 n);
     void SetFilename(std::string fname) { this->filename = fname + "_out"; }
     void SetPath(std::string _path);
 
+    u32 GetFilesCount(void) const { return header->FilesNum; }
+
+    std::vector<Pairs>* __inList;
+    std::vector<Pairs>* __outList;
 };

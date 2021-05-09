@@ -10,14 +10,12 @@ struct CContainer {
     u32 RESERVED_Before  = 0x100;
     u32 RESERVED_After   = 0x100;
 
-    struct{
-        bool isFile = false;
-    }flags;
+    bool mallocUsed = false;
 
 
     CContainer(){};
     CContainer(const char* fname);
-    ~CContainer(){ if (this->flags.isFile) free(this->__root); }
+    ~CContainer(){ if (this->mallocUsed) free(this->__root); }
 
     bool allocate(u32 size);
 
@@ -39,4 +37,8 @@ struct CContainer {
     u32 size(void) const { return this->__size; }
     u8* data(void) const { return this->__data; }
     void resize(u32 _size);
+
+    /* for in-memory ops */
+    void setData(u8* ptr) { this->__data = ptr; }
+    void setSize(u32 _size) { this->__size = _size; }
 };
