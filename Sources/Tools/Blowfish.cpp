@@ -72,7 +72,7 @@ void BlowFish::Blowfish_decipher (u32 *xl, u32 *xr)
 
 
     // constructs the enctryption sieve
-void BlowFish::Initialize (u8 key[], int keybytes)
+void BlowFish::Initialize (const u8 key[], int keybytes)
 {
     int  		i, j;
     u32  		data, datal, datar;

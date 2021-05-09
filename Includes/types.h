@@ -65,3 +65,6 @@ typedef void (*voidfn)(void);
     #define ALWAYS_INLINE  __attribute__((always_inline))
 
 #endif
+
+#include <string>
+inline void NotifyError(std::string str) {return;};
