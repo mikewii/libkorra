@@ -15,20 +15,9 @@ int main()
     std::vector<ARC::Pairs> list;
 
 
-
     ARC a(cc, &list);
-    a.SetFilename("q0000101.arc");
     a.ExtractAll();
-
-    a.Compress(list.at(0), comp);
-    a.Decompress(comp, uncomp);
-
-    MH4U b;
-    b.Decode(save_enc, save_dec);
-
-    b.Encode(save_dec, enc2);
-
-    b.Decode(enc2, dec3);
+    a.MakeARC(&list);
 
 
     return 0;

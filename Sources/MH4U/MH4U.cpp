@@ -1,6 +1,7 @@
 #include "MH4U/MH4U.hpp"
 
 #include "Tools/Blowfish.hpp"
+#include "Tools/Utils.hpp"
 
 #include <random>
 
@@ -130,7 +131,7 @@ void MH4U::PreEncode_Save(CContainer& data)
 void MH4U::InsertValue(CContainer& data, u32 value)
 {
     u8 i = 0;
-    value = swap_endian<u32>(value);
+    value = Utils::swap_endian<u32>(value);
     while (i < 4){
         if (i != 0) {value >>= 8;}
         data.addBefore(1);

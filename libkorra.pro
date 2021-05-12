@@ -12,6 +12,7 @@ SOURCES += \
         Sources/Tools/ARC.cpp \
         Sources/Tools/Blowfish.cpp \
         Sources/Tools/CContainer.cpp \
+        Sources/Tools/Utils.cpp \
         main.cpp
 
 HEADERS += \
@@ -20,4 +21,5 @@ HEADERS += \
     Includes/Tools/Blowfish.hpp \
     Includes/Tools/BlowfishTables.hpp \
     Includes/Tools/CContainer.hpp \
+    Includes/Tools/Utils.hpp \
     Includes/types.h

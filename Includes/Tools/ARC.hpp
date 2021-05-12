@@ -36,7 +36,7 @@ private:
         };
     } b;
 
-    ARC_s* header = nullptr;
+    ARC_s* __header = nullptr;
     std::string filename, path;
 
 
@@ -78,13 +78,15 @@ public:
 
     void ExtractAll(void);
 
+    void MakeARC(std::vector<Pairs>* _list);
+
     void PrintHeader(void);
     void PrintFileInfo(ARC_File_s* f, u32 n);
     void SetFilename(std::string fname) { this->filename = fname + "_out"; }
     void SetPath(std::string _path);
 
-    u32 GetFilesCount(void) const { return header->FilesNum; }
+    u32 GetFilesCount(void) const { return __header->FilesNum; }
 
-    std::vector<Pairs>* __inList;
-    std::vector<Pairs>* __outList;
+    std::vector<Pairs>* __List;
+    std::vector<Pairs>* __DecompressedList;
 };
