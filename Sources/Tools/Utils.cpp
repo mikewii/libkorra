@@ -16,7 +16,7 @@ namespace Utils {
     // Alignment safe copy
 extern void* copybytes(void* _dest, const void* _src, size_t _size)
 {
-    int isSafe = reinterpret_cast<u64>(_dest) % 4 ;
+    int isSafe = reinterpret_cast<u64>(_dest) % sizeof(_dest) ;
 
     if ( isSafe == 0 )
         return memcpy(_dest, _src, _size);
@@ -105,6 +105,17 @@ bool CCtoFile(const char* fname, CContainer* cc, bool makedir)
 
     if (wsize > 0) return true;
     return false;
+}
+
+u32 CalculateChecksum(CContainer& data)
+{
+    u32 i = 0, checksum = 0;
+
+    while (i < data.size()) {
+        checksum += data.as_u8(i) & 0xFF; i++;
+    };
+
+    return checksum;
 }
 
 } // Utils

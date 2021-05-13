@@ -6,16 +6,21 @@ CContainer::CContainer(const char* fname)
     this->readFromFile(fname);
 }
 
-bool CContainer::allocate(u32 _size)
+bool CContainer::allocate(u32 _size, bool zeroed)
 {
     if ( this->__root != nullptr) return false;
 
-    u32 extra   = this->RESERVED_Before + this->RESERVED_After;
+    u32 extra       = this->RESERVED_Before + this->RESERVED_After;
+    u32 allocSize   = _size + extra;
 
-    this->__size   = _size;
+    this->__size    = _size;
 
-    this->__root          = static_cast<u8*>( malloc(sizeof(u8) * _size + extra ));
-    this->__data          = this->__root + this->RESERVED_Before;
+    if ( zeroed )
+        this->__root    = static_cast<u8*>( calloc(allocSize, sizeof(u8)));
+    else
+        this->__root    = static_cast<u8*>( malloc(allocSize));
+
+    this->__data    = this->__root + this->RESERVED_Before;
 
     this->mallocUsed = true;
 
@@ -78,9 +83,9 @@ bool CContainer::subAfter(u32 _size)
     return false;
 }
 
-void CContainer::resize(u32 _size)
+void CContainer::resize(u32 _size, bool zeroed)
 {
-    if (this->__root == nullptr) this->allocate(_size);
+    if (this->__root == nullptr) this->allocate(_size, zeroed);
     else this->addAfter(_size);
 }
 

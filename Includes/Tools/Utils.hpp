@@ -30,5 +30,7 @@ int             makedir(const char* dir);
 bool            FileToCC(const char* fname, CContainer* cc);
 bool            CCtoFile(const char* fname, CContainer* cc, bool makedir);
 
+u32             CalculateChecksum(CContainer& data);
+
 
 } // Utils

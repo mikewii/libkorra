@@ -14,7 +14,7 @@ private:
     void    PreEncode_Save(CContainer& data);
 
     void    MHXOR(CContainer& data, u32 seed);
-    u32     CalculateChecksum(CContainer& data);
+    //u32     CalculateChecksum(CContainer& data);
     void    InsertValue(CContainer& data, u32 value);
 
     static u8 KeySaveFile[];

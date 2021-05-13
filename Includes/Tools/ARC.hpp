@@ -8,6 +8,14 @@
 static const char ARC_MAGIC[5] = "ARC\0";
 static const char CRA_MAGIC[5] = "\0CRA";
 
+enum class ARCVersion {
+    None,
+    MH4U,
+    MHXX,
+    LP1,
+    LP2
+};
+
 class ARC
 {
 private:
@@ -36,28 +44,39 @@ private:
         };
     } b;
 
-    ARC_s* __header = nullptr;
-    std::string filename, path;
-
-
     void Read(CContainer& _data);
     void PushFile(CContainer& _data, u32 n);
-    void GetPWD(void);
 
 
-    bool isARC(void);
-    bool isCRA(void);
-    void isARCFile(void);
+    bool    isARC(void);
+    bool    isCRA(void);
+    void    isARCFile(void);
+
+    u32     isNeedPadding(ARCVersion _version);
+    u32     isNeedPadding(u32 _version);
+    u32     GetVersionValue(ARCVersion _version);
+
+    u32     extractXORLock(u32 _decSize);
 
     void FixBE_Header(void);
     void FixBE_ARC_File_s(ARC_File_s* f);
 
+    u32     Align(u32 _value);
+
+    ARC_s* __header = nullptr;
+    std::string filename, path;
+    static u32 previousVersion;
+
 public:
 
-    struct Pairs
-    {
-        char    Filename[64];
+
+
+    struct Pairs {
+        static const u32 FNAME_SIZE = 64;
+
+        char    Filename[FNAME_SIZE];
         u32     ResourceHash;
+        u32     XORLock;
         u32     DecSize = 0;
 
         bool    decompressed = false;
@@ -65,7 +84,7 @@ public:
         CContainer cc{};
         ARC_File_s* f; // only in scope of class
 
-        void FixPath(void);
+        void FixPath(bool revert = false);
     };
 
     ARC(){};
@@ -78,15 +97,19 @@ public:
 
     void ExtractAll(void);
 
-    void MakeARC(std::vector<Pairs>* _list);
 
     void PrintHeader(void);
     void PrintFileInfo(ARC_File_s* f, u32 n);
     void SetFilename(std::string fname) { this->filename = fname + "_out"; }
-    void SetPath(std::string _path);
 
     u32 GetFilesCount(void) const { return __header->FilesNum; }
 
-    std::vector<Pairs>* __List;
-    std::vector<Pairs>* __DecompressedList;
+    // Making ARC
+    void MakeARC(CContainer& _output, std::vector<Pairs>* _list, ARCVersion _version = ARCVersion::None);
+    void MakeARC_File_s_Header(CContainer& _cc, std::vector<Pairs>& _list, u32 _padding, u32 _zDataStart);
+    void CopyZData(CContainer& _cc, std::vector<Pairs>& _list, u32 _zDataStart);
+
+
+
+    std::vector<Pairs>* __list;
 };

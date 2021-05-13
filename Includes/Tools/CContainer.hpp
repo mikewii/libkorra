@@ -17,7 +17,7 @@ struct CContainer {
     CContainer(const char* fname);
     ~CContainer(){ if (this->mallocUsed) free(this->__root); }
 
-    bool allocate(u32 size);
+    bool allocate(u32 size, bool zeroed = false);
 
     bool addBefore(u32 _size);
     void addAfter(u32 _size);
@@ -36,7 +36,7 @@ struct CContainer {
     /* defaults */
     u32 size(void) const { return this->__size; }
     u8* data(void) const { return this->__data; }
-    void resize(u32 _size);
+    void resize(u32 _size, bool zeroed = false);
 
     /* for in-memory ops */
     void setData(u8* ptr) { this->__data = ptr; }

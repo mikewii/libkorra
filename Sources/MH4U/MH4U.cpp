@@ -78,7 +78,7 @@ bool MH4U::PostDecode_Save(CContainer& data)
     checksum = data.as_u32(0);
     data.subBefore(sizeof(u32)); // remove checksum
 
-    checksum2 = CalculateChecksum(data);
+    checksum2 = Utils::CalculateChecksum(data);
 
     if (checksum == checksum2) return true;
     return false;
@@ -98,17 +98,6 @@ void MH4U::MHXOR(CContainer& data, u32 seed)
     };
 }
 
-u32 MH4U::CalculateChecksum(CContainer& data)
-{
-    u32 i = 0, checksum = 0;
-
-    while (i < data.size()) {
-        checksum += data.as_u8(i) & 0xFF; i++;
-    };
-
-    return checksum;
-}
-
 void MH4U::PreEncode_Save(CContainer& data)
 {
     std::mt19937 randomEngine(0x484D); // 0x484D = "MH"
@@ -119,7 +108,7 @@ void MH4U::PreEncode_Save(CContainer& data)
     random          = randomEngine();
     seed            = seed_header = random;
     seed_header     = (seed_header << 16) + 0x10;
-    checksum        = CalculateChecksum(data);
+    checksum        = Utils::CalculateChecksum(data);
 
     InsertValue(data, checksum);
 
