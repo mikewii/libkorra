@@ -16,6 +16,7 @@ SOURCES += \
         main.cpp
 
 HEADERS += \
+    Includes/Global.hpp \
     Includes/MH4U/MH4U.hpp \
     Includes/Tools/ARC.hpp \
     Includes/Tools/Blowfish.hpp \

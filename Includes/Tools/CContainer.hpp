@@ -14,7 +14,8 @@ struct CContainer {
 
 
     CContainer(){};
-    CContainer(const char* fname);
+    CContainer(const char* _fname);
+    CContainer(std::string& _fname);
     ~CContainer(){ if (this->mallocUsed) free(this->__root); }
 
     bool allocate(u32 size, bool zeroed = false);

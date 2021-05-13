@@ -1,9 +1,12 @@
 #include "Tools/CContainer.hpp"
 #include "Tools/Utils.hpp"
 
-CContainer::CContainer(const char* fname)
-{
-    this->readFromFile(fname);
+CContainer::CContainer(const char* _fname) {
+    this->readFromFile(_fname);
+}
+
+CContainer::CContainer(std::string& _fname) {
+    this->readFromFile(_fname.c_str());
 }
 
 bool CContainer::allocate(u32 _size, bool zeroed)
