@@ -8,6 +8,7 @@ CONFIG -= qt
 INCLUDEPATH += $$PWD/Includes
 
 SOURCES += \
+        Sources/MH4U/Extentions/sem.cpp \
         Sources/MH4U/MH4U.cpp \
         Sources/Tools/ARC.cpp \
         Sources/Tools/Blowfish.cpp \
@@ -17,7 +18,9 @@ SOURCES += \
 
 HEADERS += \
     Includes/Global.hpp \
+    Includes/MH4U/Extentions/sem.hpp \
     Includes/MH4U/MH4U.hpp \
+    Includes/MH4U/Resource.hpp \
     Includes/Tools/ARC.hpp \
     Includes/Tools/Blowfish.hpp \
     Includes/Tools/BlowfishTables.hpp \

@@ -48,9 +48,9 @@ private:
 
     u32     Align(u32 _value);
 
-    ARC_s* __header = nullptr;
-    static u32 previousVersion;
-    std::vector<Pair>* __list;
+    ARC_s*              __header = nullptr;
+    std::vector<Pair>*  __list;
+    static u32          __previousVersion;
 
 public:
 
@@ -62,11 +62,12 @@ public:
     int     Decompress(Pair& sourcePair, Pair& destPair);
     int     Compress(Pair& sourcePair, Pair& destPair);
 
-    void ExtractAll(void);
+    void    ExtractAll(void);
 
 
-    void PrintHeader(void);
-    void PrintFileInfo(ARC_File_s* f, u32 n);
+    void    PrintHeader(void);
+    void    PrintPairsInfo(void);
+    void    PrintFileInfo(ARC_File_s* f, u32 n);
 
     u32 GetFilesCount(void) const { return __header->FilesNum; }
 

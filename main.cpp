@@ -2,10 +2,13 @@
 #include "Tools/ARC.hpp"
 #include "MH4U/MH4U.hpp"
 #include "Tools/Utils.hpp"
+#include "MH4U/Extentions/sem.hpp"
 
 
 int main()
 {
+    using namespace MH4U;
+
     Utils::File::SetCWD();
 
     std::vector<Pair> list;
@@ -21,8 +24,15 @@ int main()
 
     ARC a(arc, &list);
     a.ExtractAll();
+    //a.PrintPairsInfo();
 
-    Utils::File::PairsVectorToFiles(list, fname, "/run/media/mw/data2/test/");
+    MH4U::SEM::Init(list.at(0));
+    MH4U::SEM::print();
+
+
+
+
+    //Utils::File::PairsVectorToFiles(list, fname, "/run/media/mw/data2/test/");
 
 
 

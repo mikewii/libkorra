@@ -5,7 +5,7 @@
 struct ARC_File_s {
     static const u32 FNAME_SIZE = 64;
 
-    u8    Filename[FNAME_SIZE];
+    u8      Filename[FNAME_SIZE];
     u32     ResourceHash;
     u32 	CompressedSize;
     u32     DecompressedSize; // xor 20000000 + 40000000 if version is 17
@@ -29,4 +29,11 @@ struct Pair {
 
     CContainer cc{};
     ARC_File_s* f;
+};
+
+struct Geometry {
+    float   Rotation;
+    float   X;
+    float   Y;
+    float   Z;
 };

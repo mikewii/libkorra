@@ -1,7 +1,7 @@
 #include "Tools/ARC.hpp"
 #include "Tools/Utils.hpp"
 
-u32 ARC::previousVersion = 0;
+u32 ARC::__previousVersion = 0;
 
 ARC::ARC(CContainer& _arcdata, std::vector<Pair>* _outlist)
 {
@@ -12,7 +12,7 @@ ARC::ARC(CContainer& _arcdata, std::vector<Pair>* _outlist)
 
     if (b.BE) FixBE_Header();
 
-    ARC::previousVersion = __header->Version;
+    ARC::__previousVersion = __header->Version;
 
     PrintHeader();
 
@@ -74,17 +74,17 @@ u32     ARC::GetVersionValue(ARCVersion _version)
 }
 
 u32     ARC::extractXORLock(u32 _decSize) {
-    return _decSize & 0xF0000000; // lock be last 4 bits
+    return _decSize & 0xF0000000; // lock be first 4 bits
 }
 
-void ARC::PrintHeader(void)
+void    ARC::PrintHeader(void)
 {
     printf("Magic:          %s\n", __header->Magic);
     printf("Version:        %d\n", __header->Version);
     printf("Num of Files:   %d\n", __header->FilesNum);
 }
 
-void ARC::PrintFileInfo(ARC_File_s* f, u32 n)
+void    ARC::PrintFileInfo(ARC_File_s* f, u32 n)
 {
     printf("\n");
     printf("File #%d\n", n);
@@ -93,6 +93,21 @@ void ARC::PrintFileInfo(ARC_File_s* f, u32 n)
     printf("Compressed size:    0x%X\n", f->CompressedSize);
     printf("Decompressed size:  0x%X\n", f->DecompressedSize);
     printf("Pointer to zdata:   0x%X\n", f->pZData);
+}
+
+void    ARC::PrintPairsInfo(void)
+{
+    u32 i = 0;
+    for ( auto& p : *__list)
+    {
+        printf("\n");
+        printf("##### Pair #%d #####\n", i++);
+        printf("File Path:          %s\n", p.Filename);
+        printf("XOR Lock:           0x%08X\n", p.XORLock);
+        printf("Resource Hash:      0x%08X\n", p.ResourceHash);
+        printf("Decompressed size:  %d\n", p.DecSize);
+        printf("CContainer size:    %d\n", p.cc.size());
+    }
 }
 
 void ARC::PushFile(CContainer& _data, u32 n)
@@ -244,8 +259,8 @@ void ARC::MakeARC(CContainer& _output, std::vector<Pair>* _list, ARCVersion _ver
     /**/    }
     /**/    else
     /**/    {
-    /**/        header.Version = ARC::previousVersion;
-    /**/        padding = isNeedPadding(ARC::previousVersion);
+    /**/        header.Version = ARC::__previousVersion;
+    /**/        padding = isNeedPadding(ARC::__previousVersion);
     /**/    }
     /**/
     /**/    Utils::copybytes(header.Magic, ARC_MAGIC, sizeof(header.Magic)); // TODO: BE LE depending on version or arg

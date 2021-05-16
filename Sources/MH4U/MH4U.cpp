@@ -5,12 +5,18 @@
 
 #include <random>
 
+namespace MH4U {
 
-u8 MH4U::KeySaveFile[]    = "blowfish key iorajegqmrna4itjeangmb agmwgtobjteowhv9mope";
-u8 MH4U::KeyDLC[]         = "AgK2DYheaCjyHGPB";
-u8 MH4U::KeyDLC_TW[]      = "Capcom123 ";
+bool    PostDecode_Save(CContainer& data);
+void    PreEncode_Save(CContainer& data);
+void    MHXOR(CContainer& data, u32 seed);
+void    InsertValue(CContainer& data, u32 value);
 
-void MH4U::Decode(CContainer& in, CContainer& out,  bool isQuest)
+static const u8 KeySaveFile[]    = "blowfish key iorajegqmrna4itjeangmb agmwgtobjteowhv9mope";
+static const u8 KeyDLC[]         = "AgK2DYheaCjyHGPB";
+static const u8 KeyDLC_TW[]      = "Capcom123 ";
+
+void Decode(CContainer& in, CContainer& out,  bool isQuest)
 {
     u32                 outSize;
     BlowFish            cypher;
@@ -38,7 +44,7 @@ void MH4U::Decode(CContainer& in, CContainer& out,  bool isQuest)
     }
 }
 
-void MH4U::Encode(CContainer& in, CContainer& out, bool isQuest)
+void Encode(CContainer& in, CContainer& out, bool isQuest)
 {
     u32                 outSize;
     BlowFish            cypher;
@@ -65,7 +71,7 @@ void MH4U::Encode(CContainer& in, CContainer& out, bool isQuest)
 
 
 
-bool MH4U::PostDecode_Save(CContainer& data)
+bool PostDecode_Save(CContainer& data)
 {
     u32 seed;
     u32 checksum, checksum2;
@@ -85,7 +91,7 @@ bool MH4U::PostDecode_Save(CContainer& data)
 
 }
 
-void MH4U::MHXOR(CContainer& data, u32 seed)
+void MHXOR(CContainer& data, u32 seed)
 {
     u32 i = 0;
 
@@ -98,7 +104,7 @@ void MH4U::MHXOR(CContainer& data, u32 seed)
     };
 }
 
-void MH4U::PreEncode_Save(CContainer& data)
+void PreEncode_Save(CContainer& data)
 {
     std::mt19937 randomEngine(0x484D); // 0x484D = "MH"
     u16 random; // must be u16
@@ -117,7 +123,7 @@ void MH4U::PreEncode_Save(CContainer& data)
     InsertValue(data, seed_header);
 }
 
-void MH4U::InsertValue(CContainer& data, u32 value)
+void InsertValue(CContainer& data, u32 value)
 {
     u8 i = 0;
     value = Utils::swap_endian<u32>(value);
@@ -128,3 +134,5 @@ void MH4U::InsertValue(CContainer& data, u32 value)
         i++;
     }
 }
+
+} // MH4U

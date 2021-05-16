@@ -3,19 +3,17 @@
 #include <algorithm>
 
 #ifdef __linux__
-    #include <stdio.h>
+    //#include <stdio.h>
     #include <unistd.h>
     #include <sys/stat.h>
-    #include <string.h>
 #else
-//
+// TODO
 #endif
 
 
 namespace Utils {
 
 char File::CWD[NAME_MAX]{0};
-bool File::isCWD = false;
 
 
     // Alignment safe copy
@@ -29,6 +27,7 @@ extern void* copybytes(void* _dest, const void* _src, size_t _size)
     return memmove(_dest, _src, _size);
 }
 
+static bool isCWD = false;
 void    File::SetCWD(void)
 {
 #ifdef __linux__

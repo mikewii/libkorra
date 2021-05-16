@@ -34,7 +34,6 @@ class File
 {
 private:
     static char CWD[NAME_MAX];
-    static bool isCWD;
 
     static void     FixPathSeparators(char* _str, bool revert = false);
     static void     FixPathSeparators(std::string& _str, bool revert = false);
