@@ -7,8 +7,6 @@
 
 int main()
 {
-    using namespace MH4U;
-
     Utils::File::SetCWD();
 
     std::vector<Pair> list;
@@ -26,8 +24,16 @@ int main()
     a.ExtractAll();
     //a.PrintPairsInfo();
 
-    MH4U::SEM::Init(list.at(0));
-    MH4U::SEM::print();
+    MH4U::SEM::sSetEmMain sem(list.at(0));
+
+    sem.setAreaNo(sem.getAreaNo() + 1);
+    sem.setAreaNo(sem.getAreaNo() + 1);
+    sem.setAreaNo(sem.getAreaNo() + 1);
+
+    sem.print();
+
+//    MH4U::SEM::Init(list.at(0));
+//    MH4U::SEM::print();
 
 
 

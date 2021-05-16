@@ -5,56 +5,49 @@ namespace SEM {
 
 sSetEmMain* __current = nullptr;
 
-void Init( Pair& _pp ){
-    setCurrent(_pp);
+sSetEmMain::sSetEmMain( Pair& _pp ){
+
+    if (( _pp.cc.size() == sizeof(sSetEmMain_s)))
+        this->data = reinterpret_cast<sSetEmMain_s&>( * _pp.cc.data() );
+    else NotifyError("Pair is not sSetEmMain_s");
 }
 
-
-
-void print( void ) { print(getCurrent()); }
-void print( sSetEmMain* _sem )
+void sSetEmMain::print( void )
 {
     printf("\n##### SetEmMain File #####\n");
 
-    printf("Magic:      0x%08X\n", _sem->Magic);
-    printf("Version:    0x%X\n", _sem->Version);
+    printf("Magic:      0x%08X\n", this->data.Magic);
+    printf("Version:    0x%X\n", this->data.Version);
 
     // actual data now
-    printf("Wave №:     %d\n", _sem->WaveNo);
-    printf("Area №:     %d\n", _sem->AreaNo);
+    printf("Wave №:     %d\n", this->data.WaveNo);
+    printf("Area №:     %d\n", this->data.AreaNo);
 
-    printf("Rotation:   %f\n", _sem->Position.Rotation);
-    printf("PosX:       %f\n", _sem->Position.X);
-    printf("PosY:       %f\n", _sem->Position.Y);
-    printf("PosZ:       %f\n", _sem->Position.Z);
+    printf("Rotation:   %f\n", this->data.Position.Rotation);
+    printf("PosX:       %f\n", this->data.Position.X);
+    printf("PosY:       %f\n", this->data.Position.Y);
+    printf("PosZ:       %f\n", this->data.Position.Z);
 }
 
 ////////// Getters //////////
 
-sSetEmMain* getCurrent( void )  { return __current; }
-u32         getWaveNo( void )   { return getCurrent()->WaveNo; }
-u32         getAreaNo( void )   { return getCurrent()->AreaNo; }
-Geometry    getPosition( void ) { return getCurrent()->Position; }
+u32         sSetEmMain::getWaveNo( void ) const     { return this->data.WaveNo; }
+u32         sSetEmMain::getAreaNo( void ) const     { return this->data.AreaNo; }
+Geometry    sSetEmMain::getPosition( void ) const   { return this->data.Position; }
 
 
 ////////// Setters //////////
 
-void        setCurrent( Pair& _pp ) {
-    __current = reinterpret_cast<sSetEmMain*>( _pp.cc.data() );
-}
+void        sSetEmMain::setWaveNo( u32 _num ) { this->data.WaveNo = _num; }
+void        sSetEmMain::setAreaNo( u32 _num ) { this->data.AreaNo = _num; }
 
-void        setWaveNo( u32 _num ) { getCurrent()->WaveNo = _num; }
-void        setAreaNo( u32 _num ) { getCurrent()->AreaNo = _num; }
-
-void        setPosition( float _rot, float _x, float _y, float _z )
+void        sSetEmMain::setPosition( float _rot, float _x, float _y, float _z )
 {
-    sSetEmMain* sem = getCurrent();
-    sem->Position.Rotation  = _rot;
-    sem->Position.X         = _x;
-    sem->Position.Y         = _y;
-    sem->Position.Z         = _z;
+    this->data.Position.Rotation  = _rot;
+    this->data.Position.X         = _x;
+    this->data.Position.Y         = _y;
+    this->data.Position.Z         = _z;
 }
-
 
 } // SEM
 } // MH4U

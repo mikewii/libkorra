@@ -67,4 +67,4 @@ typedef void (*voidfn)(void);
 #endif
 
 #include <string>
-inline void NotifyError(std::string str) {return;};
+void NotifyError(std::string _str);

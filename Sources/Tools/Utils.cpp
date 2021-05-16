@@ -11,6 +11,11 @@
 #endif
 
 
+void NotifyError(std::string _str){
+    printf("\n%s\n", _str.c_str());
+}
+
+
 namespace Utils {
 
 char File::CWD[NAME_MAX]{0};

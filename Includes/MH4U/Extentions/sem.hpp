@@ -5,35 +5,36 @@
 namespace MH4U {
 namespace SEM {
 
-const u32 MAGIC = 0x3F800000;
+struct sSetEmMain_s {
+    static const u32 MAGIC = 0x3F800000;    // no its not
 
-struct sSetEmMain {
-    u32         Magic   = MAGIC;    // maybe
-    u32         Version = 1;        // maybe
+    u32         Magic   = MAGIC;            // maybe
+    u32         Version = 1;                // maybe
     u32         WaveNo;
     u32         AreaNo;
     Geometry    Position;
 };
 
-void Init( Pair& _pp );
+struct sSetEmMain {
+
+    sSetEmMain_s data;
 
 
-// Getters
-sSetEmMain* getCurrent( void );
-u32         getWaveNo( void );
-u32         getAreaNo( void );
-Geometry    getPosition( void );
+    sSetEmMain( Pair& _pp );
+    ~sSetEmMain(){};
 
-// Setters
-void        setCurrent( Pair& _pp );
-void        setWaveNo( u32 _num );
-void        setAreaNo( u32 _num );
-void        setPosition( float _rot, float _x, float _y, float _z );
+    void print( void );
 
-void print( void );
-void print( sSetEmMain* _sem );
+    // Getters
+    u32         getWaveNo( void ) const;
+    u32         getAreaNo( void ) const;
+    Geometry    getPosition( void ) const;
 
-extern sSetEmMain* __current;
+    // Setters
+    void        setWaveNo( u32 _num );
+    void        setAreaNo( u32 _num );
+    void        setPosition( float _rot, float _x, float _y, float _z );
+};
 
 } // SEM
 } // MH4U
