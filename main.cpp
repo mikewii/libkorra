@@ -2,7 +2,6 @@
 #include "Tools/ARC.hpp"
 #include "MH4U/MH4U.hpp"
 #include "Tools/Utils.hpp"
-#include "MH4U/Extentions/sem.hpp"
 
 
 int main()
@@ -14,7 +13,8 @@ int main()
     std::string fname;
 
 
-    fpath = "/run/media/mw/data2/test/q0000101.arc";
+    fpath = "/run/media/mw/data2/test/q0000226.arc";
+    //fpath = "/run/media/mw/data2/test/quest.arc";
     fname = Utils::File::extractName(fpath);
 
 
@@ -24,13 +24,29 @@ int main()
     a.ExtractAll();
     //a.PrintPairsInfo();
 
-    MH4U::SEM::sSetEmMain sem(list.at(0));
+    for ( auto& pp : list)
+    {
+        if ( pp.ResourceHash == MH4U::GMD::RESOURCE_HASH )
+        {
+            MH4U::GMD::sGMD gmd(pp);
 
-    sem.setAreaNo(sem.getAreaNo() + 1);
-    sem.setAreaNo(sem.getAreaNo() + 1);
-    sem.setAreaNo(sem.getAreaNo() + 1);
+            gmd.printHeader();
+            gmd.printFilename();
 
-    sem.print();
+            gmd.printAllItems();
+            gmd.printAllLabels();
+        }
+    }
+
+//    MH4U::SEM::sSetEmMain sem(list.at(0));
+//    MH4U::QDP::sQuestPlus qdp(list.at(8));
+//    MH4U::GMD::sGMD gmd(list.at(10));
+
+//    sem.print();
+//    qdp.print();
+//    gmd.printHeader();
+//    gmd.printFilename();
+//    gmd.printAllItems();
 
 //    MH4U::SEM::Init(list.at(0));
 //    MH4U::SEM::print();
@@ -39,8 +55,6 @@ int main()
 
 
     //Utils::File::PairsVectorToFiles(list, fname, "/run/media/mw/data2/test/");
-
-
 
     return 0;
 }

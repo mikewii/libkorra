@@ -4,20 +4,21 @@
 
 namespace MH4U {
 namespace SEM {
+static const u32 RESOURCE_HASH = 0x2553701D;
 
 struct sSetEmMain_s {
     static const u32 MAGIC = 0x3F800000;    // no its not
 
-    u32         Magic   = MAGIC;            // maybe
+    u32         Magic = MAGIC;              // maybe
     u32         Version = 1;                // maybe
-    u32         WaveNo;
-    u32         AreaNo;
-    Geometry    Position;
+    u32         WaveNo = 0;
+    u32         AreaNo = 0;
+    Geometry    Position = {0,0,0,0};
 };
 
 struct sSetEmMain {
 
-    sSetEmMain_s data;
+    sSetEmMain_s __data;
 
 
     sSetEmMain( Pair& _pp );

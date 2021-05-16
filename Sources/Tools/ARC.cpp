@@ -14,8 +14,6 @@ ARC::ARC(CContainer& _arcdata, std::vector<Pair>* _outlist)
 
     ARC::__previousVersion = __header->Version;
 
-    PrintHeader();
-
     if(!b.isARC) return; // NotifyError("Not an ARC file!");
 
     Read(_arcdata);

@@ -12,7 +12,7 @@
 
 
 void NotifyError(std::string _str){
-    printf("\n%s\n", _str.c_str());
+    fprintf(stderr, "\n%s\n", _str.c_str());
 }
 
 

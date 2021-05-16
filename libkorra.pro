@@ -8,6 +8,8 @@ CONFIG -= qt
 INCLUDEPATH += $$PWD/Includes
 
 SOURCES += \
+        Sources/MH4U/Extentions/gmd.cpp \
+        Sources/MH4U/Extentions/qdp.cpp \
         Sources/MH4U/Extentions/sem.cpp \
         Sources/MH4U/MH4U.cpp \
         Sources/Tools/ARC.cpp \
@@ -18,6 +20,8 @@ SOURCES += \
 
 HEADERS += \
     Includes/Global.hpp \
+    Includes/MH4U/Extentions/gmd.hpp \
+    Includes/MH4U/Extentions/qdp.hpp \
     Includes/MH4U/Extentions/sem.hpp \
     Includes/MH4U/MH4U.hpp \
     Includes/MH4U/Resource.hpp \
