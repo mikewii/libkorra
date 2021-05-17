@@ -1,12 +1,26 @@
 #include "MH4U/Extentions/gmd.hpp"
 
+#include "Tools/Utils.hpp"
 #include "string.h"
 
 namespace MH4U {
 namespace GMD {
 
+sGMD::sGMD()
+{
+
+}
+
+sGMD::~sGMD()
+{
+    if ( this->__dataAdv != nullptr )
+        free( this->__dataAdv );
+}
+
 sGMD::sGMD( Pair& _pp )
 {
+    u32             pDataAdv = sizeof(sGMD_Header_s) + 1;
+    u32             dataAdvSize = 0;
     u32             expect = sizeof(sGMD_Header_s) + 1; // 1 cuz filename null terminator
     sGMD_Header_s*  gmd = nullptr;
 
@@ -23,6 +37,22 @@ sGMD::sGMD( Pair& _pp )
                     sizeof(sGMD_Advanced2_s);
             expect          += gmd->LabelsNum * sizeof(sGMD_Advanced1_s) +
                     sizeof(sGMD_Advanced2_s);
+
+            // allocate and copy adv data
+            allocateDataAdv();
+
+            pDataAdv += gmd->FilenameSize;
+            dataAdvSize = (gmd->LabelsNum * sizeof(sGMD_Advanced1_s)) + sizeof(sGMD_Advanced2_s);
+
+            Utils::copybytes(this->__dataAdv, reinterpret_cast<u8*>( this->__data) + pDataAdv, dataAdvSize);
+
+
+            u32 sum0, sum1;
+            sum0 = Utils::CalculateChecksum(_pp.cc.data() + pDataAdv, dataAdvSize);
+            sum1 = Utils::CalculateChecksum(this->__dataAdv, dataAdvSize);
+
+            if ( sum0 != sum1 )
+                fprintf( stderr, "something wrong with dataadv copy!\n");
         }
     }
     else goto err;
@@ -43,6 +73,87 @@ sGMD::sGMD( Pair& _pp )
 
 err:
     NotifyError("Pair is not a GMD");
+}
+
+void sGMD::make( Pair& _pp )
+{
+    sGMD_Header_s   header;
+    u32             itemsSize = 0;
+    u32             labelsSize = 0;
+    u32             filenameSize = 0;
+    u32             dataAdvSize = 0;
+    u32             totalSize = 0;
+    u32             shift = 0;
+
+
+    ///// Setting sizes
+    filenameSize = this->__filename.size();
+
+    for ( auto& label : this->__LabelsStrings )
+        labelsSize += label.size() + 1;
+
+    for ( auto& item : this->__ItemsStrings )
+        itemsSize += item.size() + 1;
+
+    totalSize = sizeof(sGMD_Header_s) + filenameSize + 1 + labelsSize + itemsSize;
+
+    if ( !this->__LabelsStrings.empty() )
+        totalSize += dataAdvSize = (this->__LabelsStrings.size() * sizeof(sGMD_Advanced1_s)) + sizeof(sGMD_Advanced2_s);
+
+    ///// Making header
+    header.Magic        = header.MAGIC;
+    header.Version      = header.VERSION;
+    header.Unk          = this->__data->Unk;
+
+    header.LabelsNum    = this->__LabelsStrings.size();
+    header.LabelsSize   = labelsSize;
+
+    header.ItemsNum     = this->__ItemsStrings.size();
+    header.ItemsSize    = itemsSize;
+
+    header.FilenameSize = filenameSize;
+
+    ///// Copy data to CContainer
+    _pp.cc.resize(totalSize, true);
+
+    // Copy header
+    Utils::copybytes(_pp.cc.data(), &header, sizeof(sGMD_Header_s));
+    shift += sizeof(sGMD_Header_s);
+
+    // Copy filename
+    Utils::copybytes(_pp.cc.data() + shift, this->__filename.c_str(), this->__filename.size());
+    shift += filenameSize + 1;
+
+    // Copy labels if they exist
+    if ( !this->__LabelsStrings.empty() )
+    {
+        // Copy dataAdv first
+        Utils::copybytes(_pp.cc.data() + shift, this->__dataAdv, dataAdvSize);
+        shift += dataAdvSize;
+
+        for ( auto& str : this->__LabelsStrings )
+        {
+            Utils::copybytes(_pp.cc.data() + shift, str.c_str(), str.size());
+            shift += str.size() + 1;
+        }
+    }
+
+    // Copy items if they exist (they should)
+    if ( !this->__ItemsStrings.empty() )
+    {
+        for ( auto& str : this->__ItemsStrings )
+        {
+            Utils::copybytes(_pp.cc.data() + shift, str.c_str(), str.size());
+            shift += str.size() + 1;
+        }
+    }
+}
+
+
+void sGMD::allocateDataAdv( void )
+{
+    u32 size = (this->__data->LabelsNum * sizeof(sGMD_Advanced1_s)) + sizeof(sGMD_Advanced2_s);
+    this->__dataAdv = reinterpret_cast<u8*>( calloc(size, sizeof(u8)) );
 }
 
 void sGMD::printHeader( void )
@@ -144,7 +255,7 @@ std::string     sGMD::getFilenameStr() const {
     return std::string( reinterpret_cast<const char*>( this->__data + sizeof(sGMD_Header_s)) );
 }
 
-std::string    sGMD::getLabelStr( u32 _id ) const{
+std::string    sGMD::getLabelStr( u32 _id ) const {
     if ( _id > this->__LabelsStrings.size() ) return "";
     else return this->__LabelsStrings.at(_id);
 }
@@ -176,6 +287,22 @@ bool    sGMD::setItemStr( std::string _str, u32 _id ) {
 void    sGMD::appendLabelStr( std::string _str ) { this->__LabelsStrings.push_back(_str); }
 void    sGMD::appendItemStr( std::string _str ) { this->__ItemsStrings.push_back(_str); }
 
+
+bool    sGMD::removeLabelStr( u32 _id )
+{
+    if ( _id > this->__LabelsStrings.size() ) return false;
+    else this->__LabelsStrings.erase(this->__LabelsStrings.begin() + _id);
+
+    return true;
+}
+
+bool    sGMD::removeItemStr( u32 _id )
+{
+    if ( _id > this->__ItemsStrings.size() ) return false;
+    else this->__ItemsStrings.erase(this->__ItemsStrings.begin() + _id);
+
+    return true;
+}
 
 } // GMD
 } // MH4U

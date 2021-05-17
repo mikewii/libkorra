@@ -118,13 +118,12 @@ std::string     File::cutName(std::string& _path)
     return res.substr(0, res.find_last_of("/"));
 }
 
-void         File::PairToFiles(Pair& _pair, std::string& _fname)
+void File::PairToFiles( Pair& _pair, std::string& _fname, std::string _firstPath )
 {
-    std::string root = makepath(_fname);
-    root.append("_out");
-
-    makedir(root.c_str());
-
+    std::string first;
+    std::string last;
+    std::string full;
+    std::string path;
 
 
 }
@@ -186,7 +185,7 @@ bool FileToCC(const char* fname, CContainer* cc)
         fsize = ftell(f);
         rewind(f);
 
-        cc->allocate(fsize);
+        cc->resize(fsize);
 
         rsize = fread(cc->data(), sizeof(u8), fsize, f);
         fclose(f);
@@ -224,15 +223,46 @@ bool CCtoFile(const char* fname, CContainer* cc, bool makedir)
     return false;
 }
 
-u32 CalculateChecksum(CContainer& data)
+u32 CalculateChecksum( CContainer& _data )
 {
     u32 i = 0, checksum = 0;
 
-    while (i < data.size()) {
-        checksum += data.as_u8(i) & 0xFF; i++;
+    while (i < _data.size()) {
+        checksum += _data.as_u8(i) & 0xFF; i++;
     };
 
     return checksum;
+}
+
+u32 CalculateChecksum( u8* _data, u32 _size )
+{
+    u32 i = 0, checksum = 0;
+
+    while( i < _size ) {
+        checksum += _data[i] & 0xFF; i++;
+    }
+
+    return checksum;
+}
+
+void FindDiff(u8* _data0, u8* _data1, u32 _size)
+{
+    u32 i = 0, sum0 = 0, sum1 = 0;
+
+    while( i < _size ) {
+        sum0 += _data0[i] & 0xFF;
+        sum1 += _data1[i] & 0xFF;
+
+        if ( sum0 != sum1 )
+        {
+            u64* p0 = reinterpret_cast<u64*>( &_data0[i] );
+            u64* p1 = reinterpret_cast<u64*>( &_data1[i] );
+            fprintf( stderr, "diff at 0x%lx | 0x%lx\n", p0, p1);
+            break;
+        }
+
+        i++;
+    }
 }
 
 void File::FixPathSeparators(char* _str, bool revert)

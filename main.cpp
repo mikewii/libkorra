@@ -8,13 +8,15 @@ int main()
 {
     Utils::File::SetCWD();
 
+    Pair out;
     std::vector<Pair> list;
     std::string fpath;
     std::string fname;
 
 
-    fpath = "/run/media/mw/data2/test/q0000226.arc";
-    //fpath = "/run/media/mw/data2/test/quest.arc";
+    //fpath = "/run/media/mw/data2/test/q0000226.arc";
+    //fpath = "/run/media/mw/data2/test/q0000101.arc";
+    fpath = "/run/media/mw/data2/test/quest.arc";
     fname = Utils::File::extractName(fpath);
 
 
@@ -24,17 +26,38 @@ int main()
     a.ExtractAll();
     //a.PrintPairsInfo();
 
-    for ( auto& pp : list)
+    std::string path = "/run/media/mw/data2/test/out.gmd";
+    for ( auto& in : list)
     {
-        if ( pp.ResourceHash == MH4U::GMD::RESOURCE_HASH )
+        if ( in.ResourceHash == MH4U::GMD::RESOURCE_HASH )
         {
-            MH4U::GMD::sGMD gmd(pp);
+            MH4U::GMD::sGMD gmd(in);
 
-            gmd.printHeader();
-            gmd.printFilename();
+            gmd.make(out);
 
-            gmd.printAllItems();
-            gmd.printAllLabels();
+            u32 sum0, sum1;
+            sum0 = Utils::CalculateChecksum(in.cc);
+            sum1 = Utils::CalculateChecksum(out.cc);
+
+            Utils::FindDiff(in.cc.data(), out.cc.data(), out.cc.size());
+
+            if (in.cc.size() != out.cc.size()) {
+                printf("");
+            }
+
+            if (sum0 == sum1)
+            {
+                printf("all fine\n");
+                out.cc.writeToFile(path.c_str());
+
+                path.append("a");
+            }
+
+//            gmd.printHeader();
+//            gmd.printFilename();
+
+//            gmd.printAllItems();
+            //gmd.printAllLabels();
         }
     }
 
