@@ -60,9 +60,10 @@ typedef void (*voidfn)(void);
         /// Flags a function as deprecated.
         #define DEPRECATED
     #endif
-    #define NAKED __attribute__((naked))
-    #define NORETURN __attribute__((noreturn))
-    #define ALWAYS_INLINE  __attribute__((always_inline))
+    #define NAKED           __attribute__((naked))
+    #define NORETURN        __attribute__((noreturn))
+    #define ALWAYS_INLINE   __attribute__((always_inline))
+    #define WEAK            __attribute__((weak))
 
 #endif
 

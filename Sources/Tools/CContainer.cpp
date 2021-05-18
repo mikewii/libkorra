@@ -14,9 +14,9 @@ CContainer::~CContainer()
     this->_free();
 }
 
-void CContainer::_free( void ) { if (this->mallocUsed) free(this->__root); }
+void    CContainer::_free( void ) { if (this->mallocUsed) free(this->__root); }
 
-bool CContainer::allocate( u32 _size, bool _zeroed )
+bool    CContainer::allocate( u32 _size, bool _zeroed )
 {
     if ( this->__root != nullptr) this->_free();
 
@@ -37,7 +37,7 @@ bool CContainer::allocate( u32 _size, bool _zeroed )
     return true;
 }
 
-bool CContainer::addBefore( u32 _size )
+bool    CContainer::addBefore( u32 _size )
 {
     if (_size <= this->RESERVED_Before && this->RESERVED_Before != 0)
     {
@@ -52,7 +52,7 @@ bool CContainer::addBefore( u32 _size )
     return false;
 }
 
-void CContainer::addAfter( u32 _size )
+void    CContainer::addAfter( u32 _size )
 {
     if(_size <= this->RESERVED_After && this->RESERVED_After != 0)
     {
@@ -66,7 +66,7 @@ void CContainer::addAfter( u32 _size )
     }
 }
 
-bool CContainer::subBefore( u32 _size )
+bool    CContainer::subBefore( u32 _size )
 {
     if (_size < this->__size)
     {
@@ -80,7 +80,7 @@ bool CContainer::subBefore( u32 _size )
     return false;
 }
 
-bool CContainer::subAfter( u32 _size )
+bool    CContainer::subAfter( u32 _size )
 {
     if (_size < this->__size)
     {
@@ -93,31 +93,29 @@ bool CContainer::subAfter( u32 _size )
     return false;
 }
 
-void CContainer::resize( u32 _size, bool _zeroed )
+void    CContainer::resize( u32 _size, bool _zeroed )
 {
     if (this->__root == nullptr) this->allocate(_size, _zeroed);
     else if ( this->__root != nullptr && _zeroed ) this->allocate(_size, _zeroed);
     else this->addAfter(_size);
 }
 
-u8&     CContainer::as_u8( u32 _n ){
+u8&     CContainer::as_u8( u32 _n ) {
     return static_cast<u8&>(this->__data[_n]);
 }
 
-u16&    CContainer::as_u16(u32 _n){
+u16&    CContainer::as_u16 ( u32 _n ) {
     return reinterpret_cast<u16&>(this->__data[_n * sizeof(u16)]);
 }
 
-u32&    CContainer::as_u32(u32 _n){
+u32&    CContainer::as_u32( u32 _n ) {
     return reinterpret_cast<u32&>(this->__data[_n * sizeof(u32)]);
 }
 
-bool CContainer::readFromFile(const char* _fname)
-{
-    return Utils::FileToCC(_fname, this);
+bool    CContainer::readFromFile( const char* _fname ) {
+    return Utils::File::FileToCC(_fname, this);
 }
 
-bool CContainer::writeToFile(const char* _fname, bool _makedir)
-{
-    return Utils::CCtoFile(_fname, this, _makedir);
+bool    CContainer::writeToFile( const char* _fname, bool _makedir ) {
+    return Utils::File::CCtoFile(_fname, this, _makedir);
 }

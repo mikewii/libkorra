@@ -6,11 +6,6 @@
 namespace MH4U {
 namespace GMD {
 
-sGMD::sGMD()
-{
-
-}
-
 sGMD::~sGMD()
 {
     if ( this->__dataAdv != nullptr )
@@ -41,27 +36,19 @@ sGMD::sGMD( Pair& _pp )
             // allocate and copy adv data
             allocateDataAdv();
 
-            pDataAdv += gmd->FilenameSize;
+            pDataAdv    += gmd->FilenameSize;
             dataAdvSize = (gmd->LabelsNum * sizeof(sGMD_Advanced1_s)) + sizeof(sGMD_Advanced2_s);
 
             Utils::copybytes(this->__dataAdv, reinterpret_cast<u8*>( this->__data) + pDataAdv, dataAdvSize);
-
-
-            u32 sum0, sum1;
-            sum0 = Utils::CalculateChecksum(_pp.cc.data() + pDataAdv, dataAdvSize);
-            sum1 = Utils::CalculateChecksum(this->__dataAdv, dataAdvSize);
-
-            if ( sum0 != sum1 )
-                fprintf( stderr, "something wrong with dataadv copy!\n");
         }
     }
     else goto err;
 
     if ( gmd->Padding0 != 0 )
-        fprintf( stderr, "GMD Padding0 isnt 0\n" );
+        NotifyError( "GMD Padding0 isnt 0" );
 
     if ( gmd->Padding1 != 0 )
-        fprintf( stderr, "GMD Padding1 isnt 0\n" );
+        NotifyError( "GMD Padding1 isnt 0" );
 
     if ( expect != _pp.cc.size() ) {
         fprintf( stderr, "Size mismatch! CC %d | GMD %d\n", _pp.cc.size(), expect );
@@ -75,7 +62,8 @@ err:
     NotifyError("Pair is not a GMD");
 }
 
-void sGMD::make( Pair& _pp )
+
+void sGMD::save( Pair& _pp )
 {
     sGMD_Header_s   header;
     u32             itemsSize = 0;
@@ -89,26 +77,26 @@ void sGMD::make( Pair& _pp )
     ///// Setting sizes
     filenameSize = this->__filename.size();
 
-    for ( auto& label : this->__LabelsStrings )
+    for ( auto& label : this->__labelStrings )
         labelsSize += label.size() + 1;
 
-    for ( auto& item : this->__ItemsStrings )
+    for ( auto& item : this->__itemStrings )
         itemsSize += item.size() + 1;
 
     totalSize = sizeof(sGMD_Header_s) + filenameSize + 1 + labelsSize + itemsSize;
 
-    if ( !this->__LabelsStrings.empty() )
-        totalSize += dataAdvSize = (this->__LabelsStrings.size() * sizeof(sGMD_Advanced1_s)) + sizeof(sGMD_Advanced2_s);
+    if ( !this->__labelStrings.empty() )
+        totalSize += dataAdvSize = (this->__labelStrings.size() * sizeof(sGMD_Advanced1_s)) + sizeof(sGMD_Advanced2_s);
 
     ///// Making header
     header.Magic        = header.MAGIC;
     header.Version      = header.VERSION;
-    header.Unk          = this->__data->Unk;
+    header.Unk          = this->__unk;
 
-    header.LabelsNum    = this->__LabelsStrings.size();
+    header.LabelsNum    = this->__labelStrings.size();
     header.LabelsSize   = labelsSize;
 
-    header.ItemsNum     = this->__ItemsStrings.size();
+    header.ItemsNum     = this->__itemStrings.size();
     header.ItemsSize    = itemsSize;
 
     header.FilenameSize = filenameSize;
@@ -125,13 +113,13 @@ void sGMD::make( Pair& _pp )
     shift += filenameSize + 1;
 
     // Copy labels if they exist
-    if ( !this->__LabelsStrings.empty() )
+    if ( !this->__labelStrings.empty() )
     {
         // Copy dataAdv first
         Utils::copybytes(_pp.cc.data() + shift, this->__dataAdv, dataAdvSize);
         shift += dataAdvSize;
 
-        for ( auto& str : this->__LabelsStrings )
+        for ( auto& str : this->__labelStrings )
         {
             Utils::copybytes(_pp.cc.data() + shift, str.c_str(), str.size());
             shift += str.size() + 1;
@@ -139,9 +127,9 @@ void sGMD::make( Pair& _pp )
     }
 
     // Copy items if they exist (they should)
-    if ( !this->__ItemsStrings.empty() )
+    if ( !this->__itemStrings.empty() )
     {
-        for ( auto& str : this->__ItemsStrings )
+        for ( auto& str : this->__itemStrings )
         {
             Utils::copybytes(_pp.cc.data() + shift, str.c_str(), str.size());
             shift += str.size() + 1;
@@ -183,16 +171,19 @@ void sGMD::readAll( void )
     sGMD_Header_s*  gmd = this->__data;
     u32             shift = 0;
 
-    this->__LabelsStrings.resize(gmd->LabelsNum);
-    this->__ItemsStrings.resize(gmd->ItemsNum);
+    this->__unk     = this->__data->Unk;
+
+    this->__labelStrings.resize(gmd->LabelsNum);
+    this->__itemStrings.resize(gmd->ItemsNum);
 
     this->__pLabels = this->__pItems;
+
 
     // Filename
     this->__filename = reinterpret_cast<const char*>( gmd ) + sizeof(sGMD_Header_s);
 
     // Labels
-    for ( auto& str : this->__LabelsStrings )
+    for ( auto& str : this->__labelStrings )
     {
         char* pStr = reinterpret_cast<char*>( gmd ) + this->__pLabels + shift;
 
@@ -205,7 +196,7 @@ void sGMD::readAll( void )
     this->__pItems  += shift;
     shift           = 0;
 
-    for ( auto& str : this->__ItemsStrings )
+    for ( auto& str : this->__itemStrings )
     {
         char* pStr = reinterpret_cast<char*>( gmd ) + this->__pItems + shift;
 
@@ -226,18 +217,18 @@ bool sGMD::printFilename( void )
 
 bool sGMD::printAllLabels( void )
 {
-    if ( this->__LabelsStrings.empty() ) return false;
+    if ( this->__labelStrings.empty() ) return false;
 
-    for ( auto& str : this->__LabelsStrings)
+    for ( auto& str : this->__labelStrings)
         this->print(str);
 
     return true;
 }
 bool sGMD::printAllItems( void )
 {
-    if ( this->__ItemsStrings.empty() ) return false;
+    if ( this->__itemStrings.empty() ) return false;
 
-    for ( auto& str : this->__ItemsStrings)
+    for ( auto& str : this->__itemStrings)
         this->print(str);
 
     return true;
@@ -256,13 +247,13 @@ std::string     sGMD::getFilenameStr() const {
 }
 
 std::string    sGMD::getLabelStr( u32 _id ) const {
-    if ( _id > this->__LabelsStrings.size() ) return "";
-    else return this->__LabelsStrings.at(_id);
+    if ( _id > this->__labelStrings.size() ) return "";
+    else return this->__labelStrings.at(_id);
 }
 
 std::string    sGMD::getItemStr( u32 _id ) const {
-    if ( _id > this->__ItemsStrings.size() ) return "";
-    else return this->__ItemsStrings.at(_id);
+    if ( _id > this->__itemStrings.size() ) return "";
+    else return this->__itemStrings.at(_id);
 }
 
 
@@ -271,35 +262,35 @@ std::string    sGMD::getItemStr( u32 _id ) const {
 void    sGMD::setFilenameStr( std::string _str ) { this->__filename = _str; }
 
 bool    sGMD::setLabelStr( std::string _str, u32 _id ) {
-    if ( _id > this->__LabelsStrings.size() ) return false;
-    else this->__LabelsStrings.at(_id) = _str;
+    if ( _id > this->__labelStrings.size() ) return false;
+    else this->__labelStrings.at(_id) = _str;
 
     return true;
 }
 
 bool    sGMD::setItemStr( std::string _str, u32 _id ) {
-    if ( _id > this->__ItemsStrings.size() ) return false;
-    else this->__ItemsStrings.at(_id) = _str;
+    if ( _id > this->__itemStrings.size() ) return false;
+    else this->__itemStrings.at(_id) = _str;
 
     return true;
 }
 
-void    sGMD::appendLabelStr( std::string _str ) { this->__LabelsStrings.push_back(_str); }
-void    sGMD::appendItemStr( std::string _str ) { this->__ItemsStrings.push_back(_str); }
+void    sGMD::appendLabelStr( std::string _str ) { this->__labelStrings.push_back(_str); }
+void    sGMD::appendItemStr( std::string _str ) { this->__itemStrings.push_back(_str); }
 
 
 bool    sGMD::removeLabelStr( u32 _id )
 {
-    if ( _id > this->__LabelsStrings.size() ) return false;
-    else this->__LabelsStrings.erase(this->__LabelsStrings.begin() + _id);
+    if ( _id > this->__labelStrings.size() ) return false;
+    else this->__labelStrings.erase(this->__labelStrings.begin() + _id);
 
     return true;
 }
 
 bool    sGMD::removeItemStr( u32 _id )
 {
-    if ( _id > this->__ItemsStrings.size() ) return false;
-    else this->__ItemsStrings.erase(this->__ItemsStrings.begin() + _id);
+    if ( _id > this->__itemStrings.size() ) return false;
+    else this->__itemStrings.erase(this->__itemStrings.begin() + _id);
 
     return true;
 }

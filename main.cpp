@@ -33,7 +33,7 @@ int main()
         {
             MH4U::GMD::sGMD gmd(in);
 
-            gmd.make(out);
+            gmd.save(out);
 
             u32 sum0, sum1;
             sum0 = Utils::CalculateChecksum(in.cc);
@@ -48,7 +48,7 @@ int main()
             if (sum0 == sum1)
             {
                 printf("all fine\n");
-                out.cc.writeToFile(path.c_str());
+                //out.cc.writeToFile(path.c_str());
 
                 path.append("a");
             }

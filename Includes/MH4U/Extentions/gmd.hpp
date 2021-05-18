@@ -39,7 +39,6 @@ class sGMD
 {
 public:
 
-    sGMD();
     sGMD( Pair& _pp );
     ~sGMD();
 
@@ -48,7 +47,18 @@ public:
     bool printAllLabels( void );
     bool printAllItems( void );
 
+    /**
+     * @brief Save loaded gmd to new Pair
+     * @param _pp
+     */
+    void save( Pair& _pp );
+
+    /**
+     * @brief Make new gmd and save it to Pair
+     * @param _pp
+     */
     void make( Pair& _pp );
+    void makeAdv();
 
     // Getters
     u32             getItemsNum( void ) const;
@@ -72,9 +82,10 @@ private:
     u8*                         __dataAdv = nullptr;
     u32                         __pLabels = 0;
     u32                         __pItems = 0;
-    std::string                 __filename;
-    std::vector<std::string>    __LabelsStrings;
-    std::vector<std::string>    __ItemsStrings;
+    float                       __unk = 0;
+    std::string                 __filename = "example";
+    std::vector<std::string>    __labelStrings;
+    std::vector<std::string>    __itemStrings;
 
     void print( std::string& _str );
     void print( const char* _str );
