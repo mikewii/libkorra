@@ -14,7 +14,7 @@ CContainer::~CContainer()
     this->_free();
 }
 
-void    CContainer::_free( void ) { if (this->mallocUsed) free(this->__root); }
+void    CContainer::_free( void ) { if (this->__root != nullptr) free(this->__root); }
 
 bool    CContainer::allocate( u32 _size, bool _zeroed )
 {
@@ -31,8 +31,6 @@ bool    CContainer::allocate( u32 _size, bool _zeroed )
         this->__root    = static_cast<u8*>( malloc(allocSize));
 
     this->__data    = this->__root + this->RESERVED_Before;
-
-    this->mallocUsed = true;
 
     return true;
 }

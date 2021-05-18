@@ -42,8 +42,6 @@ private:
     u32         RESERVED_Before  = 0x100;
     u32         RESERVED_After   = 0x100;
 
-    bool mallocUsed = false;
-
     bool allocate( u32 _size, bool _zeroed = false );
     void _free( void );
 };

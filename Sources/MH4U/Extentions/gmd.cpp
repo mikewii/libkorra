@@ -6,6 +6,10 @@
 namespace MH4U {
 namespace GMD {
 
+sGMD::sGMD()
+{
+}
+
 sGMD::~sGMD()
 {
     if ( this->__dataAdv2 != nullptr )
@@ -45,8 +49,37 @@ err:
     NotifyError("Pair is not a GMD");
 }
 
+void sGMD::make( Pair& _pp )
+{
+    if ( this->__itemStrings.empty() ) {
+        NotifyError("No items to write to gmd!");
+        return;
+    }
 
-void sGMD::save( Pair& _pp )
+    this->save(_pp);
+}
+
+void sGMD::makeAdv( Pair& _pp, std::vector<sGMD_Advanced1_s>* _vecAdv1, sGMD_Advanced2_s* _adv2)
+{
+    if ( this->__itemStrings.size() != this->__labelStrings.size() ) {
+        NotifyError("Items must be same ammount as Labels!");
+        return;
+    }
+
+    if ( this->__labelStrings.empty() ) {
+        NotifyError("Advanced GMD must have Labels!");
+        return;
+    }
+
+    if ( _vecAdv1->size() != this->__labelStrings.size() ) {
+        NotifyError("Vector of sGMD_Advanced_s must be same ammount as Labels!");
+        return;
+    }
+
+    this->save(_pp, _vecAdv1, _adv2);
+}
+
+void sGMD::save( Pair& _pp, std::vector<sGMD_Advanced1_s>* _vecAdv1, sGMD_Advanced2_s* _adv2 )
 {
     sGMD_Header_s   header;
     u32             totalSize   = 0;
@@ -58,9 +91,13 @@ void sGMD::save( Pair& _pp )
     u32 o_dataAdv2  = 0;    u32 dataAdv2Size    = 0;
     u32 o_labels    = 0;    u32 labelsSize      = 0;
     u32 o_items     = 0;    u32 itemsSize       = 0;
+    std::vector<sGMD_Advanced1_s>&  dataAdv1    = this->__dataAdv1;
+    sGMD_Advanced2_s*               dataAdv2    = this->__dataAdv2;
 
 
     _pp.ResourceHash    = GMD::RESOURCE_HASH;
+    if ( _vecAdv1 ) dataAdv1 = *_vecAdv1;
+    if ( _adv2 )    dataAdv2 = _adv2;
 
 
     ///// Calcualte sizes
@@ -76,7 +113,7 @@ void sGMD::save( Pair& _pp )
 
     if ( isAdv )
     {
-        dataAdv1Size    = this->__dataAdv1.size() * sizeof(sGMD_Advanced1_s);
+        dataAdv1Size    = dataAdv1.size() * sizeof(sGMD_Advanced1_s);
         dataAdv2Size    = sizeof(sGMD_Advanced2_s);
         totalSize       += dataAdv1Size + dataAdv2Size;
     }
@@ -95,17 +132,7 @@ void sGMD::save( Pair& _pp )
 
 
     ///// Making header
-    header.Magic        = header.MAGIC;
-    header.Version      = header.VERSION;
-    header.Unk          = this->__unk;
-
-    header.LabelsNum    = this->__labelStrings.size();
-    header.LabelsSize   = labelsSize;
-
-    header.ItemsNum     = this->__itemStrings.size();
-    header.ItemsSize    = itemsSize;
-
-    header.FilenameSize = filenameSize;
+    setHeader(header, labelsSize, itemsSize);
 
 
     ///// Resize container to fit data
@@ -124,7 +151,7 @@ void sGMD::save( Pair& _pp )
     if ( isAdv )
     {
         // Copy adv data1
-        for ( auto& data : this->__dataAdv1 )
+        for ( auto& data : dataAdv1 )
         {
             Utils::copybytes(p_start + o_dataAdv1 + shift, &data, sizeof(sGMD_Advanced1_s));
 
@@ -132,7 +159,7 @@ void sGMD::save( Pair& _pp )
         } shift = 0;
 
         // Copy adv data2
-        Utils::copybytes(p_start + o_dataAdv2, this->__dataAdv2, sizeof(sGMD_Advanced2_s));
+        Utils::copybytes(p_start + o_dataAdv2, dataAdv2, sizeof(sGMD_Advanced2_s));
 
         for ( auto& str : this->__labelStrings )
         {
@@ -257,6 +284,22 @@ void sGMD::readAll( void )
 
         shift += strlen(pStr) + NULL_TERMINATOR;
     }
+}
+
+void sGMD::setHeader( sGMD_Header_s& _header, u32 _labelsSize, u32 _itemsSize )
+{
+    _header.Magic        = _header.MAGIC;
+    _header.Version      = _header.VERSION;
+
+    _header.Unk          = this->__unk;
+
+    _header.LabelsNum    = this->__labelStrings.size();
+    _header.LabelsSize   = _labelsSize;
+
+    _header.ItemsNum     = this->__itemStrings.size();
+    _header.ItemsSize    = _itemsSize;
+
+    _header.FilenameSize = this->__filename.size();
 }
 
 bool sGMD::printFilename( void )

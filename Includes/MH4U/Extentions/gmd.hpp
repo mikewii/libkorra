@@ -42,6 +42,7 @@ class sGMD
 {
 public:
 
+    sGMD();
     sGMD( Pair& _pp );
     ~sGMD();
 
@@ -52,16 +53,26 @@ public:
 
     /**
      * @brief Save loaded gmd to new Pair
-     * @param _pp
+     * @param _pp       Pair to save data to
+     * @param _vecAdv1  Vector of sGMD_Advanced1_s data
+     * @param _adv2     sGMD_Advanced2_s data
      */
-    void save( Pair& _pp );
+    void save( Pair& _pp, std::vector<sGMD_Advanced1_s>* _vecAdv1 = nullptr, sGMD_Advanced2_s* _adv2 = nullptr );
 
     /**
      * @brief Make new gmd and save it to Pair
-     * @param _pp
+     * @param _pp       Pair to save data to
      */
     void make( Pair& _pp );
-    void makeAdv();
+
+
+    /**
+     * @brief Make new advancew gmd and save it to Pair
+     * @param _pp       Pair to save data to
+     * @param _vecAdv1  Vector of sGMD_Advanced1_s data
+     * @param _adv2     sGMD_Advanced2_s data
+     */
+    void makeAdv( Pair& _pp, std::vector<sGMD_Advanced1_s>* _vecAdv1 = nullptr, sGMD_Advanced2_s* _adv2 = nullptr);
 
     // Getters
     u32             getItemsNum( void ) const;
@@ -92,6 +103,8 @@ private:
     void print( std::string& _str );
     void print( const char* _str );
     void readAll( void );
+
+    void setHeader( sGMD_Header_s& _header, u32 _labelsSize, u32 _itemsSize );
 
 };
 
