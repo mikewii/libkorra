@@ -117,10 +117,10 @@ std::string     File::popName( std::string& _path ) {
 
 void File::PairToFile( Pair& _pair, std::string& _fname, std::string _firstPath )
 {
-    std::string first;
-    std::string last;
-    std::string full;
-    std::string path;
+    std::string     first;
+    std::string     last;
+    std::string     full;
+    std::string     path;
 
 
 }
@@ -172,9 +172,9 @@ bool        File::FileToCC( std::string& _fpath, CContainer* _cc ) {
 
 bool        File::FileToCC( const char* _fpath, CContainer* _cc )
 {
-    FILE* f = nullptr;
-    u32 fsize = 0;
-    u32 rsize = 0;
+    FILE*   f = nullptr;
+    u32     fsize = 0;
+    u32     rsize = 0;
 
 #ifdef __linux__
 
@@ -191,6 +191,7 @@ bool        File::FileToCC( const char* _fpath, CContainer* _cc )
         rsize = fread(_cc->data(), sizeof(u8), fsize, f);
         fclose(f);
     }
+    else NotifyError("FileToCC: File doenst exist or cant read!");
 
 #else
     //
@@ -206,8 +207,14 @@ bool        File::CCtoFile( std::string& _fpath, CContainer* _cc, bool _makedir 
 
 bool        File::CCtoFile( const char* _fpath, CContainer* _cc, bool _makedir )
 {
-    FILE* f = nullptr;
-    u32 wsize = 0;
+    FILE*   f = nullptr;
+    u32     wsize = 0;
+
+    if ( _cc->size() == 0) {
+        NotifyError("CCtoFile: CContainer is empty!");
+        return false;
+    }
+
 
     if (_makedir)
     {

@@ -8,39 +8,22 @@ namespace GMD {
 
 sGMD::~sGMD()
 {
-    if ( this->__dataAdv != nullptr )
-        free( this->__dataAdv );
+    if ( this->__dataAdv2 != nullptr )
+        free(this->__dataAdv2);
 }
 
 sGMD::sGMD( Pair& _pp )
 {
-    u32             pDataAdv = sizeof(sGMD_Header_s) + 1;
-    u32             dataAdvSize = 0;
-    u32             expect = sizeof(sGMD_Header_s) + 1; // 1 cuz filename null terminator
+    u32             expectedSize = sizeof(sGMD_Header_s) + NULL_TERMINATOR;
     sGMD_Header_s*  gmd = nullptr;
 
     if ( _pp.ResourceHash == RESOURCE_HASH ) {
         this->__data = gmd = reinterpret_cast<sGMD_Header_s*>( _pp.cc.data() );
 
-
-        this->__pItems += expect + gmd->FilenameSize;
-        expect += gmd->FilenameSize + gmd->ItemsSize + gmd->LabelsSize;
+        expectedSize += gmd->FilenameSize + gmd->ItemsSize + gmd->LabelsSize;
 
         if ( gmd->LabelsNum > 0 )
-        {
-            this->__pItems  += gmd->LabelsNum * sizeof(sGMD_Advanced1_s) +
-                    sizeof(sGMD_Advanced2_s);
-            expect          += gmd->LabelsNum * sizeof(sGMD_Advanced1_s) +
-                    sizeof(sGMD_Advanced2_s);
-
-            // allocate and copy adv data
-            allocateDataAdv();
-
-            pDataAdv    += gmd->FilenameSize;
-            dataAdvSize = (gmd->LabelsNum * sizeof(sGMD_Advanced1_s)) + sizeof(sGMD_Advanced2_s);
-
-            Utils::copybytes(this->__dataAdv, reinterpret_cast<u8*>( this->__data) + pDataAdv, dataAdvSize);
-        }
+            expectedSize += gmd->LabelsNum * sizeof(sGMD_Advanced1_s) + sizeof(sGMD_Advanced2_s);
     }
     else goto err;
 
@@ -50,8 +33,8 @@ sGMD::sGMD( Pair& _pp )
     if ( gmd->Padding1 != 0 )
         NotifyError( "GMD Padding1 isnt 0" );
 
-    if ( expect != _pp.cc.size() ) {
-        fprintf( stderr, "Size mismatch! CC %d | GMD %d\n", _pp.cc.size(), expect );
+    if ( expectedSize != _pp.cc.size() ) {
+        fprintf( stderr, "Size mismatch! CC %d | GMD %d\n", _pp.cc.size(), expectedSize );
         goto err;
     }
 
@@ -66,27 +49,50 @@ err:
 void sGMD::save( Pair& _pp )
 {
     sGMD_Header_s   header;
-    u32             itemsSize = 0;
-    u32             labelsSize = 0;
-    u32             filenameSize = 0;
-    u32             dataAdvSize = 0;
-    u32             totalSize = 0;
-    u32             shift = 0;
+    u32             totalSize   = 0;
+    u32             shift       = 0;
+    bool            isAdv       = this->__labelStrings.size() > 0 ? true : false;
+    u8*             p_start     = nullptr;
+    u32 o_filename  = 0;    u32 filenameSize    = 0;
+    u32 o_dataAdv1  = 0;    u32 dataAdv1Size    = 0;
+    u32 o_dataAdv2  = 0;    u32 dataAdv2Size    = 0;
+    u32 o_labels    = 0;    u32 labelsSize      = 0;
+    u32 o_items     = 0;    u32 itemsSize       = 0;
 
 
-    ///// Setting sizes
+    _pp.ResourceHash    = GMD::RESOURCE_HASH;
+
+
+    ///// Calcualte sizes
     filenameSize = this->__filename.size();
 
     for ( auto& label : this->__labelStrings )
-        labelsSize += label.size() + 1;
+        labelsSize += label.size() + NULL_TERMINATOR;
 
     for ( auto& item : this->__itemStrings )
-        itemsSize += item.size() + 1;
+        itemsSize += item.size() + NULL_TERMINATOR;
 
-    totalSize = sizeof(sGMD_Header_s) + filenameSize + 1 + labelsSize + itemsSize;
+    totalSize = sizeof(sGMD_Header_s) + filenameSize + NULL_TERMINATOR + labelsSize + itemsSize;
 
-    if ( !this->__labelStrings.empty() )
-        totalSize += dataAdvSize = (this->__labelStrings.size() * sizeof(sGMD_Advanced1_s)) + sizeof(sGMD_Advanced2_s);
+    if ( isAdv )
+    {
+        dataAdv1Size    = this->__dataAdv1.size() * sizeof(sGMD_Advanced1_s);
+        dataAdv2Size    = sizeof(sGMD_Advanced2_s);
+        totalSize       += dataAdv1Size + dataAdv2Size;
+    }
+
+    ///// Calculate offsets
+    o_filename  = sizeof(sGMD_Header_s);
+
+    if( isAdv )
+    {
+        o_dataAdv1  = o_filename + filenameSize + NULL_TERMINATOR;
+        o_dataAdv2  = o_dataAdv1 + dataAdv1Size;
+        o_labels    = o_dataAdv2 + dataAdv2Size;
+        o_items     = o_labels + labelsSize;
+    }
+    else o_items = o_filename + filenameSize + NULL_TERMINATOR;
+
 
     ///// Making header
     header.Magic        = header.MAGIC;
@@ -101,29 +107,38 @@ void sGMD::save( Pair& _pp )
 
     header.FilenameSize = filenameSize;
 
-    ///// Copy data to CContainer
-    _pp.cc.resize(totalSize, true);
 
+    ///// Resize container to fit data
+    _pp.cc.resize(totalSize, true);
+    p_start = _pp.cc.data();
+
+
+    ///// Copy data to CContainer
     // Copy header
-    Utils::copybytes(_pp.cc.data(), &header, sizeof(sGMD_Header_s));
-    shift += sizeof(sGMD_Header_s);
+    Utils::copybytes(p_start, &header, sizeof(sGMD_Header_s));
 
     // Copy filename
-    Utils::copybytes(_pp.cc.data() + shift, this->__filename.c_str(), this->__filename.size());
-    shift += filenameSize + 1;
+    Utils::copybytes(p_start + o_filename, this->__filename.c_str(), this->__filename.size());
 
     // Copy labels if they exist
-    if ( !this->__labelStrings.empty() )
+    if ( isAdv )
     {
-        // Copy dataAdv first
-        Utils::copybytes(_pp.cc.data() + shift, this->__dataAdv, dataAdvSize);
-        shift += dataAdvSize;
+        // Copy adv data1
+        for ( auto& data : this->__dataAdv1 )
+        {
+            Utils::copybytes(p_start + o_dataAdv1 + shift, &data, sizeof(sGMD_Advanced1_s));
+
+            shift += sizeof(sGMD_Advanced1_s);
+        } shift = 0;
+
+        // Copy adv data2
+        Utils::copybytes(p_start + o_dataAdv2, this->__dataAdv2, sizeof(sGMD_Advanced2_s));
 
         for ( auto& str : this->__labelStrings )
         {
-            Utils::copybytes(_pp.cc.data() + shift, str.c_str(), str.size());
-            shift += str.size() + 1;
-        }
+            Utils::copybytes(p_start + o_labels + shift, str.c_str(), str.size());
+            shift += str.size() + NULL_TERMINATOR;
+        } shift = 0;
     }
 
     // Copy items if they exist (they should)
@@ -131,18 +146,12 @@ void sGMD::save( Pair& _pp )
     {
         for ( auto& str : this->__itemStrings )
         {
-            Utils::copybytes(_pp.cc.data() + shift, str.c_str(), str.size());
-            shift += str.size() + 1;
+            Utils::copybytes(p_start + o_items + shift, str.c_str(), str.size());
+            shift += str.size() + NULL_TERMINATOR;
         }
     }
 }
 
-
-void sGMD::allocateDataAdv( void )
-{
-    u32 size = (this->__data->LabelsNum * sizeof(sGMD_Advanced1_s)) + sizeof(sGMD_Advanced2_s);
-    this->__dataAdv = reinterpret_cast<u8*>( calloc(size, sizeof(u8)) );
-}
 
 void sGMD::printHeader( void )
 {
@@ -168,41 +177,85 @@ void sGMD::printHeader( void )
 
 void sGMD::readAll( void )
 {
-    sGMD_Header_s*  gmd = this->__data;
-    u32             shift = 0;
+    sGMD_Header_s*  gmd                 = this->__data;
+    u8*             p_Start             = nullptr;
+    u32             o_Filename          = 0;
+    u32             o_sGMD_Advanced1_s  = 0;
+    u32             o_sGMD_Advanced2_s  = 0;
+    u32             o_Labels            = 0;
+    u32             o_Items             = 0;
+    u32             dataAdv1Size        = 0;
+    u32             shift               = 0;
+    bool            isAdv = gmd->LabelsNum > 0 ? true : false;
 
-    this->__unk     = this->__data->Unk;
-
+    // Resize before filling in data
     this->__labelStrings.resize(gmd->LabelsNum);
+    this->__dataAdv1.resize(gmd->LabelsNum);
     this->__itemStrings.resize(gmd->ItemsNum);
 
-    this->__pLabels = this->__pItems;
+    dataAdv1Size    = this->__labelStrings.size() * sizeof(sGMD_Advanced1_s);
+    p_Start         = reinterpret_cast<u8*>( this->__data );
+
+    // Calculate offsets
+    o_Filename      = sizeof(sGMD_Header_s);
+
+    if ( isAdv )
+    {
+        o_sGMD_Advanced1_s  = o_Filename + gmd->FilenameSize + NULL_TERMINATOR;
+        o_sGMD_Advanced2_s  = o_sGMD_Advanced1_s + dataAdv1Size;
+        o_Labels            = o_sGMD_Advanced2_s + sizeof(sGMD_Advanced2_s);
+        o_Items             = o_Labels; // calculated later
+    }
+    else o_Items    = o_Filename + gmd->FilenameSize + NULL_TERMINATOR;
+
+
+    ///// Read
+    // Unknown value
+    this->__unk     = this->__data->Unk;
 
 
     // Filename
-    this->__filename = reinterpret_cast<const char*>( gmd ) + sizeof(sGMD_Header_s);
+    this->__filename = reinterpret_cast<const char*>( p_Start + o_Filename );
+
+
+    // sGMD_Advanced1_s
+    for ( auto& a : this->__dataAdv1 )
+    {
+        u8* p = p_Start + o_sGMD_Advanced1_s + shift;
+        Utils::copybytes(&a, p, sizeof(sGMD_Advanced1_s));
+
+        shift += sizeof(sGMD_Advanced1_s);
+    } shift = 0;
+
+
+    // sGMD_Advanced2_s
+    if ( isAdv )
+    {
+        this->__dataAdv2 = reinterpret_cast<sGMD_Advanced2_s*>(
+                    calloc( 1, sizeof(sGMD_Advanced2_s)) );
+        Utils::copybytes(this->__dataAdv2, p_Start + o_sGMD_Advanced2_s, sizeof(sGMD_Advanced2_s));
+    }
+
 
     // Labels
     for ( auto& str : this->__labelStrings )
     {
-        char* pStr = reinterpret_cast<char*>( gmd ) + this->__pLabels + shift;
+        char* pStr = reinterpret_cast<char*>( p_Start ) + o_Labels + shift;
 
         str = pStr;
 
-        shift += strlen(pStr) + 1;
-    }
+        shift += strlen(pStr) + NULL_TERMINATOR;
+    } o_Items += shift; shift = 0;
+
 
     // Items
-    this->__pItems  += shift;
-    shift           = 0;
-
     for ( auto& str : this->__itemStrings )
     {
-        char* pStr = reinterpret_cast<char*>( gmd ) + this->__pItems + shift;
+        char* pStr = reinterpret_cast<char*>( p_Start ) + o_Items + shift;
 
         str = pStr;
 
-        shift += strlen(pStr) + 1;
+        shift += strlen(pStr) + NULL_TERMINATOR;
     }
 }
 

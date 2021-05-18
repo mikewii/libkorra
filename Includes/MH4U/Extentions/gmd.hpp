@@ -6,6 +6,9 @@
 
 namespace MH4U {
 namespace GMD {
+
+#define NULL_TERMINATOR 1
+
 static const u32 RESOURCE_HASH = 0x242BB29A; // mhxx
 
 struct sGMD_Header_s {
@@ -78,19 +81,17 @@ public:
     bool            removeItemStr( u32 _id );
 
 private:
-    sGMD_Header_s*              __data = nullptr;
-    u8*                         __dataAdv = nullptr;
-    u32                         __pLabels = 0;
-    u32                         __pItems = 0;
-    float                       __unk = 0;
-    std::string                 __filename = "example";
-    std::vector<std::string>    __labelStrings;
-    std::vector<std::string>    __itemStrings;
+    sGMD_Header_s*                  __data = nullptr;
+    std::string                     __filename = "example";
+    std::vector<std::string>        __labelStrings;
+    std::vector<std::string>        __itemStrings;
+    float                           __unk = 0;
+    std::vector<sGMD_Advanced1_s>   __dataAdv1;
+    sGMD_Advanced2_s*               __dataAdv2 = nullptr;
 
     void print( std::string& _str );
     void print( const char* _str );
     void readAll( void );
-    void allocateDataAdv( void );
 
 };
 

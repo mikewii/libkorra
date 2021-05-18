@@ -41,8 +41,8 @@ extern void*    copybytes( void* _dest, const void* _src, size_t _size );
 
 /**
  * @brief Calculate sum of bytes
- * @param _data CContainer to work on
- * @return  Sum of bytes
+ * @param _data     CContainer to work on
+ * @return          Sum of bytes
  */
 u32             CalculateChecksum( CContainer& _data );
 
@@ -50,7 +50,7 @@ u32             CalculateChecksum( CContainer& _data );
  * @brief Calculate sum of bytes
  * @param _data     Pointer to data to work on
  * @param _size     Size of _data
- * @return  Sum of bytes
+ * @return          Sum of bytes
  */
 u32             CalculateChecksum( u8* _data, u32 _size );
 
@@ -97,35 +97,35 @@ public:
 
     /**
      * @brief Write CContainer from Pair to file
-     * @param _pair Pair to work on
-     * @param _fname Root folder name
-     * @param _firstPath Path to save toor folder at
+     * @param _pair         Pair to work on
+     * @param _fname        Root folder name
+     * @param _firstPath    Path to save toor folder at
      */
     static void PairToFile( Pair& _pair, std::string& _fname, std::string _firstPath = "" );
 
     /**
      * @brief Write all CContainers from Pairs in vector to files
-     * @param _vec vector of Pairs
-     * @param _fname Root folder name
-     * @param _firstPath Path to save root folder at
+     * @param _vec          Vector of Pairs
+     * @param _fname        Root folder name
+     * @param _firstPath    Path to save root folder at
      */
     static void PairVectorToFiles( std::vector<Pair>& _vec, std::string& _fname, std::string _firstPath = "" );
 
     /**
      * @brief Read file to CContainer
-     * @param _fpath    path with filename
+     * @param _fpath    Path with filename
      * @param _cc       CContainer to hold data
-     * @return          true if read successfully
+     * @return          true if read successfull
      */
     static bool FileToCC( const char* _path, CContainer* _cc );
     static bool FileToCC( std::string& _path, CContainer* _cc );
 
     /**
      * @brief Write data from CContainer to file
-     * @param _fpath    path with filename
+     * @param _fpath    Path with filename
      * @param _cc       CContainer to work with
      * @param _makedir  if true then attempt to make dirs from _fpath
-     * @return          true if write successfully
+     * @return          true if write successfull
      */
     static bool CCtoFile( const char* _path, CContainer* _cc, bool _makedir = false );
     static bool CCtoFile( std::string& _path, CContainer* _cc, bool _makedir = false );

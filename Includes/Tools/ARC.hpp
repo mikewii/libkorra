@@ -18,9 +18,33 @@ enum class ARCVersion {
 
 class ARC
 {
+public:
+
+    ARC(){};
+    ARC(CContainer& _arcdata, std::vector<Pair>* _outlist);
+    ~ARC();
+
+    void    Decompress(u32 n);
+    int     Decompress(Pair& sourcePair, Pair& destPair);
+    int     Compress(Pair& sourcePair, Pair& destPair);
+
+    void    ExtractAll(void);
+
+
+    void    PrintHeader(void);
+    void    PrintPairsInfo(void);
+    void    PrintFileInfo(ARC_File_s* f, u32 n);
+
+    u32     GetFilesCount(void) const { return __header->FilesNum; }
+
+    // Making ARC
+    void MakeARC(CContainer& _output, std::vector<Pair>* _list, ARCVersion _version = ARCVersion::None);
+    void MakeARC_File_s_Header(CContainer& _cc, std::vector<Pair>& _list, u32 _padding, u32 _zDataStart);
+    void CopyZData(CContainer& _cc, std::vector<Pair>& _list, u32 _zDataStart);
+
 private:
 
-    union {
+    union { // dont need it?
         u32 bitfield{0};
         struct{
             bool LE : 1;
@@ -43,37 +67,13 @@ private:
 
     u32     extractXORLock(u32 _decSize);
 
-    void FixBE_Header(void);
-    void FixBE_ARC_File_s(ARC_File_s* f);
+    void    FixBE_Header(void);
+    void    FixBE_ARC_File_s(ARC_File_s* f);
 
     u32     Align(u32 _value);
 
     ARC_s*              __header = nullptr;
     std::vector<Pair>*  __list;
     static u32          __previousVersion;
-
-public:
-
-    ARC(){};
-    ARC(CContainer& _arcdata, std::vector<Pair>* _outlist);
-    ~ARC();
-
-    void    Decompress(u32 n);
-    int     Decompress(Pair& sourcePair, Pair& destPair);
-    int     Compress(Pair& sourcePair, Pair& destPair);
-
-    void    ExtractAll(void);
-
-
-    void    PrintHeader(void);
-    void    PrintPairsInfo(void);
-    void    PrintFileInfo(ARC_File_s* f, u32 n);
-
-    u32 GetFilesCount(void) const { return __header->FilesNum; }
-
-    // Making ARC
-    void MakeARC(CContainer& _output, std::vector<Pair>* _list, ARCVersion _version = ARCVersion::None);
-    void MakeARC_File_s_Header(CContainer& _cc, std::vector<Pair>& _list, u32 _padding, u32 _zDataStart);
-    void CopyZData(CContainer& _cc, std::vector<Pair>& _list, u32 _zDataStart);
 
 };

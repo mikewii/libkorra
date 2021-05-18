@@ -5,6 +5,11 @@ u32 ARC::__previousVersion = 0;
 
 ARC::ARC(CContainer& _arcdata, std::vector<Pair>* _outlist)
 {
+    if ( _arcdata.size() == 0) {
+        NotifyError("ARC: CContainer is empty!");
+        return;
+    }
+
     __header = reinterpret_cast<ARC_s*>(&_arcdata.as_u8(0));
     __list = _outlist;
 
@@ -144,8 +149,9 @@ void ARC::Read(CContainer& _data)
 
 void ARC::ExtractAll(void)
 {
-    for(int i = 0; i < __header->FilesNum; i++)
-        Decompress(i);
+    if ( this->__header )
+        for(int i = 0; i < __header->FilesNum; i++)
+            Decompress(i);
 }
 
 void ARC::Decompress(u32 n)
