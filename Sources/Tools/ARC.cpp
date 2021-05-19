@@ -168,7 +168,7 @@ void ARC::Decompress(u32 n)
     if ( uncompress(p.cc.data(), &decSize, source, p.f->CompressedSize) == Z_OK )
     {
         p.DecSize = decSize;
-        p.decompressed = true;
+        p.isDecompressed = true;
     }
 }
 
@@ -192,7 +192,7 @@ int ARC::Decompress(Pair& sourcePair, Pair& destPair)
     if ( err == Z_OK )
     {
         destPair.DecSize = decSize;
-        destPair.decompressed = true;
+        destPair.isDecompressed = true;
         destPair.cc.resize(decSize);
         Utils::copybytes(destPair.cc.data(), temp.data(), decSize);
     }

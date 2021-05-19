@@ -2,7 +2,7 @@
 #include "types.h"
 #include "Global.hpp"
 
-namespace MH4U {
+namespace MHXX {
 namespace QDP {
 static const u32 RESOURCE_HASH = 0x26BEC21C;
 
@@ -28,15 +28,18 @@ struct sQuestPlus_s {
 } PACKED;
 
 
-struct sQuestPlus {
+class sQuestPlus : public PairInfo
+{
+public:
 
-    sQuestPlus_s __data;
-
-
+    sQuestPlus();
     sQuestPlus( Pair& _pp );
     ~sQuestPlus(){};
 
     void print( void );
+
+    void make( Pair& _pp );
+    void save( Pair& _pp );
 
     // Getters
     bool    getIsFence( void ) const;
@@ -63,7 +66,10 @@ struct sQuestPlus {
     void    setFortHpS( u16 _num );
     void    setFortHpL( u16 _num );
 
+private:
+    sQuestPlus_s    __data;
+
 };
 
 } // QDP
-} // MH4U
+} // MHXX

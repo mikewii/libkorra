@@ -2,7 +2,7 @@
 #include "types.h"
 #include "Global.hpp"
 
-namespace MH4U {
+namespace MHXX {
 namespace SEM {
 static const u32 RESOURCE_HASH = 0x2553701D;
 
@@ -16,15 +16,18 @@ struct sSetEmMain_s {
     Geometry    Position = {0,0,0,0};
 };
 
-struct sSetEmMain {
+class sSetEmMain : public PairInfo
+{
+public:
 
-    sSetEmMain_s __data;
-
-
+    sSetEmMain();
     sSetEmMain( Pair& _pp );
     ~sSetEmMain(){};
 
     void print( void );
+
+    void make( Pair& _pp );
+    void save( Pair& _pp );
 
     // Getters
     u32         getWaveNo( void ) const;
@@ -35,7 +38,11 @@ struct sSetEmMain {
     void        setWaveNo( u32 _num );
     void        setAreaNo( u32 _num );
     void        setPosition( float _rot, float _x, float _y, float _z );
+
+private:
+    sSetEmMain_s    __data;
+
 };
 
 } // SEM
-} // MH4U
+} // MHXX

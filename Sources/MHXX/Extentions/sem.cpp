@@ -1,15 +1,25 @@
-#include "MH4U/Extentions/sem.hpp"
+#include "MHXX/Extentions/sem.hpp"
 
-namespace MH4U {
+#include "Tools/Utils.hpp"
+
+namespace MHXX {
 namespace SEM {
 
 sSetEmMain* __current = nullptr;
 
+sSetEmMain::sSetEmMain()
+{
+}
+
 sSetEmMain::sSetEmMain( Pair& _pp )
 {
     if (( _pp.cc.size() == sizeof(sSetEmMain_s) && _pp.ResourceHash == RESOURCE_HASH ))
-        this->__data = reinterpret_cast<sSetEmMain_s&>( * _pp.cc.data() );
+    {
+        Utils::copybytes(&this->__data, _pp.cc.data(), sizeof(sSetEmMain_s)); // for safekeeping
 
+        this->SetPairInfo(_pp);
+        //this->__data = reinterpret_cast<sSetEmMain_s&>( * _pp.cc.data() );
+    }
     else NotifyError("Pair is not sSetEmMain_s");
 }
 
@@ -29,6 +39,27 @@ void sSetEmMain::print( void )
     printf("PosX:       %f\n", sem.Position.X);
     printf("PosY:       %f\n", sem.Position.Y);
     printf("PosZ:       %f\n", sem.Position.Z);
+}
+
+void sSetEmMain::make( Pair& _pp) { this->save(_pp); }
+void sSetEmMain::save( Pair& _pp )
+{
+    _pp.ResourceHash    = MHXX::SEM::RESOURCE_HASH;
+    _pp.XORLock         = MHXX_XORLock;
+
+    _pp.cc.resize(sizeof(sSetEmMain_s));
+
+    Utils::copybytes(_pp.cc.data(), &this->__data, sizeof(sSetEmMain_s));
+
+    ///// Set Pair info
+    if ( this->isPairInfoSet() ) this->GetPairInfo( _pp );
+    else
+    {
+        _pp.DecSize         = sizeof(sSetEmMain_s);
+        _pp.ResourceHash    = MHXX::SEM::RESOURCE_HASH;
+        _pp.XORLock         = MHXX_XORLock;
+        _pp.isDecompressed    = true;
+    }
 }
 
 ////////// Getters //////////
@@ -54,4 +85,4 @@ void        sSetEmMain::setPosition( float _rot, float _x, float _y, float _z )
 }
 
 } // SEM
-} // MH4U
+} // MHXX

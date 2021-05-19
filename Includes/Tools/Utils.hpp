@@ -56,11 +56,12 @@ u32             CalculateChecksum( u8* _data, u32 _size );
 
 /**
  * @brief Prints address of first different byte between data
- * @param _data0    pointer to data to check agains
- * @param _data1    pointer to data to check agains
- * @param _size     size of data, _data0 and _data1 must be same size
+ * @param _data0    Pointer to data to check agains
+ * @param _data1    Pointer to data to check agains
+ * @param _size     Size of data, _data0 and _data1 must be same size
+ * @return          Pointers to diff data in both data0 and data1
  */
-void             FindDiff( u8* _data0, u8* _data1, u32 _size );
+std::pair<u8*, u8*> FindDiff( u8* _data0, u8* _data1, u32 _size );
 
 
 
@@ -83,15 +84,15 @@ public:
 
     /**
      * @brief Extract last string from path divided by separator
-     * @param _path
-     * @return filename string
+     * @param _path     Path string with filename
+     * @return          Filename string
      */
     static std::string      extractName( const char* _path );
 
     /**
      * @brief Extract last string from path divided by separator
-     * @param _path
-     * @return filename string
+     * @param _path     Path string with filename
+     * @return          Filename string
      */
     static std::string      extractName( std::string& _path );
 
@@ -115,7 +116,7 @@ public:
      * @brief Read file to CContainer
      * @param _fpath    Path with filename
      * @param _cc       CContainer to hold data
-     * @return          true if read successfull
+     * @return          True if read successfull
      */
     static bool FileToCC( const char* _path, CContainer* _cc );
     static bool FileToCC( std::string& _path, CContainer* _cc );
@@ -124,8 +125,8 @@ public:
      * @brief Write data from CContainer to file
      * @param _fpath    Path with filename
      * @param _cc       CContainer to work with
-     * @param _makedir  if true then attempt to make dirs from _fpath
-     * @return          true if write successfull
+     * @param _makedir  If true then attempt to make dirs from _fpath
+     * @return          True if write successfull
      */
     static bool CCtoFile( const char* _path, CContainer* _cc, bool _makedir = false );
     static bool CCtoFile( std::string& _path, CContainer* _cc, bool _makedir = false );

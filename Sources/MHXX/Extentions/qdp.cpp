@@ -1,13 +1,24 @@
-#include "MH4U/Extentions/qdp.hpp"
+#include "MHXX/Extentions/qdp.hpp"
 
-namespace MH4U {
+#include "Tools/Utils.hpp"
+
+namespace MHXX {
 namespace QDP {
+
+sQuestPlus::sQuestPlus()
+{
+}
 
 sQuestPlus::sQuestPlus( Pair& _pp )
 {
     if ( _pp.cc.size() == sizeof(sQuestPlus_s) && _pp.ResourceHash == RESOURCE_HASH )
-        this->__data = reinterpret_cast<sQuestPlus_s&>( * _pp.cc.data() );
+    {
+        Utils::copybytes(&this->__data, _pp.cc.data(), sizeof(sQuestPlus_s)); // we copy now
 
+        this->SetPairInfo(_pp);
+
+        //this->__data = reinterpret_cast<sQuestPlus_s&>( * _pp.cc.data() );
+    }
     else NotifyError("Pair is not a sQuestPlus_s");
 }
 
@@ -33,6 +44,27 @@ void sQuestPlus::print( void)
 
     printf("FortHpS:                %hd\n", qdp.FortHpS);
     printf("FortHpL:                %hd\n", qdp.FortHpL);
+}
+
+void sQuestPlus::make( Pair& _pp) { this->save(_pp); }
+void sQuestPlus::save( Pair& _pp )
+{
+    _pp.ResourceHash    = MHXX::QDP::RESOURCE_HASH;
+    _pp.XORLock         = MHXX_XORLock;
+
+    _pp.cc.resize(sizeof(sQuestPlus_s));
+
+    Utils::copybytes(_pp.cc.data(), &this->__data, sizeof(sQuestPlus_s));
+
+    ///// Set Pair info
+    if ( this->isPairInfoSet() ) this->GetPairInfo( _pp );
+    else
+    {
+        _pp.DecSize         = sizeof(sQuestPlus_s);
+        _pp.ResourceHash    = MHXX::QDP::RESOURCE_HASH;
+        _pp.XORLock         = MHXX_XORLock;
+        _pp.isDecompressed    = true;
+    }
 }
 
 ////////// Getters //////////
@@ -63,4 +95,4 @@ void    sQuestPlus::setFortHpS( u16 _num ) { this->__data.FortHpS = _num; }
 void    sQuestPlus::setFortHpL( u16 _num ) { this->__data.FortHpL = _num; }
 
 } // QDP
-} // MH4U
+} // MHXX

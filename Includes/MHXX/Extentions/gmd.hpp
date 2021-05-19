@@ -4,7 +4,7 @@
 
 #include <vector>
 
-namespace MH4U {
+namespace MHXX {
 namespace GMD {
 
 #define NULL_TERMINATOR 1
@@ -38,7 +38,7 @@ struct sGMD_Advanced2_s {
     u32 Unk[256];
 };
 
-class sGMD
+class sGMD : public PairInfo
 {
 public:
 
@@ -99,6 +99,7 @@ private:
     float                           __unk = 0;
     std::vector<sGMD_Advanced1_s>   __dataAdv1;
     sGMD_Advanced2_s*               __dataAdv2 = nullptr;
+    bool                            __isNew = false;
 
     void print( std::string& _str );
     void print( const char* _str );
@@ -109,4 +110,4 @@ private:
 };
 
 } // GMD
-} // MH4U
+} // MHXX

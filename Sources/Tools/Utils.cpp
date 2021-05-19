@@ -255,9 +255,12 @@ u32         CalculateChecksum( u8* _data, u32 _size )
     return checksum;
 }
 
-void        FindDiff( u8* _data0, u8* _data1, u32 _size )
+
+std::pair<u8*, u8*>     FindDiff( u8* _data0, u8* _data1, u32 _size )
 {
     u32 i = 0, sum0 = 0, sum1 = 0;
+    u8* p0 = nullptr;
+    u8* p1 = nullptr;
 
     while( i < _size ) {
         sum0 += _data0[i] & 0xFF;
@@ -265,15 +268,17 @@ void        FindDiff( u8* _data0, u8* _data1, u32 _size )
 
         if ( sum0 != sum1 )
         {
-            u8* p0 = &_data0[i];
-            u8* p1 = &_data1[i];
-            fprintf( stderr, "diff at 0x%lx | 0x%lx\n",
+            p0 = &_data0[i];
+            p1 = &_data1[i];
+            fprintf( stderr, "diff at 0x%lx | 0x%lx\n", // no point to print but yeah
                      reinterpret_cast<u64>( p0 ), reinterpret_cast<u64>( p1 ));
             break;
         }
 
         i++;
     }
+
+    return { p0, p1 };
 }
 
 void        File::FixPathSeparators( char* _str, bool revert )

@@ -1,7 +1,10 @@
 #include "Tools/CContainer.hpp"
 #include "Tools/ARC.hpp"
 #include "MH4U/MH4U.hpp"
+#include "MHXX/MHXX.hpp"
 #include "Tools/Utils.hpp"
+
+#include "Tools/Test.hpp"
 
 
 int main()
@@ -12,19 +15,6 @@ int main()
     std::vector<Pair> list;
     std::string fpath;
     std::string fname;
-
-    MH4U::GMD::sGMD gmdout;
-
-    gmdout.appendItemStr("yeah!");
-    gmdout.appendItemStr("delete this!");
-    gmdout.appendItemStr("second string");
-    gmdout.setFilenameStr("TestGMD");
-
-    gmdout.removeItemStr(1);
-
-    gmdout.make(pgmdout);
-
-    pgmdout.cc.writeToFile("/run/media/mw/data2/test/test.gmd");
 
 
     fpath = "/run/media/mw/data2/test/q0000226.arc";
@@ -38,22 +28,17 @@ int main()
     ARC a(arc, &list);
     a.ExtractAll();
 
+    // Run tests
     for ( auto& in : list )
     {
-        if ( in.ResourceHash == MH4U::GMD::RESOURCE_HASH )
-        {
-            MH4U::GMD::sGMD gmd(in);
+        if ( in.ResourceHash == MHXX::GMD::RESOURCE_HASH )
+            TEST::test<MHXX::GMD::sGMD>( in );
 
-            gmd.save(out);
+        if ( in.ResourceHash == MHXX::QDP::RESOURCE_HASH )
+            TEST::test<MHXX::QDP::sQuestPlus>( in );
 
-            u32 sum0, sum1;
-            sum0 = Utils::CalculateChecksum(in.cc);
-            sum1 = Utils::CalculateChecksum(out.cc);
-
-            Utils::FindDiff(in.cc.data(), out.cc.data(), out.cc.size());
-
-            if (sum0 == sum1) printf("all fine\n");
-        }
+        if ( in.ResourceHash == MHXX::SEM::RESOURCE_HASH )
+            TEST::test<MHXX::SEM::sSetEmMain>( in );
     }
 
     //Utils::File::PairsVectorToFiles(list, fname, "/run/media/mw/data2/test/");

@@ -1,21 +1,12 @@
-#include "MH4U/Extentions/gmd.hpp"
+#include "MHXX/Extentions/gmd.hpp"
 
 #include "Tools/Utils.hpp"
 #include "string.h"
 
-namespace MH4U {
+namespace MHXX {
 namespace GMD {
 
-sGMD::sGMD()
-{
-}
-
-sGMD::~sGMD()
-{
-    if ( this->__dataAdv2 != nullptr )
-        free(this->__dataAdv2);
-}
-
+sGMD::sGMD() { __isNew = true; }
 sGMD::sGMD( Pair& _pp )
 {
     u32             expectedSize = sizeof(sGMD_Header_s) + NULL_TERMINATOR;
@@ -23,11 +14,6 @@ sGMD::sGMD( Pair& _pp )
 
     if ( _pp.ResourceHash == RESOURCE_HASH ) {
         this->__data = gmd = reinterpret_cast<sGMD_Header_s*>( _pp.cc.data() );
-
-        expectedSize += gmd->FilenameSize + gmd->ItemsSize + gmd->LabelsSize;
-
-        if ( gmd->LabelsNum > 0 )
-            expectedSize += gmd->LabelsNum * sizeof(sGMD_Advanced1_s) + sizeof(sGMD_Advanced2_s);
     }
     else goto err;
 
@@ -37,16 +23,29 @@ sGMD::sGMD( Pair& _pp )
     if ( gmd->Padding1 != 0 )
         NotifyError( "GMD Padding1 isnt 0" );
 
+
+    expectedSize += gmd->FilenameSize + gmd->ItemsSize + gmd->LabelsSize;
+    if ( gmd->LabelsNum > 0 )
+        expectedSize += gmd->LabelsNum * sizeof(sGMD_Advanced1_s) + sizeof(sGMD_Advanced2_s);
+
+
     if ( expectedSize != _pp.cc.size() ) {
         fprintf( stderr, "Size mismatch! CC %d | GMD %d\n", _pp.cc.size(), expectedSize );
         goto err;
     }
 
+    this->SetPairInfo(_pp);
     this->readAll();
     return;
 
 err:
     NotifyError("Pair is not a GMD");
+}
+
+sGMD::~sGMD()
+{
+    if ( this->__dataAdv2 != nullptr )
+        free(this->__dataAdv2);
 }
 
 void sGMD::make( Pair& _pp )
@@ -72,7 +71,12 @@ void sGMD::makeAdv( Pair& _pp, std::vector<sGMD_Advanced1_s>* _vecAdv1, sGMD_Adv
     }
 
     if ( _vecAdv1->size() != this->__labelStrings.size() ) {
-        NotifyError("Vector of sGMD_Advanced_s must be same ammount as Labels!");
+        NotifyError("Vector of sGMD_Advanced1_s must be same ammount as Labels!");
+        return;
+    }
+
+    if ( _adv2 == nullptr ) {
+        NotifyError("sGMD_Advanced2_s must be allocated!");
         return;
     }
 
@@ -95,7 +99,6 @@ void sGMD::save( Pair& _pp, std::vector<sGMD_Advanced1_s>* _vecAdv1, sGMD_Advanc
     sGMD_Advanced2_s*               dataAdv2    = this->__dataAdv2;
 
 
-    _pp.ResourceHash    = GMD::RESOURCE_HASH;
     if ( _vecAdv1 ) dataAdv1 = *_vecAdv1;
     if ( _adv2 )    dataAdv2 = _adv2;
 
@@ -161,6 +164,7 @@ void sGMD::save( Pair& _pp, std::vector<sGMD_Advanced1_s>* _vecAdv1, sGMD_Advanc
         // Copy adv data2
         Utils::copybytes(p_start + o_dataAdv2, dataAdv2, sizeof(sGMD_Advanced2_s));
 
+        // Copy labels
         for ( auto& str : this->__labelStrings )
         {
             Utils::copybytes(p_start + o_labels + shift, str.c_str(), str.size());
@@ -176,6 +180,16 @@ void sGMD::save( Pair& _pp, std::vector<sGMD_Advanced1_s>* _vecAdv1, sGMD_Advanc
             Utils::copybytes(p_start + o_items + shift, str.c_str(), str.size());
             shift += str.size() + NULL_TERMINATOR;
         }
+    }
+
+    ///// Set Pair info
+    if ( this->isPairInfoSet() ) this->GetPairInfo( _pp );
+    else
+    {
+        _pp.DecSize         = totalSize;
+        _pp.ResourceHash    = MHXX::GMD::RESOURCE_HASH;
+        _pp.XORLock         = MHXX_XORLock;
+        _pp.isDecompressed    = true;
     }
 }
 
@@ -288,9 +302,6 @@ void sGMD::readAll( void )
 
 void sGMD::setHeader( sGMD_Header_s& _header, u32 _labelsSize, u32 _itemsSize )
 {
-    _header.Magic        = _header.MAGIC;
-    _header.Version      = _header.VERSION;
-
     _header.Unk          = this->__unk;
 
     _header.LabelsNum    = this->__labelStrings.size();
@@ -392,4 +403,4 @@ bool    sGMD::removeItemStr( u32 _id )
 }
 
 } // GMD
-} // MH4U
+} // MHXX
