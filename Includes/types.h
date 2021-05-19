@@ -69,3 +69,5 @@ typedef void (*voidfn)(void);
 
 #include <string>
 void NotifyError(std::string _str);
+
+#define FNAME_SIZE 64

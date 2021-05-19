@@ -14,6 +14,18 @@ CContainer::~CContainer()
     this->_free();
 }
 
+CContainer& CContainer::operator=( const CContainer& _cc )
+{
+    // Guard self assignment
+    if ( this == &_cc ) return *this;
+
+    this->resize(_cc.size(), true);
+
+    Utils::copybytes(this->data(), _cc.data(), _cc.size());
+
+    return *this;
+}
+
 void    CContainer::_free( void ) { if (this->__root != nullptr) free(this->__root); }
 
 bool    CContainer::allocate( u32 _size, bool _zeroed )

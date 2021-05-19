@@ -16,13 +16,13 @@ struct sSetEmMain_s {
     Geometry    Position = {0,0,0,0};
 };
 
-class sSetEmMain : public PairInfo
+class cSetEmMain : public PairInfoKeeper
 {
 public:
 
-    sSetEmMain();
-    sSetEmMain( Pair& _pp );
-    ~sSetEmMain(){};
+    cSetEmMain();
+    cSetEmMain( Pair& _pp );
+    ~cSetEmMain(){};
 
     void print( void );
 
@@ -41,6 +41,10 @@ public:
 
 private:
     sSetEmMain_s    __data;
+
+    u32 getResourceHash( void ) const { return MHXX::SEM::RESOURCE_HASH; }
+
+    friend class Export<cSetEmMain>;
 
 };
 

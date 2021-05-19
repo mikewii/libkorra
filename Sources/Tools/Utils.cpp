@@ -147,7 +147,7 @@ void File::PairVectorToFiles(std::vector<Pair>& _vec, std::string& _fname, std::
 
     for(auto& pair : _vec)
     {
-        last    = pair.Filename;
+        last    = pair.info.Filename;
 
         last.append(".");
         last.append(extractExt(pair.cc));
@@ -270,8 +270,7 @@ std::pair<u8*, u8*>     FindDiff( u8* _data0, u8* _data1, u32 _size )
         {
             p0 = &_data0[i];
             p1 = &_data1[i];
-            fprintf( stderr, "diff at 0x%lx | 0x%lx\n", // no point to print but yeah
-                     reinterpret_cast<u64>( p0 ), reinterpret_cast<u64>( p1 ));
+
             break;
         }
 

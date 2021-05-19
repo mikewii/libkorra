@@ -5,13 +5,13 @@ u32 ARC::__previousVersion = 0;
 
 ARC::ARC(CContainer& _arcdata, std::vector<Pair>* _outlist)
 {
-    if ( _arcdata.size() == 0) {
+    if ( _arcdata.size() == 0 ) {
         NotifyError("ARC: CContainer is empty!");
         return;
     }
 
-    __header = reinterpret_cast<ARC_s*>(&_arcdata.as_u8(0));
-    __list = _outlist;
+    __header    = reinterpret_cast<ARC_s*>(&_arcdata.as_u8(0));
+    __list      = _outlist;
 
     isARCFile();
 
@@ -19,7 +19,13 @@ ARC::ARC(CContainer& _arcdata, std::vector<Pair>* _outlist)
 
     ARC::__previousVersion = __header->Version;
 
-    if(!b.isARC) return; // NotifyError("Not an ARC file!");
+    if(!b.isARC) {
+        NotifyError("Not an ARC file!");
+        return;
+    }
+
+    __list->resize(__header->FilesNum);
+    __listARC_File_s.resize(__header->FilesNum, nullptr);
 
     Read(_arcdata);
 }
@@ -100,24 +106,15 @@ void    ARC::PrintFileInfo(ARC_File_s* f, u32 n)
 
 void    ARC::PrintPairsInfo(void)
 {
-    u32 i = 0;
     for ( auto& p : *__list)
-    {
-        printf("\n");
-        printf("##### Pair #%d #####\n", i++);
-        printf("File Path:          %s\n", p.Filename);
-        printf("XOR Lock:           0x%08X\n", p.XORLock);
-        printf("Resource Hash:      0x%08X\n", p.ResourceHash);
-        printf("Decompressed size:  %d\n", p.DecSize);
-        printf("CContainer size:    %d\n", p.cc.size());
-    }
+        p.print();
 }
 
 void ARC::PushFile(CContainer& _data, u32 n)
 {
-    Pair       pair;
+    Pair&       pair = this->__list->at(n);
     u32         padding = 0;
-    ARC_File_s* file;
+    ARC_File_s* file = nullptr;
     u32         xorLock;
 
     padding = _data.as_u32(2) == 0 ? 4 : 0;
@@ -132,13 +129,12 @@ void ARC::PushFile(CContainer& _data, u32 n)
     file->DecompressedSize &= ~xorLock;
 
     // copy and set things
-    Utils::copybytes(pair.Filename, file->Filename, ARC_File_s::FNAME_SIZE);
-    pair.ResourceHash   = file->ResourceHash;
-    pair.XORLock        = xorLock;
-    pair.f              = file;
+    Utils::copybytes(pair.info.Filename, file->Filename, FNAME_SIZE);
+    pair.info.ResourceHash  = file->ResourceHash;
+    pair.info.XORLock       = xorLock;
 
 
-    __list->push_back(pair);
+    this->__listARC_File_s.at(n) = file;
 }
 
 void ARC::Read(CContainer& _data)
@@ -156,19 +152,20 @@ void ARC::ExtractAll(void)
 
 void ARC::Decompress(u32 n)
 {
-    Pair&      p = __list->at(n);
+    Pair&       p = __list->at(n);
+    ARC_File_s* f = __listARC_File_s.at(n);
     Bytef*      source = nullptr;
     uLongf      decSize = 0;
 
-    decSize = p.f->DecompressedSize;
+    decSize = f->DecompressedSize;
     p.cc.resize(decSize);
 
-    source = reinterpret_cast<Bytef*>( reinterpret_cast<u64>(&__header[0]) + p.f->pZData );
+    source = reinterpret_cast<Bytef*>( reinterpret_cast<u64>(&__header[0]) + f->pZData );
 
-    if ( uncompress(p.cc.data(), &decSize, source, p.f->CompressedSize) == Z_OK )
+    if ( uncompress(p.cc.data(), &decSize, source, f->CompressedSize) == Z_OK )
     {
-        p.DecSize = decSize;
-        p.isDecompressed = true;
+        p.info.DecSize = decSize;
+        p.info.isDecompressed = true;
     }
 }
 
@@ -181,9 +178,9 @@ int ARC::Decompress(Pair& sourcePair, Pair& destPair)
     int             err;
 
     /* prepare temp bufer */
-    decSize = sourcePair.DecSize;
+    decSize     = sourcePair.info.DecSize;
     temp.resize(decSize);
-    pTemp = reinterpret_cast<Bytef*>( temp.data() );
+    pTemp       = reinterpret_cast<Bytef*>( temp.data() );
 
     /* prepare source */
     pSrc = reinterpret_cast<Bytef*>( sourcePair.cc.data() );
@@ -191,8 +188,8 @@ int ARC::Decompress(Pair& sourcePair, Pair& destPair)
     err = uncompress(pTemp, &decSize, pSrc, sourcePair.cc.size());
     if ( err == Z_OK )
     {
-        destPair.DecSize = decSize;
-        destPair.isDecompressed = true;
+        destPair.info.DecSize           = decSize;
+        destPair.info.isDecompressed    = true;
         destPair.cc.resize(decSize);
         Utils::copybytes(destPair.cc.data(), temp.data(), decSize);
     }
@@ -220,13 +217,13 @@ int ARC::Compress(Pair& sourcePair, Pair& destPair)
     err = compress(pTemp, &compSize, pSrc, sourcePair.cc.size());
     if ( err == Z_OK )
     {
-        destPair.DecSize        = sourcePair.DecSize;
-        destPair.XORLock        = sourcePair.XORLock;
-        destPair.ResourceHash   = sourcePair.ResourceHash;
+        destPair.info.DecSize        = sourcePair.info.DecSize;
+        destPair.info.XORLock        = sourcePair.info.XORLock;
+        destPair.info.ResourceHash   = sourcePair.info.ResourceHash;
 
         destPair.cc.resize(compSize);
         Utils::copybytes(destPair.cc.data(), temp.data(), compSize);
-        Utils::copybytes(destPair.Filename, sourcePair.Filename, ARC_File_s::FNAME_SIZE);
+        Utils::copybytes(destPair.info.Filename, sourcePair.info.Filename, FNAME_SIZE);
     }
 
     return err;
@@ -347,10 +344,10 @@ void ARC::MakeARC_File_s_Header(
     {
         Pair& pair = _list.at(i);
 
-        Utils::copybytes(&arc[i], pair.Filename, ARC_File_s::FNAME_SIZE);
-        arc[i].DecompressedSize = pair.DecSize ^ pair.XORLock;
+        Utils::copybytes(&arc[i], pair.info.Filename, FNAME_SIZE);
+        arc[i].DecompressedSize = pair.info.DecSize ^ pair.info.XORLock;
         arc[i].CompressedSize   = pair.cc.size();
-        arc[i].ResourceHash     = pair.ResourceHash;
+        arc[i].ResourceHash     = pair.info.ResourceHash;
         arc[i].pZData           = pZData;
 
         pZData  += pair.cc.size();

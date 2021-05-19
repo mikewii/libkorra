@@ -1,19 +1,17 @@
 #include "MHXX/Extentions/sem.hpp"
 
-#include "Tools/Utils.hpp"
-
 namespace MHXX {
 namespace SEM {
 
-sSetEmMain* __current = nullptr;
+cSetEmMain* __current = nullptr;
 
-sSetEmMain::sSetEmMain()
+cSetEmMain::cSetEmMain()
 {
 }
 
-sSetEmMain::sSetEmMain( Pair& _pp )
+cSetEmMain::cSetEmMain( Pair& _pp )
 {
-    if (( _pp.cc.size() == sizeof(sSetEmMain_s) && _pp.ResourceHash == RESOURCE_HASH ))
+    if (( _pp.cc.size() == sizeof(sSetEmMain_s) && _pp.info.ResourceHash == RESOURCE_HASH ))
     {
         Utils::copybytes(&this->__data, _pp.cc.data(), sizeof(sSetEmMain_s)); // for safekeeping
 
@@ -23,7 +21,7 @@ sSetEmMain::sSetEmMain( Pair& _pp )
     else NotifyError("Pair is not sSetEmMain_s");
 }
 
-void sSetEmMain::print( void )
+void cSetEmMain::print( void )
 {
     sSetEmMain_s& sem = this->__data;
     printf("\n##### SetEmMain File #####\n");
@@ -41,40 +39,22 @@ void sSetEmMain::print( void )
     printf("PosZ:       %f\n", sem.Position.Z);
 }
 
-void sSetEmMain::make( Pair& _pp) { this->save(_pp); }
-void sSetEmMain::save( Pair& _pp )
-{
-    _pp.ResourceHash    = MHXX::SEM::RESOURCE_HASH;
-    _pp.XORLock         = MHXX_XORLock;
-
-    _pp.cc.resize(sizeof(sSetEmMain_s));
-
-    Utils::copybytes(_pp.cc.data(), &this->__data, sizeof(sSetEmMain_s));
-
-    ///// Set Pair info
-    if ( this->isPairInfoSet() ) this->GetPairInfo( _pp );
-    else
-    {
-        _pp.DecSize         = sizeof(sSetEmMain_s);
-        _pp.ResourceHash    = MHXX::SEM::RESOURCE_HASH;
-        _pp.XORLock         = MHXX_XORLock;
-        _pp.isDecompressed    = true;
-    }
-}
+void cSetEmMain::make( Pair& _pp) { this->save(_pp); }
+void cSetEmMain::save( Pair& _pp ) { Export<cSetEmMain>::save(*this, _pp); }
 
 ////////// Getters //////////
 
-u32         sSetEmMain::getWaveNo( void ) const     { return this->__data.WaveNo; }
-u32         sSetEmMain::getAreaNo( void ) const     { return this->__data.AreaNo; }
-Geometry    sSetEmMain::getPosition( void ) const   { return this->__data.Position; }
+u32         cSetEmMain::getWaveNo( void ) const     { return this->__data.WaveNo; }
+u32         cSetEmMain::getAreaNo( void ) const     { return this->__data.AreaNo; }
+Geometry    cSetEmMain::getPosition( void ) const   { return this->__data.Position; }
 
 
 ////////// Setters //////////
 
-void        sSetEmMain::setWaveNo( u32 _num ) { this->__data.WaveNo = _num; }
-void        sSetEmMain::setAreaNo( u32 _num ) { this->__data.AreaNo = _num; }
+void        cSetEmMain::setWaveNo( u32 _num ) { this->__data.WaveNo = _num; }
+void        cSetEmMain::setAreaNo( u32 _num ) { this->__data.AreaNo = _num; }
 
-void        sSetEmMain::setPosition( float _rot, float _x, float _y, float _z )
+void        cSetEmMain::setPosition( float _rot, float _x, float _y, float _z )
 {
     sSetEmMain_s& sem = this->__data;
 

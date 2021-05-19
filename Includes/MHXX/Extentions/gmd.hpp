@@ -38,13 +38,16 @@ struct sGMD_Advanced2_s {
     u32 Unk[256];
 };
 
-class sGMD : public PairInfo
+class cGMD : public PairInfoKeeper
 {
 public:
 
-    sGMD();
-    sGMD( Pair& _pp );
-    ~sGMD();
+    cGMD();
+    cGMD( Pair& _pp );
+    cGMD( const cGMD& ) = delete;
+    ~cGMD();
+
+    cGMD& operator=( const cGMD& ) = delete; // maybe later
 
     void printHeader( void );
     bool printFilename( void );
@@ -99,7 +102,6 @@ private:
     float                           __unk = 0;
     std::vector<sGMD_Advanced1_s>   __dataAdv1;
     sGMD_Advanced2_s*               __dataAdv2 = nullptr;
-    bool                            __isNew = false;
 
     void print( std::string& _str );
     void print( const char* _str );

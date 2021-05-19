@@ -1,17 +1,15 @@
 #include "MHXX/Extentions/qdp.hpp"
 
-#include "Tools/Utils.hpp"
-
 namespace MHXX {
 namespace QDP {
 
-sQuestPlus::sQuestPlus()
+cQuestPlus::cQuestPlus()
 {
 }
 
-sQuestPlus::sQuestPlus( Pair& _pp )
+cQuestPlus::cQuestPlus( Pair& _pp )
 {
-    if ( _pp.cc.size() == sizeof(sQuestPlus_s) && _pp.ResourceHash == RESOURCE_HASH )
+    if ( _pp.cc.size() == sizeof(sQuestPlus_s) && _pp.info.ResourceHash == RESOURCE_HASH )
     {
         Utils::copybytes(&this->__data, _pp.cc.data(), sizeof(sQuestPlus_s)); // we copy now
 
@@ -22,7 +20,7 @@ sQuestPlus::sQuestPlus( Pair& _pp )
     else NotifyError("Pair is not a sQuestPlus_s");
 }
 
-void sQuestPlus::print( void)
+void cQuestPlus::print( void)
 {
     sQuestPlus_s& qdp = this->__data;
 
@@ -46,53 +44,35 @@ void sQuestPlus::print( void)
     printf("FortHpL:                %hd\n", qdp.FortHpL);
 }
 
-void sQuestPlus::make( Pair& _pp) { this->save(_pp); }
-void sQuestPlus::save( Pair& _pp )
-{
-    _pp.ResourceHash    = MHXX::QDP::RESOURCE_HASH;
-    _pp.XORLock         = MHXX_XORLock;
-
-    _pp.cc.resize(sizeof(sQuestPlus_s));
-
-    Utils::copybytes(_pp.cc.data(), &this->__data, sizeof(sQuestPlus_s));
-
-    ///// Set Pair info
-    if ( this->isPairInfoSet() ) this->GetPairInfo( _pp );
-    else
-    {
-        _pp.DecSize         = sizeof(sQuestPlus_s);
-        _pp.ResourceHash    = MHXX::QDP::RESOURCE_HASH;
-        _pp.XORLock         = MHXX_XORLock;
-        _pp.isDecompressed    = true;
-    }
-}
+void cQuestPlus::make( Pair& _pp) { this->save(_pp); }
+void cQuestPlus::save( Pair& _pp ) { Export<cQuestPlus>::save(*this, _pp); }
 
 ////////// Getters //////////
 
-bool    sQuestPlus::getIsFence( void ) const { return this->__data.isFence; }
-bool    sQuestPlus::getIsFenceFromStart( void ) const { return this->__data.isFenceFromStart; }
-u16     sQuestPlus::getFenceOpenTime( void ) const { return this->__data.FenceOpenTime; }
-u16     sQuestPlus::getFenceStartTime( void ) const { return this->__data.FenceStartTime; }
-u16     sQuestPlus::getFenceReuseTime( void ) const { return this->__data.FenceReuseTime; }
-bool    sQuestPlus::getIsDragonator( void ) const { return this->__data.isDragonator; }
-u16     sQuestPlus::getDragonatorStartTime( void ) const { return this->__data.DragonatorStartTime; }
-u16     sQuestPlus::getDragonatorReuseTime( void ) const { return this->__data.DragonatorReuseTime; }
-u16     sQuestPlus::getFortHpS( void ) const { return this->__data.FortHpS; }
-u16     sQuestPlus::getFortHpL( void ) const { return this->__data.FortHpL; }
+bool    cQuestPlus::getIsFence( void ) const { return this->__data.isFence; }
+bool    cQuestPlus::getIsFenceFromStart( void ) const { return this->__data.isFenceFromStart; }
+u16     cQuestPlus::getFenceOpenTime( void ) const { return this->__data.FenceOpenTime; }
+u16     cQuestPlus::getFenceStartTime( void ) const { return this->__data.FenceStartTime; }
+u16     cQuestPlus::getFenceReuseTime( void ) const { return this->__data.FenceReuseTime; }
+bool    cQuestPlus::getIsDragonator( void ) const { return this->__data.isDragonator; }
+u16     cQuestPlus::getDragonatorStartTime( void ) const { return this->__data.DragonatorStartTime; }
+u16     cQuestPlus::getDragonatorReuseTime( void ) const { return this->__data.DragonatorReuseTime; }
+u16     cQuestPlus::getFortHpS( void ) const { return this->__data.FortHpS; }
+u16     cQuestPlus::getFortHpL( void ) const { return this->__data.FortHpL; }
 
 
 ////////// Setters //////////
 
-void    sQuestPlus::setIsFence( bool _b ) { this->__data.isFence = _b; }
-void    sQuestPlus::setIsFenceFromStart( bool _b ) { this->__data.isFenceFromStart = _b; }
-void    sQuestPlus::setFenceOpenTime( u16 _num ) { this->__data.FenceOpenTime = _num; }
-void    sQuestPlus::setFenceStartTime( u16 _num ) { this->__data.FenceStartTime = _num; }
-void    sQuestPlus::setFenceReuseTime( u16 _num ) { this->__data.FenceReuseTime = _num; }
-void    sQuestPlus::setIsDragonator( bool _b ) { this->__data.isDragonator = _b; }
-void    sQuestPlus::setDragonatorStartTime( u16 _num ) { this->__data.DragonatorStartTime = _num; }
-void    sQuestPlus::setDragonatorReuseTime( u16 _num ) { this->__data.DragonatorReuseTime = _num; }
-void    sQuestPlus::setFortHpS( u16 _num ) { this->__data.FortHpS = _num; }
-void    sQuestPlus::setFortHpL( u16 _num ) { this->__data.FortHpL = _num; }
+void    cQuestPlus::setIsFence( bool _b ) { this->__data.isFence = _b; }
+void    cQuestPlus::setIsFenceFromStart( bool _b ) { this->__data.isFenceFromStart = _b; }
+void    cQuestPlus::setFenceOpenTime( u16 _num ) { this->__data.FenceOpenTime = _num; }
+void    cQuestPlus::setFenceStartTime( u16 _num ) { this->__data.FenceStartTime = _num; }
+void    cQuestPlus::setFenceReuseTime( u16 _num ) { this->__data.FenceReuseTime = _num; }
+void    cQuestPlus::setIsDragonator( bool _b ) { this->__data.isDragonator = _b; }
+void    cQuestPlus::setDragonatorStartTime( u16 _num ) { this->__data.DragonatorStartTime = _num; }
+void    cQuestPlus::setDragonatorReuseTime( u16 _num ) { this->__data.DragonatorReuseTime = _num; }
+void    cQuestPlus::setFortHpS( u16 _num ) { this->__data.FortHpS = _num; }
+void    cQuestPlus::setFortHpL( u16 _num ) { this->__data.FortHpL = _num; }
 
 } // QDP
 } // MHXX

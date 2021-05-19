@@ -1,6 +1,6 @@
 #pragma once
 #include "types.h"
-#include "Global.hpp"
+#include "Tools/Pair.hpp"
 
 #include <climits>
 #include <vector>

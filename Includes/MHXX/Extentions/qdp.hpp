@@ -28,13 +28,13 @@ struct sQuestPlus_s {
 } PACKED;
 
 
-class sQuestPlus : public PairInfo
+class cQuestPlus : public PairInfoKeeper
 {
 public:
 
-    sQuestPlus();
-    sQuestPlus( Pair& _pp );
-    ~sQuestPlus(){};
+    cQuestPlus();
+    cQuestPlus( Pair& _pp );
+    ~cQuestPlus(){};
 
     void print( void );
 
@@ -68,6 +68,10 @@ public:
 
 private:
     sQuestPlus_s    __data;
+
+    u32 getResourceHash( void ) const { return MHXX::QDP::RESOURCE_HASH; }
+
+    friend class Export<cQuestPlus>;
 
 };
 

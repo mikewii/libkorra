@@ -9,6 +9,9 @@ public:
     CContainer( std::string& _fname );
     ~CContainer();
 
+    CContainer& operator=( const CContainer& _cc );
+
+
     u32     size( void ) const { return this->__size; }
     void    resize( u32 _size, bool zeroed = false );
 

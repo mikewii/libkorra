@@ -27,18 +27,44 @@ int main()
 
     ARC a(arc, &list);
     a.ExtractAll();
+    //a.PrintPairsInfo();
 
     // Run tests
-    for ( auto& in : list )
+    for ( auto& pair : list )
     {
-        if ( in.ResourceHash == MHXX::GMD::RESOURCE_HASH )
-            TEST::test<MHXX::GMD::sGMD>( in );
+        if ( pair.info.ResourceHash == MHXX::GMD::RESOURCE_HASH )
+            TEST::test<MHXX::GMD::cGMD>( pair );
 
-        if ( in.ResourceHash == MHXX::QDP::RESOURCE_HASH )
-            TEST::test<MHXX::QDP::sQuestPlus>( in );
+        if ( pair.info.ResourceHash == MHXX::QDP::RESOURCE_HASH )
+            TEST::test<MHXX::QDP::cQuestPlus>( pair );
 
-        if ( in.ResourceHash == MHXX::SEM::RESOURCE_HASH )
-            TEST::test<MHXX::SEM::sSetEmMain>( in );
+        if ( pair.info.ResourceHash == MHXX::SEM::RESOURCE_HASH )
+            TEST::test<MHXX::SEM::cSetEmMain>( pair );
+
+        if ( pair.info.ResourceHash == MHXX::REM::RESOURCE_HASH )
+        {
+            TEST::test<MHXX::REM::cRewardEm>( pair );
+
+            MHXX::REM::cRewardEm rem(pair);
+            //rem.print();
+        }
+
+        if ( pair.info.ResourceHash == MHXX::SUP::RESOURCE_HASH )
+        {
+            TEST::test<MHXX::SUP::cSupply>( pair );
+
+            MHXX::SUP::cSupply sup(pair);
+            //sup.print(true);
+        }
+
+        if ( pair.info.ResourceHash == MHXX::QDL::RESOURCE_HASH )
+        {
+            TEST::test<MHXX::QDL::cQuestDataLink>( pair );
+
+            MHXX::QDL::cQuestDataLink qdl(pair);
+            qdl.print();
+
+        }
     }
 
     //Utils::File::PairsVectorToFiles(list, fname, "/run/media/mw/data2/test/");

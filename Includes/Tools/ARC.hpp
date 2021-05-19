@@ -72,8 +72,9 @@ private:
 
     u32     Align(u32 _value);
 
-    ARC_s*              __header = nullptr;
-    std::vector<Pair>*  __list;
-    static u32          __previousVersion;
+    std::vector<Pair>*          __list;
+    std::vector<ARC_File_s*>    __listARC_File_s;
+    ARC_s*                      __header = nullptr;
+    static u32                  __previousVersion;
 
 };

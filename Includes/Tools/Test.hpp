@@ -6,29 +6,37 @@
 namespace TEST {
 
 template<class T>
-void test( Pair& _pp )
+void test( Pair& _in )
 {
     Pair                    out;
-    u32                     sum0, sum1;
-    const char*             className = typeid(T).name();
+    std::pair<u32, u32>     sumCC, sumPairInfo;
     std::pair<u8*, u8*>     pointers;
+    const char*             className = typeid(T).name();
 
-    T c( _pp );
+    T c( _in );
 
     c.make( out );
 
-    sum0 = Utils::CalculateChecksum( _pp.cc );
-    sum1 = Utils::CalculateChecksum( out.cc );
+    sumCC.first         = Utils::CalculateChecksum( _in.cc );
+    sumCC.second        = Utils::CalculateChecksum( out.cc );
 
-    if ( sum0 != sum1 )
+    sumPairInfo.first   = Utils::CalculateChecksum( reinterpret_cast<u8*>( &_in.info ), sizeof(PairInfo));
+    sumPairInfo.second  = Utils::CalculateChecksum( reinterpret_cast<u8*>( &out.info ), sizeof(PairInfo));
+
+    if ( sumCC.first != sumCC.second )
     {
-        fprintf(stderr, "Checksum diffrent! %s\n", className);
+        fprintf(stderr, "Checksum different! %s\n", className);
 
         // just for debugging
-        pointers = Utils::FindDiff(_pp.cc.data(), out.cc.data(), out.cc.size());
+        pointers = Utils::FindDiff(_in.cc.data(), out.cc.data(), out.cc.size());
     }
-    else if ( _pp.cc.size() != out.cc.size() ) fprintf(stderr, "Size mismatch! %s\n", className);
-    else printf("Test successfull fo %s!\n", className);
+    else if ( sumPairInfo.first != sumPairInfo.second )
+        fprintf(stderr, "Checksum of PairInfo is different! %s\n", className);
+
+    else if ( _in.cc.size() != out.cc.size() )
+        fprintf(stderr, "Size mismatch! %s\n", className);
+
+    else printf("Test successfull for %s!\n", className);
 }
 
 } // TEST
