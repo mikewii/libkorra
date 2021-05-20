@@ -10,6 +10,9 @@ INCLUDEPATH += $$PWD/Includes
 SOURCES += \
         Sources/Global.cpp \
         Sources/MH4U/MH4U.cpp \
+        Sources/MHXX/Enemy/Enemy.cpp \
+        Sources/MHXX/Extentions/esl.cpp \
+        Sources/MHXX/Extentions/ext.cpp \
         Sources/MHXX/Extentions/gmd.cpp \
         Sources/MHXX/Extentions/qdl.cpp \
         Sources/MHXX/Extentions/qdp.cpp \
@@ -27,6 +30,9 @@ HEADERS += \
     Includes/Global.hpp \
     Includes/MH4U/MH4U.hpp \
     Includes/MH4U/Resource.hpp \
+    Includes/MHXX/Enemy/Enemy.hpp \
+    Includes/MHXX/Extentions/esl.hpp \
+    Includes/MHXX/Extentions/ext.hpp \
     Includes/MHXX/Extentions/gmd.hpp \
     Includes/MHXX/Extentions/qdl.hpp \
     Includes/MHXX/Extentions/qdp.hpp \
@@ -34,6 +40,7 @@ HEADERS += \
     Includes/MHXX/Extentions/sem.hpp \
     Includes/MHXX/Extentions/sup.hpp \
     Includes/MHXX/MHXX.hpp \
+    Includes/MHXX/Strings/Enemy.hpp \
     Includes/MHXX/Strings/Items.hpp \
     Includes/Tools/ARC.hpp \
     Includes/Tools/Blowfish.hpp \

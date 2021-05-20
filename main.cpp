@@ -20,6 +20,7 @@ int main()
     fpath = "/run/media/mw/data2/test/q0000226.arc";
     //fpath = "/run/media/mw/data2/test/q0000101.arc";
     //fpath = "/run/media/mw/data2/test/quest.arc";
+    //fpath = "/run/media/mw/data2/test/q0001053.arc"; // Beware the Comet of Disaster
     fname = Utils::File::extractName(fpath);
 
 
@@ -27,19 +28,29 @@ int main()
 
     ARC a(arc, &list);
     a.ExtractAll();
-    //a.PrintPairsInfo();
+    a.PrintPairsInfo();
 
     // Run tests
     for ( auto& pair : list )
     {
         if ( pair.info.ResourceHash == MHXX::GMD::RESOURCE_HASH )
+        {
             TEST::test<MHXX::GMD::cGMD>( pair );
+
+//            MHXX::GMD::cGMD gmd(pair);
+//            gmd.printAllItems();
+        }
 
         if ( pair.info.ResourceHash == MHXX::QDP::RESOURCE_HASH )
             TEST::test<MHXX::QDP::cQuestPlus>( pair );
 
         if ( pair.info.ResourceHash == MHXX::SEM::RESOURCE_HASH )
+        {
             TEST::test<MHXX::SEM::cSetEmMain>( pair );
+
+            MHXX::SEM::cSetEmMain sem(pair);
+            sem.print();
+        }
 
         if ( pair.info.ResourceHash == MHXX::REM::RESOURCE_HASH )
         {
@@ -62,12 +73,19 @@ int main()
             TEST::test<MHXX::QDL::cQuestDataLink>( pair );
 
             MHXX::QDL::cQuestDataLink qdl(pair);
-            qdl.print();
+            //qdl.print();
 
+        }
+
+        if ( pair.info.ResourceHash == MHXX::ESL::RESOURCE_HASH )
+        {
+            MHXX::ESL::cEmSetList esl( pair );
+
+            //esl.print();
         }
     }
 
-    //Utils::File::PairsVectorToFiles(list, fname, "/run/media/mw/data2/test/");
+    //Utils::File::PairVectorToFiles(list, fname, "/run/media/mw/data2/test/");
 
     return 0;
 }

@@ -46,7 +46,7 @@ void cSetEmMain::save( Pair& _pp ) { Export<cSetEmMain>::save(*this, _pp); }
 
 u32         cSetEmMain::getWaveNo( void ) const     { return this->__data.WaveNo; }
 u32         cSetEmMain::getAreaNo( void ) const     { return this->__data.AreaNo; }
-Geometry    cSetEmMain::getPosition( void ) const   { return this->__data.Position; }
+Geometry4F  cSetEmMain::getPosition( void ) const   { return this->__data.Position; }
 
 
 ////////// Setters //////////

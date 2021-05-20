@@ -1,4 +1,5 @@
 #include "MHXX/Extentions/qdl.hpp"
+#include <string.h>
 
 namespace MHXX {
 namespace QDL {
@@ -64,11 +65,34 @@ sQDLItem_s  cQuestDataLink::getItem( sQDLItemOrder _id ) const
     return this->__data.Item[_id];
 }
 
+std::string sQDLItem_s::getName( void ) const { return std::string(this->Name); }
+
 
 ////////// Setters //////////
 void        cQuestDataLink::setItem( sQDLItem_s& _item, sQDLItemOrder _id )
 {
     this->__data.Item[_id] = _item;
+}
+
+bool    sQDLItem_s::setName( std::string& _str )
+{
+    if ( _str.size() <= sQDLItem_s::QDL_NAME_MAX )
+    {
+        Utils::copybytes(this->Name, _str.c_str(), _str.size());
+        return true;
+    }
+    else return false;
+}
+
+bool    sQDLItem_s::setName( const char* _str )
+{
+    u32 size = strlen(_str);
+    if ( size <= sQDLItem_s::QDL_NAME_MAX )
+    {
+        Utils::copybytes(this->Name, _str, size);
+        return true;
+    }
+    else return false;
 }
 
 

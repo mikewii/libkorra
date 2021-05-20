@@ -3,11 +3,14 @@
 #include "Tools/Utils.hpp"
 #include <typeinfo>
 
+//#define TEST
+
 namespace TEST {
 
 template<class T>
 void test( Pair& _in )
 {
+#ifdef TEST
     Pair                    out;
     std::pair<u32, u32>     sumCC, sumPairInfo;
     std::pair<u8*, u8*>     pointers;
@@ -37,6 +40,7 @@ void test( Pair& _in )
         fprintf(stderr, "Size mismatch! %s\n", className);
 
     else printf("Test successfull for %s!\n", className);
+#endif
 }
 
 } // TEST

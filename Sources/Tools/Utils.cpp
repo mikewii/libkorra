@@ -159,10 +159,6 @@ void File::PairVectorToFiles(std::vector<Pair>& _vec, std::string& _fname, std::
 
         makedir(path.c_str());
         pair.cc.writeToFile(full.c_str());
-
-
-        printf("%s\n", path.c_str());
-        printf("%s\n", full.c_str());
     }
 }
 

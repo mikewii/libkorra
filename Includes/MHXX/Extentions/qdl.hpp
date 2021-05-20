@@ -32,6 +32,13 @@ struct sQDLItem_s {
 
     u32     Resource;
     char    Name[QDL_NAME_MAX];
+
+    // Getters
+    std::string getName( void ) const;
+
+    // Setters
+    bool        setName( std::string& _str );
+    bool        setName( const char* _str );
 };
 
 struct sQuestDataLink_s {

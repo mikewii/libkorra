@@ -43,7 +43,7 @@ struct ARC_s {
     u16  FilesNum;
 };
 
-struct Geometry {
+struct Geometry4F {
     float   Rotation;
     float   X;
     float   Y;

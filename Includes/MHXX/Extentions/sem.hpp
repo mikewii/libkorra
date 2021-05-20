@@ -7,13 +7,13 @@ namespace SEM {
 static const u32 RESOURCE_HASH = 0x2553701D;
 
 struct sSetEmMain_s {
-    static const u32 MAGIC = 0x3F800000;    // no its not
+    static const u32 MAGIC = 0x3F800000;
 
-    u32         Magic = MAGIC;              // maybe
-    u32         Version = 1;                // maybe
-    u32         WaveNo = 0;
-    u32         AreaNo = 0;
-    Geometry    Position = {0,0,0,0};
+    u32         Magic       = MAGIC;            // maybe
+    u32         Version     = 1;                // maybe
+    u32         WaveNo      = 0;
+    u32         AreaNo      = 0;
+    Geometry4F  Position    = {0,0,0,0};
 };
 
 class cSetEmMain : public PairInfoKeeper
@@ -32,7 +32,7 @@ public:
     // Getters
     u32         getWaveNo( void ) const;
     u32         getAreaNo( void ) const;
-    Geometry    getPosition( void ) const;
+    Geometry4F  getPosition( void ) const;
 
     // Setters
     void        setWaveNo( u32 _num );
