@@ -33,7 +33,7 @@ void cSetEmMain::print( void )
     printf("Wave №:     %d\n", sem.WaveNo);
     printf("Area №:     %d\n", sem.AreaNo);
 
-    printf("Rotation:   %f\n", sem.Position.Rotation);
+    printf("Rotation:   %f\n", sem.Position.R);
     printf("PosX:       %f\n", sem.Position.X);
     printf("PosY:       %f\n", sem.Position.Y);
     printf("PosZ:       %f\n", sem.Position.Z);
@@ -44,9 +44,9 @@ void cSetEmMain::save( Pair& _pp ) { Export<cSetEmMain>::save(*this, _pp); }
 
 ////////// Getters //////////
 
-u32         cSetEmMain::getWaveNo( void ) const     { return this->__data.WaveNo; }
-u32         cSetEmMain::getAreaNo( void ) const     { return this->__data.AreaNo; }
-Geometry4F  cSetEmMain::getPosition( void ) const   { return this->__data.Position; }
+u32                 cSetEmMain::getWaveNo( void ) const     { return this->__data.WaveNo; }
+u32                 cSetEmMain::getAreaNo( void ) const     { return this->__data.AreaNo; }
+Geometry4<float>    cSetEmMain::getPosition( void ) const   { return this->__data.Position; }
 
 
 ////////// Setters //////////
@@ -58,10 +58,10 @@ void        cSetEmMain::setPosition( float _rot, float _x, float _y, float _z )
 {
     sSetEmMain_s& sem = this->__data;
 
-    sem.Position.Rotation  = _rot;
-    sem.Position.X         = _x;
-    sem.Position.Y         = _y;
-    sem.Position.Z         = _z;
+    sem.Position.R  = _rot;
+    sem.Position.X  = _x;
+    sem.Position.Y  = _y;
+    sem.Position.Z  = _z;
 }
 
 } // SEM

@@ -3,9 +3,28 @@
 #include "Tools/Utils.hpp"
 #include <typeinfo>
 
+#include <chrono>
+
 //#define TEST
 
 namespace TEST {
+
+void runTests( void );
+
+class Timer
+{
+    using TimePoint = std::chrono::system_clock::time_point;
+
+public:
+    void start( void );
+    void stop( void );
+
+private:
+    std::pair<TimePoint, TimePoint> timer;
+
+    TimePoint getTime( void ) const { return std::chrono::system_clock::now(); }
+
+};
 
 template<class T>
 void test( Pair& _in )

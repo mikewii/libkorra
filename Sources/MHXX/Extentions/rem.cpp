@@ -79,7 +79,7 @@ void cRewardEm::printRewardItems( bool _useNames )
         if ( _useNames )
         {
             if ( rewardItem.ID < ITEMS_MAX )
-                printf("Item#%02d :ID:      %s\n", i, MHXX::Items[rewardItem.ID]);
+                printf("Item#%02d :ID:      %s\n", i, MHXX::Items.at(rewardItem.ID));
             else printf("Item#%02d :ID:      ID is out of range!\n", i);
         }
         else printf("Item#%02d :ID:      %hd\n", i, rewardItem.ID);

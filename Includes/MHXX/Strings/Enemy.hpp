@@ -1,17 +1,19 @@
 #pragma once
 #include "types.h"
+#include <array>
 #include "MHXX/Enemy/Enemy.hpp"
 
 namespace MHXX {
+
+#define EM_MAX 139
 
 struct Em {
     const char* Name;
     const EmID  ID;
 };
 
-static const u8 EnemyStrSize = 139;
-static const Em EnemymStr[] =
-{
+static const std::array<const Em, EM_MAX> EnemyStr =
+{{
     {"(None)",                  {0,  NORMAL}},
     {"Rathian",                 {1,  NORMAL}},
     {"Gold Rathian",            {1,  RARE}},
@@ -22,7 +24,7 @@ static const Em EnemymStr[] =
     {"Khezu",                   {3,  NORMAL}},
     {"Basarios",                {4,  NORMAL}},
     {"Gravios",                 {5,  NORMAL}},
-    // 6
+    //
     {"Diablos",                 {7,  NORMAL}},
     {"Bloodbath",               {7,  DEVIANT}},
     {"Yian Kut-Ku",             {8,  NORMAL}},
@@ -49,24 +51,21 @@ static const Em EnemymStr[] =
     {"Furious Rajang",          {23, VARIANT}},
     {"Kushala Daora",           {24, NORMAL}},
     {"Chameleos",               {25, NORMAL}},
-    // 26
+    //
     {"Teostra",                 {27, NORMAL}},
-    // 28
-    // 29
+    //
     {"Bulldrome",               {30, NORMAL}},
-    // 31
+    //
     {"Tigrex",                  {32, NORMAL}},
     {"Grimclaw",                {32, DEVIANT}},
     {"Akantor",                 {33, NORMAL}},
     {"Giadrome",                {34, NORMAL}},
-    // 35
+    //
     {"Lavasioth",               {36, NORMAL}},
     {"Nargacuga",               {37, NORMAL}},
     {"Silverwind",              {37, DEVIANT}},
     {"Ukanlos",                 {38, NORMAL}},
-    // 39
-    // 40
-    // 41
+    //
     {"Barioth",                 {42, NORMAL}},
     {"Deviljho",                {43, NORMAL}},
     {"Savage Deviljho",         {43, VARIANT}},
@@ -75,19 +74,16 @@ static const Em EnemymStr[] =
     {"Crystalbeard",            {45, DEVIANT}},
     {"Lagiacrus",               {46, NORMAL}},
     {"Royal Ludroth",           {47, NORMAL}},
-    // 48
+    //
     {"Agnaktor",                {49, NORMAL}},
     {"Alatreon",                {50, NORMAL}},
-    // 51
-    // 52
-    // 53
-    // 54
+    //
     {"Duramboros",              {55, NORMAL}},
     {"Nibelsnarf",              {56, NORMAL}},
     {"Zinogre",                 {57, NORMAL}},
     {"Thunderlord",             {57, DEVIANT}},
     {"Amatsu",                  {58, NORMAL}},
-    // 59
+    //
     {"Arzuros",                 {60, NORMAL}},
     {"Redhelm",                 {60, DEVIANT}},
     {"Lagombi",                 {61, NORMAL}},
@@ -95,7 +91,7 @@ static const Em EnemymStr[] =
     {"Volvidon",                {62, NORMAL}},
     {"Brachydios",              {63, NORMAL}},
     {"R. Brachydios",           {63, VARIANT}},
-    // 64
+    //
     {"Kecha Wacha",             {65, NORMAL}},
     {"Tetsucabra",              {66, NORMAL}},
     {"Drilltusk",               {66, DEVIANT}},
@@ -106,12 +102,10 @@ static const Em EnemymStr[] =
     {"Gore Magala",             {71, NORMAL}},
     {"Chaotic G. Magala",       {71, VARIANT}},
     {"Shagaru Magala",          {72, NORMAL}},
-    // 73
-    // 74
-    // 75
+    //
     {"Seltas",                  {76, NORMAL}},
     {"Seregios",                {77, NORMAL}},
-    // 78
+    //
     {"Malfestio",               {79, NORMAL}},
     {"Hidden Haze",             {79, DEVIANT}},
     {"Glavenus",                {80, NORMAL}},
@@ -125,10 +119,9 @@ static const Em EnemymStr[] =
     {"Nakarkos",                {84, NORMAL}},
     {"Great Maccao",            {85, NORMAL}},
     {"Valstrax",                {86, NORMAL}},
-    // 87
     {"Mecha",                   {87, NORMAL}},
     {"Ahtal-Ka",                {88, NORMAL}},
-    /////
+    //
     {"Aptonoth",                {1,  SMALL}},
     {"Apceros",                 {2,  SMALL}},
     {"Kelbi",                   {3,  SMALL}},
@@ -145,42 +138,32 @@ static const Em EnemymStr[] =
     {"Popo",                    {14, SMALL}},
     {"Giaprey",                 {15, SMALL}},
     {"Anteka",                  {16, SMALL}},
-    {"Blango",                  {17, SUB}}, // Fix
-    {"Thunderbug",              {17, SMALL}}, // Fix
-    // 18
+    {"Great Thunderbug",        {17, SMALL}},
+    //
     {"Remobra",                 {19, SMALL}},
     {"Hermitaur",               {20, SMALL}},
     {"Ceanataur",               {21, SMALL}},
     {"Conga",                   {22, SMALL}},
-    // 23
-    // 24
+    {"Blango",                  {23, SMALL}},
+    //
     {"Rhenoplos",               {25, SMALL}},
     {"Bnahabra",                {26, SMALL}},
     {"Altaroth",                {27, SMALL}},
-    // 28
-    // 29
-    // 30
-    // 31
-    // 32
-    // 33
+    //
     {"Jaggi",                   {34, SMALL}},
     {"Jaggia",                  {35, SMALL}},
-    // 36
-    // 37
-    // 38
+    //
     {"Ludroth",                 {39, SMALL}},
     {"Uroktor",                 {40, SMALL}},
     {"Slagtoth",                {41, SMALL}},
     {"Gargwa",                  {42, SMALL}},
-    // 43
+    //
     {"Zamite",                  {44, SMALL}},
     {"Konchu",                  {45, SMALL}},
     {"Maccao",                  {46, SMALL}},
     {"Larinoth",                {47, SMALL}},
     {"Moofah",                  {48, SMALL}},
-    /////
     //
-    /////
     {"Tentacle",                {99, SMALL}},
     {"Unknown",                 {100,SMALL}},
     {"Unknown",                 {101,SMALL}},
@@ -189,5 +172,6 @@ static const Em EnemymStr[] =
     {"Unknown",                 {104,SMALL}},
     {"Unknown",                 {105,SMALL}},
     {"Unknown",                 {106,SMALL}}
-};
-} // MHXX_Struct
+}};
+
+} // MHXX

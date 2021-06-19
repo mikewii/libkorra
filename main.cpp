@@ -7,11 +7,40 @@
 #include "Tools/Test.hpp"
 
 
-int main()
+//#define USE_GUI
+
+#ifdef USE_GUI
+#include "GUI/mainwindow.h"
+#include <QApplication>
+
+inline static int GUI_RUN(int argc, char *argv[])
 {
+    QApplication    gui(argc, argv);
+    MainWindow      w;
+
+    w.show();
+
+    return gui.exec();
+}
+#endif
+
+
+int main(int argc, char *argv[])
+{
+//#define AAA
+#ifdef AAA
+    #include <locale.h>
+    setlocale(LC_ALL, "rus");
+
+
+#endif
+    TEST::runTests();
+    return 0;
+
+
     Utils::File::SetCWD();
 
-    Pair out, pgmdout;
+    Pair out;
     std::vector<Pair> list;
     std::string fpath;
     std::string fname;
@@ -87,6 +116,9 @@ int main()
 
     //Utils::File::PairVectorToFiles(list, fname, "/run/media/mw/data2/test/");
 
+#ifdef USE_GUI
+    return GUI_RUN(argc, argv);
+#else
     return 0;
+#endif
 }
-// 6770909000

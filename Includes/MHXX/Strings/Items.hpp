@@ -1,9 +1,10 @@
 #pragma once
+#include <array>
 
 namespace MHXX {
 #define ITEMS_MAX 2991
 
-static const char* Items[ITEMS_MAX] = {
+static const std::array<const char*, ITEMS_MAX> Items = {
     "--------",
     "Book of Combos 1",
     "Book of Combos 2",
@@ -2994,7 +2995,7 @@ static const char* Items[ITEMS_MAX] = {
     "DUMMY",
     "DUMMY",
     "DUMMY",
-    "DUMMY"}
-;
+    "DUMMY"
+};
 
 } //

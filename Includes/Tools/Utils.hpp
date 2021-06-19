@@ -11,6 +11,18 @@ namespace Utils {
 #define SEPARATOR_WIN   '\\'
 
 
+template<bool>
+struct bool_to_str
+{
+    static constexpr const char* value = "true";
+};
+
+template<>
+struct bool_to_str<false>
+{
+    static constexpr const char* value = "false";
+};
+
 template <typename T>
 T swap_endian(T u)
 {

@@ -59,10 +59,11 @@ int             File::makedir( const char* dir )
     if(tmp[len - 1] == SEPARATOR)
             tmp[len - 1] = 0;
     for(p = tmp + 1; *p; p++)
-            if(*p == SEPARATOR) {
-                    *p = 0;
-                    res = mkdir(tmp, perm);
-                    *p = SEPARATOR;
+            if(*p == SEPARATOR)
+            {
+                *p = 0;
+                res = mkdir(tmp, perm);
+                *p = SEPARATOR;
             }
     res = mkdir(tmp, perm);
    #else
@@ -234,7 +235,7 @@ u32         CalculateChecksum( CContainer& _data )
     u32 i = 0, checksum = 0;
 
     while (i < _data.size()) {
-        checksum += _data.as_u8(i) & 0xFF; i++;
+        checksum += _data.as<u8>(i) & 0xFF; i++;
     };
 
     return checksum;

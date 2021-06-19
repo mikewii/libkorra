@@ -31,9 +31,10 @@ public:
 
     // Access
     u8*     data( void ) const { return this->__data; }
-    u8&     as_u8( u32 _n );
-    u16&    as_u16( u32 _n );
-    u32&    as_u32( u32 _n );
+
+    template<typename T>
+    T&      as( u32 _n )
+    { return reinterpret_cast<T&>(this->__data[_n * sizeof(T)]); }
 
 
 private:

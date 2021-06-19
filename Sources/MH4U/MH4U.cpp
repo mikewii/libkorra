@@ -76,12 +76,12 @@ bool PostDecode_Save(CContainer& data)
     u32 seed;
     u32 checksum, checksum2;
 
-    seed = data.as_u32(0) >> 16;
+    seed = data.as<u32>(0) >> 16;
     data.subBefore(sizeof(u32)); // remove seed
 
     MHXOR(data, seed);
 
-    checksum = data.as_u32(0);
+    checksum = data.as<u32>(0);
     data.subBefore(sizeof(u32)); // remove checksum
 
     checksum2 = Utils::CalculateChecksum(data);
@@ -99,7 +99,7 @@ void MHXOR(CContainer& data, u32 seed)
     {
         if (seed == 0){seed = 1;}
         seed = seed * 0xB0 % 0xFF53;
-        data.as_u16(i) ^= seed;
+        data.as<u16>(i) ^= seed;
         i++;
     };
 }
@@ -130,7 +130,7 @@ void InsertValue(CContainer& data, u32 value)
     while (i < 4){
         if (i != 0) {value >>= 8;}
         data.addBefore(1);
-        data.as_u8(0) = value;
+        data.as<u8>(0) = value;
         i++;
     }
 }

@@ -12,18 +12,18 @@ namespace GMD {
 static const u32 RESOURCE_HASH = 0x242BB29A; // mhxx
 
 struct sGMD_Header_s {
-    static const u32    MAGIC = 0x00444D47; // GMD
+    static const u32    MAGIC   = 0x00444D47; // GMD
     static const u32    VERSION = 0x00010302; // u8 major 2, u8 minor 3, u8 patch 1, u8 padding
 
-    u32     Magic = MAGIC;
-    u32     Version = VERSION;
+    u32     Magic       = MAGIC;
+    u32     Version     = VERSION;
 
-    u32     Padding0 = 0;
+    u32     Padding0    = 0;
     float   Unk;
-    u32     Padding1 = 0;
+    u32     Padding1    = 0;
 
     u32     LabelsNum;
-    u32     ItemsNum;
+    u32     ItemsNum;   // can be higher than labelsnum
     u32     LabelsSize;
     u32     ItemsSize;
 

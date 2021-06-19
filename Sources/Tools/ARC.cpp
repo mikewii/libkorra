@@ -10,7 +10,7 @@ ARC::ARC(CContainer& _arcdata, std::vector<Pair>* _outlist)
         return;
     }
 
-    __header    = reinterpret_cast<ARC_s*>(&_arcdata.as_u8(0));
+    __header    = reinterpret_cast<ARC_s*>(&_arcdata.as<u8>(0));
     __list      = _outlist;
 
     isARCFile();
@@ -117,10 +117,10 @@ void ARC::PushFile(CContainer& _data, u32 n)
     ARC_File_s* file = nullptr;
     u32         xorLock;
 
-    padding = _data.as_u32(2) == 0 ? 4 : 0;
+    padding = _data.as<u32>(2) == 0 ? 4 : 0;
 
     file = reinterpret_cast<ARC_File_s*>
-            ( &_data.as_u8(0) + sizeof(ARC_s) + padding + (sizeof(ARC_File_s) * n) );
+            ( &_data.as<u8>(0) + sizeof(ARC_s) + padding + (sizeof(ARC_File_s) * n) );
 
     if (b.BE) FixBE_ARC_File_s(file);
 

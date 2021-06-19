@@ -40,7 +40,7 @@ void cSupply::print( bool _useNames )
         if ( _useNames )
         {
             if ( item.ID < ITEMS_MAX )
-                printf("Item#%02d :ID:      %s\n", i, MHXX::Items[item.ID]);
+                printf("Item#%02d :ID:      %s\n", i, MHXX::Items.at(item.ID));
             else printf("Item#%02d :ID:      ID is out of range!\n", i);
         }
         else printf("Item#%02d :ID:      %hd\n", i, item.ID);

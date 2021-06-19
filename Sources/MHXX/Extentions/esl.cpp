@@ -69,7 +69,7 @@ void cEmSetList::print( void )
             printf("Enemy:      %s\n", getEnemyStr(esdpos.EnemyID));
             printf("Area:       %hhd\n", esdpos.Area);
             printf("Position:   R:%f|X:%f|Y:%f|Z:%f\n",
-                   esdpos.Position.Rotation, esdpos.Position.X, esdpos.Position.Y, esdpos.Position.Z);
+                   esdpos.Position.R, esdpos.Position.X, esdpos.Position.Y, esdpos.Position.Z);
             printf("Unk2:       0x%08X|0x%08X|0x%08X\n\n",
                    esdpos.Unk2[0], esdpos.Unk2[1], esdpos.Unk2[2]);
         }

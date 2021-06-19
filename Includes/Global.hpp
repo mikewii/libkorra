@@ -43,9 +43,17 @@ struct ARC_s {
     u16  FilesNum;
 };
 
-struct Geometry4F {
-    float   Rotation;
-    float   X;
-    float   Y;
-    float   Z;
+template <typename T>
+struct Geometry4 {
+    T   R;
+    T   X;
+    T   Y;
+    T   Z;
+};
+
+template <typename T>
+struct Geometry3 {
+    T   X;
+    T   Y;
+    T   Z;
 };

@@ -61,10 +61,10 @@ void cGMD::make( Pair& _pp )
 
 void cGMD::makeAdv( Pair& _pp, std::vector<sGMD_Advanced1_s>* _vecAdv1, sGMD_Advanced2_s* _adv2)
 {
-    if ( this->__itemStrings.size() != this->__labelStrings.size() ) {
-        NotifyError("Items must be same ammount as Labels!");
-        return;
-    }
+//    if ( this->__itemStrings.size() != this->__labelStrings.size() ) {
+//        NotifyError("Items must be same ammount as Labels!");
+//        return;
+//    }
 
     if ( this->__labelStrings.empty() ) {
         NotifyError("Advanced GMD must have Labels!");
