@@ -9,7 +9,7 @@ struct PairInfo {
     u32     DecSize = 0;
     bool    isDecompressed = false;
 
-    void print( void );
+    void print(void);
 } PACKED;
 
 struct Pair {
@@ -17,7 +17,7 @@ struct Pair {
     PairInfo    info;
     CContainer  cc{};
 
-    void print( void ) { this->info.print(); };
+    void print(void) { this->info.print(); };
 };
 
 class PairInfoKeeper // for transfering info from one pair to another
@@ -28,15 +28,15 @@ public:
      * @brief Saves info from provided Pair
      * @param _pp   Pair to work on
      */
-    void SetPairInfo( Pair& _pp );
+    void SetPairInfo(Pair& _pp);
 
     /**
      * @brief Writes saved info to provided Pair
      * @param _pp   Pair to work on
      */
-    bool GetPairInfo( Pair& _pp );
+    bool GetPairInfo(Pair& _pp);
 
-    bool isPairInfoSet( void ) const { return this->__isSet; }
+    bool isPairInfoSet(void) const { return this->__isSet; }
 
 private:
     PairInfo    __info;

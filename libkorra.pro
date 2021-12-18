@@ -65,6 +65,7 @@ HEADERS += \
     Includes/MHXX/Strings/Common.hpp \
     Includes/MHXX/Strings/Enemy.hpp \
     Includes/MHXX/Strings/Items.hpp \
+    Includes/MHXX/Strings/ext.hpp \
     Includes/Tools/ARC.hpp \
     Includes/Tools/Blowfish.hpp \
     Includes/Tools/BlowfishTables.hpp \

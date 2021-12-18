@@ -25,7 +25,7 @@ struct sESData_s {
 
     u16             EmSmallNum;
 
-    sEmSmallData_s  EmSmall[];
+//    sEmSmallData_s  EmSmall[];
 } PACKED;
 
 struct sESLHeader_s { // 0x40 ?
@@ -43,16 +43,16 @@ class cEmSetList : public PairInfoKeeper
 public:
 
     cEmSetList();
-    cEmSetList( Pair& _pp );
+    cEmSetList(Pair& _pp);
     ~cEmSetList();
 
-    void print( void );
+    void print(void);
 
 private:
     sESLHeader_s                                                    __header;
     std::vector<std::pair<sESData_s, std::vector<sEmSmallData_s>>>  __ESD;
 
-    void read( Pair& _pp  );
+    void read(Pair& _pp);
 
 };
 

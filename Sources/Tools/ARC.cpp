@@ -5,7 +5,7 @@ u32 ARC::__previousVersion = 0;
 
 ARC::ARC(CContainer& _arcdata, std::vector<Pair>* _outlist)
 {
-    if ( _arcdata.size() == 0 ) {
+    if (_arcdata.size() == 0) {
         NotifyError("ARC: CContainer is empty!");
         return;
     }
@@ -19,7 +19,7 @@ ARC::ARC(CContainer& _arcdata, std::vector<Pair>* _outlist)
 
     ARC::__previousVersion = __header->Version;
 
-    if(!b.isARC) {
+    if (!b.isARC) {
         NotifyError("Not an ARC file!");
         return;
     }
@@ -34,55 +34,43 @@ ARC::~ARC()
 {
 }
 
-bool ARC::isARC(void) {
-    return std::equal(ARC_MAGIC, ARC_MAGIC + 4, __header->Magic);
-}
+bool ARC::isARC(void) { return std::equal(ARC_MAGIC, ARC_MAGIC + 4, __header->Magic); }
 
-bool ARC::isCRA(void) {
-    return std::equal(CRA_MAGIC, CRA_MAGIC + 4, __header->Magic);
-}
-
+bool ARC::isCRA(void) { return std::equal(CRA_MAGIC, CRA_MAGIC + 4, __header->Magic); }
 void ARC::isARCFile(void)
 {
     b.isARC |= b.LE = isARC();
     b.isARC |= b.BE = isCRA();
 }
 
-u32     ARC::isNeedPadding(ARCVersion _version){
-    return isNeedPadding(GetVersionValue(_version));
-}
-
-u32     ARC::isNeedPadding(u32 _version)
+u32 ARC::isNeedPadding(ARCVersion _version){ return isNeedPadding(GetVersionValue(_version));}
+u32 ARC::isNeedPadding(u32 _version)
 {
     switch(_version){
-
     case 17 : return 4; // MH4U MHXX
     case 19 : return 4; // MH4U
     case 7  : return 0; // LP1
     case 8  : return 0; // LP2
-
     default:return 0;
     }
 
     return 0;
 }
 
-u32     ARC::GetVersionValue(ARCVersion _version)
+u32 ARC::GetVersionValue(ARCVersion _version)
 {
     switch(_version){
-
     case ARCVersion::MHXX:
     case ARCVersion::MH4U: return 17;
     case ARCVersion::LP1: return 7;
     case ARCVersion::LP2: return 8;
-
     default:return 0;
     }
 
     return 0;
 }
 
-u32     ARC::extractXORLock(u32 _decSize) {
+u32 ARC::extractXORLock(u32 _decSize) {
     return _decSize & 0xF0000000; // lock be first 4 bits
 }
 
@@ -106,7 +94,7 @@ void    ARC::PrintFileInfo(ARC_File_s* f, u32 n)
 
 void    ARC::PrintPairsInfo(void)
 {
-    for ( auto& p : *__list)
+    for (auto& p : *__list)
         p.print();
 }
 
@@ -145,7 +133,7 @@ void ARC::Read(CContainer& _data)
 
 void ARC::ExtractAll(void)
 {
-    if ( this->__header )
+    if (this->__header)
         for(int i = 0; i < __header->FilesNum; i++)
             Decompress(i);
 }
@@ -160,9 +148,9 @@ void ARC::Decompress(u32 n)
     decSize = f->DecompressedSize;
     p.cc.resize(decSize);
 
-    source = reinterpret_cast<Bytef*>( reinterpret_cast<u64>(&__header[0]) + f->pZData );
+    source = reinterpret_cast<Bytef*>(reinterpret_cast<u64>(&__header[0]) + f->pZData);
 
-    if ( uncompress(p.cc.data(), &decSize, source, f->CompressedSize) == Z_OK )
+    if (uncompress(p.cc.data(), &decSize, source, f->CompressedSize) == Z_OK)
     {
         p.info.DecSize = decSize;
         p.info.isDecompressed = true;
@@ -186,7 +174,7 @@ int ARC::Decompress(Pair& sourcePair, Pair& destPair)
     pSrc = reinterpret_cast<Bytef*>( sourcePair.cc.data() );
 
     err = uncompress(pTemp, &decSize, pSrc, sourcePair.cc.size());
-    if ( err == Z_OK )
+    if (err == Z_OK)
     {
         destPair.info.DecSize           = decSize;
         destPair.info.isDecompressed    = true;
@@ -215,7 +203,7 @@ int ARC::Compress(Pair& sourcePair, Pair& destPair)
     pSrc = reinterpret_cast<Bytef*>( sourcePair.cc.data() );
 
     err = compress(pTemp, &compSize, pSrc, sourcePair.cc.size());
-    if ( err == Z_OK )
+    if (err == Z_OK)
     {
         destPair.info.DecSize        = sourcePair.info.DecSize;
         destPair.info.XORLock        = sourcePair.info.XORLock;
@@ -253,7 +241,7 @@ void ARC::MakeARC(CContainer& _output, std::vector<Pair>* _list, ARCVersion _ver
 
     /* Making header */
     /**/    header.FilesNum = _list->size();
-    /**/    if ( _version != ARCVersion::None )
+    /**/    if (_version != ARCVersion::None)
     /**/    {
     /**/        header.Version = GetVersionValue(_version);
     /**/        padding = isNeedPadding(_version);
@@ -268,10 +256,9 @@ void ARC::MakeARC(CContainer& _output, std::vector<Pair>* _list, ARCVersion _ver
     /**/
 
 
-
     /* Compress all data */
     /**/    listAfter.resize(_list->size());
-    /**/    for ( u32 i = 0; i < _list->size(); i++ )
+    /**/    for (u32 i = 0; i < _list->size(); i++)
     /**/        Compress(_list->at(i), listAfter.at(i));
 
 
@@ -279,7 +266,7 @@ void ARC::MakeARC(CContainer& _output, std::vector<Pair>* _list, ARCVersion _ver
     /**/    finalSize = sizeof(ARC_s) + padding + (sizeof(ARC_File_s) * listAfter.size());
     /**/    finalSize = Align(finalSize);
     /**/    zDataStart = finalSize += 16; // padding, maybe decided by version
-    /**/    for( auto& pp : listAfter)
+    /**/    for (auto& pp : listAfter)
     /**/        finalSize += pp.cc.size();
 
 
@@ -301,7 +288,7 @@ u32 ARC::Align(u32 _value)
 {
     constexpr const u32 align = sizeof(u64) * 2; // file alignment
 
-    while ( _value % align != 0 )
+    while (_value % align != 0)
         _value += 4;
 
     return _value;
@@ -312,9 +299,9 @@ void ARC::CopyZData(CContainer& _cc, std::vector<Pair>& _list, u32 _zDataStart)
     u32     shift = 0;
     u8*     to = _cc.data() + _zDataStart;
 
-    for ( u32 i = 0; i < _list.size(); i++ )
+    for (u32 i = 0; i < _list.size(); i++)
     {
-        Pair&  pp = _list.at(i);
+        Pair&   pp = _list.at(i);
         u32     ammount;
         u8*     from;
 
@@ -340,7 +327,7 @@ void ARC::MakeARC_File_s_Header(
     arc     = reinterpret_cast<ARC_File_s*>( _cc.data() + sizeof(ARC_s) + _padding );
     pZData  = _zDataStart;
 
-    for ( u32 i = 0; i < _list.size(); i++ )
+    for (u32 i = 0; i < _list.size(); i++)
     {
         Pair& pair = _list.at(i);
 
@@ -351,7 +338,6 @@ void ARC::MakeARC_File_s_Header(
         arc[i].pZData           = pZData;
 
         pZData  += pair.cc.size();
-
     }
 }
 

@@ -1,7 +1,7 @@
 #include "Tools/Pair.hpp"
 #include "Tools/Utils.hpp"
 
-void PairInfoKeeper::SetPairInfo( Pair& _pp )
+void PairInfoKeeper::SetPairInfo(Pair& _pp)
 {
     Utils::copybytes(&this->__info.Filename, _pp.info.Filename, FNAME_SIZE);
     this->__info.ResourceHash   = _pp.info.ResourceHash;
@@ -12,9 +12,9 @@ void PairInfoKeeper::SetPairInfo( Pair& _pp )
     this->__isSet           = true;
 }
 
-bool PairInfoKeeper::GetPairInfo( Pair &_pp )
+bool PairInfoKeeper::GetPairInfo(Pair &_pp)
 {
-    if ( _pp.cc.size() <= 0 ) return false;
+    if (_pp.cc.size() <= 0) return false;
 
     Utils::copybytes(_pp.info.Filename, this->__info.Filename, FNAME_SIZE);
     _pp.info.ResourceHash    = this->__info.ResourceHash;
@@ -25,7 +25,7 @@ bool PairInfoKeeper::GetPairInfo( Pair &_pp )
     return true;
 }
 
-void PairInfo::print( void )
+void PairInfo::print(void)
 {
     printf("\n##### Pair info #####\n");
     printf("Filename:       %s\n", this->Filename);

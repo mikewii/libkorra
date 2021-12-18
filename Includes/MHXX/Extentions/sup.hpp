@@ -30,24 +30,24 @@ class cSupply : public PairInfoKeeper
 public:
 
     cSupply();
-    cSupply( Pair& _pp );
+    cSupply(Pair& _pp);
     ~cSupply();
 
-    void make( Pair& _pp );
-    void save( Pair& _pp );
+    void make(Pair& _pp);
+    void save(Pair& _pp);
 
-    void print( bool _useNames = false );
+    void print(bool _useNames = false);
 
     // Getters
-    sSupplyItem_s   getItem( u32 _id );
+    sSupplyItem_s   getItem(u32 _id);
 
     // Setters
-    bool            setItem( u32 _id, sSupplyItem_s& _item );
+    bool            setItem(u32 _id, sSupplyItem_s& _item);
 
 private:
     sSupply_s   __data;
 
-    u32 getResourceHash( void ) const { return MHXX::SUP::RESOURCE_HASH; }
+    u32 getResourceHash(void) const { return MHXX::SUP::RESOURCE_HASH; }
 
     friend class Export<cSupply>;
 

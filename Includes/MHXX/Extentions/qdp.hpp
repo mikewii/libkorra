@@ -33,43 +33,43 @@ class cQuestPlus : public PairInfoKeeper
 public:
 
     cQuestPlus();
-    cQuestPlus( Pair& _pp );
+    cQuestPlus(Pair& _pp);
     ~cQuestPlus(){};
 
-    void print( void );
+    void print(void);
 
-    void make( Pair& _pp );
-    void save( Pair& _pp );
+    void make(Pair& _pp);
+    void save(Pair& _pp);
 
     // Getters
-    bool    getIsFence( void ) const;
-    bool    getIsFenceFromStart( void ) const;
-    u16     getFenceOpenTime( void ) const;
-    u16     getFenceStartTime( void ) const;
-    u16     getFenceReuseTime( void ) const;
-    bool    getIsDragonator( void ) const;
-    u16     getDragonatorStartTime( void ) const;
-    u16     getDragonatorReuseTime( void ) const;
-    u16     getFortHpS( void ) const;
-    u16     getFortHpL( void ) const;
+    bool    getIsFence(void) const;
+    bool    getIsFenceFromStart(void) const;
+    u16     getFenceOpenTime(void) const;
+    u16     getFenceStartTime(void) const;
+    u16     getFenceReuseTime(void) const;
+    bool    getIsDragonator(void) const;
+    u16     getDragonatorStartTime(void) const;
+    u16     getDragonatorReuseTime(void) const;
+    u16     getFortHpS(void) const;
+    u16     getFortHpL(void) const;
 
 
     // Setters
-    void    setIsFence( bool _b );
-    void    setIsFenceFromStart( bool _b );
-    void    setFenceOpenTime( u16 _num );
-    void    setFenceStartTime( u16 _num );
-    void    setFenceReuseTime( u16 _num );
-    void    setIsDragonator( bool _b );
-    void    setDragonatorStartTime( u16 _num );
-    void    setDragonatorReuseTime( u16 _num );
-    void    setFortHpS( u16 _num );
-    void    setFortHpL( u16 _num );
+    void    setIsFence(bool _b);
+    void    setIsFenceFromStart(bool _b);
+    void    setFenceOpenTime(u16 _num);
+    void    setFenceStartTime(u16 _num);
+    void    setFenceReuseTime(u16 _num);
+    void    setIsDragonator(bool _b);
+    void    setDragonatorStartTime(u16 _num);
+    void    setDragonatorReuseTime(u16 _num);
+    void    setFortHpS(u16 _num);
+    void    setFortHpL(u16 _num);
 
 private:
     sQuestPlus_s    __data;
 
-    u32 getResourceHash( void ) const { return MHXX::QDP::RESOURCE_HASH; }
+    u32 getResourceHash(void) const { return MHXX::QDP::RESOURCE_HASH; }
 
     friend class Export<cQuestPlus>;
 

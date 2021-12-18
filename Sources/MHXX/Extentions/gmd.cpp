@@ -8,29 +8,25 @@ cGMD::cGMD()
 {
 }
 
-cGMD::cGMD( Pair& _pp )
+cGMD::cGMD(Pair& _pp)
 {
     u32             expectedSize = sizeof(sGMD_Header_s) + NULL_TERMINATOR;
     sGMD_Header_s*  gmd = nullptr;
 
-    if ( _pp.info.ResourceHash == RESOURCE_HASH ) {
+    if (_pp.info.ResourceHash == RESOURCE_HASH) {
         this->__data = gmd = reinterpret_cast<sGMD_Header_s*>( _pp.cc.data() );
     }
     else goto err;
 
-    if ( gmd->Padding0 != 0 )
-        NotifyError( "GMD Padding0 isnt 0" );
-
-    if ( gmd->Padding1 != 0 )
-        NotifyError( "GMD Padding1 isnt 0" );
-
+    if (gmd->Padding0 != 0) NotifyError("GMD Padding0 isnt 0");
+    if (gmd->Padding1 != 0) NotifyError("GMD Padding1 isnt 0");
 
     expectedSize += gmd->FilenameSize + gmd->ItemsSize + gmd->LabelsSize;
-    if ( gmd->LabelsNum > 0 )
+    if (gmd->LabelsNum > 0)
         expectedSize += gmd->LabelsNum * sizeof(sGMD_Advanced1_s) + sizeof(sGMD_Advanced2_s);
 
 
-    if ( expectedSize != _pp.cc.size() ) {
+    if (expectedSize != _pp.cc.size()) {
         fprintf( stderr, "Size mismatch! CC %d | GMD %d\n", _pp.cc.size(), expectedSize );
         goto err;
     }
@@ -45,13 +41,13 @@ err:
 
 cGMD::~cGMD()
 {
-    if ( this->__dataAdv2 != nullptr )
+    if (this->__dataAdv2 != nullptr)
         free(this->__dataAdv2);
 }
 
-void cGMD::make( Pair& _pp )
+void cGMD::make(Pair& _pp)
 {
-    if ( this->__itemStrings.empty() ) {
+    if (this->__itemStrings.empty()) {
         NotifyError("No items to write to gmd!");
         return;
     }
@@ -59,24 +55,24 @@ void cGMD::make( Pair& _pp )
     this->save(_pp);
 }
 
-void cGMD::makeAdv( Pair& _pp, std::vector<sGMD_Advanced1_s>* _vecAdv1, sGMD_Advanced2_s* _adv2)
+void cGMD::makeAdv(Pair& _pp, std::vector<sGMD_Advanced1_s>* _vecAdv1, sGMD_Advanced2_s* _adv2)
 {
 //    if ( this->__itemStrings.size() != this->__labelStrings.size() ) {
 //        NotifyError("Items must be same ammount as Labels!");
 //        return;
 //    }
 
-    if ( this->__labelStrings.empty() ) {
+    if (this->__labelStrings.empty()) {
         NotifyError("Advanced GMD must have Labels!");
         return;
     }
 
-    if ( _vecAdv1->size() != this->__labelStrings.size() ) {
+    if (_vecAdv1->size() != this->__labelStrings.size()) {
         NotifyError("Vector of sGMD_Advanced1_s must be same ammount as Labels!");
         return;
     }
 
-    if ( _adv2 == nullptr ) {
+    if (_adv2 == nullptr) {
         NotifyError("sGMD_Advanced2_s must be allocated!");
         return;
     }
@@ -84,7 +80,7 @@ void cGMD::makeAdv( Pair& _pp, std::vector<sGMD_Advanced1_s>* _vecAdv1, sGMD_Adv
     this->save(_pp, _vecAdv1, _adv2);
 }
 
-void cGMD::save( Pair& _pp, std::vector<sGMD_Advanced1_s>* _vecAdv1, sGMD_Advanced2_s* _adv2 )
+void cGMD::save(Pair& _pp, std::vector<sGMD_Advanced1_s>* _vecAdv1, sGMD_Advanced2_s* _adv2)
 {
     sGMD_Header_s   header;
     u32             totalSize   = 0;
@@ -100,22 +96,22 @@ void cGMD::save( Pair& _pp, std::vector<sGMD_Advanced1_s>* _vecAdv1, sGMD_Advanc
     sGMD_Advanced2_s*               dataAdv2    = this->__dataAdv2;
 
 
-    if ( _vecAdv1 ) dataAdv1 = *_vecAdv1;
-    if ( _adv2 )    dataAdv2 = _adv2;
+    if (_vecAdv1) dataAdv1 = *_vecAdv1;
+    if (_adv2)    dataAdv2 = _adv2;
 
 
     ///// Calcualte sizes
     filenameSize = this->__filename.size();
 
-    for ( auto& label : this->__labelStrings )
+    for (auto& label : this->__labelStrings)
         labelsSize += label.size() + NULL_TERMINATOR;
 
-    for ( auto& item : this->__itemStrings )
+    for (auto& item : this->__itemStrings)
         itemsSize += item.size() + NULL_TERMINATOR;
 
     totalSize = sizeof(sGMD_Header_s) + filenameSize + NULL_TERMINATOR + labelsSize + itemsSize;
 
-    if ( isAdv )
+    if (isAdv)
     {
         dataAdv1Size    = dataAdv1.size() * sizeof(sGMD_Advanced1_s);
         dataAdv2Size    = sizeof(sGMD_Advanced2_s);
@@ -125,7 +121,7 @@ void cGMD::save( Pair& _pp, std::vector<sGMD_Advanced1_s>* _vecAdv1, sGMD_Advanc
     ///// Calculate offsets
     o_filename  = sizeof(sGMD_Header_s);
 
-    if( isAdv )
+    if(isAdv)
     {
         o_dataAdv1  = o_filename + filenameSize + NULL_TERMINATOR;
         o_dataAdv2  = o_dataAdv1 + dataAdv1Size;
@@ -138,11 +134,9 @@ void cGMD::save( Pair& _pp, std::vector<sGMD_Advanced1_s>* _vecAdv1, sGMD_Advanc
     ///// Making header
     setHeader(header, labelsSize, itemsSize);
 
-
     ///// Resize container to fit data
     _pp.cc.resize(totalSize, true);
     p_start = _pp.cc.data();
-
 
     ///// Copy data to CContainer
     // Copy header
@@ -152,10 +146,10 @@ void cGMD::save( Pair& _pp, std::vector<sGMD_Advanced1_s>* _vecAdv1, sGMD_Advanc
     Utils::copybytes(p_start + o_filename, this->__filename.c_str(), this->__filename.size());
 
     // Copy labels if they exist
-    if ( isAdv )
+    if (isAdv)
     {
         // Copy adv data1
-        for ( auto& data : dataAdv1 )
+        for (auto& data : dataAdv1)
         {
             Utils::copybytes(p_start + o_dataAdv1 + shift, &data, sizeof(sGMD_Advanced1_s));
 
@@ -166,7 +160,7 @@ void cGMD::save( Pair& _pp, std::vector<sGMD_Advanced1_s>* _vecAdv1, sGMD_Advanc
         Utils::copybytes(p_start + o_dataAdv2, dataAdv2, sizeof(sGMD_Advanced2_s));
 
         // Copy labels
-        for ( auto& str : this->__labelStrings )
+        for (auto& str : this->__labelStrings)
         {
             Utils::copybytes(p_start + o_labels + shift, str.c_str(), str.size());
             shift += str.size() + NULL_TERMINATOR;
@@ -174,9 +168,9 @@ void cGMD::save( Pair& _pp, std::vector<sGMD_Advanced1_s>* _vecAdv1, sGMD_Advanc
     }
 
     // Copy items if they exist (they should)
-    if ( !this->__itemStrings.empty() )
+    if (!this->__itemStrings.empty())
     {
-        for ( auto& str : this->__itemStrings )
+        for (auto& str : this->__itemStrings)
         {
             Utils::copybytes(p_start + o_items + shift, str.c_str(), str.size());
             shift += str.size() + NULL_TERMINATOR;
@@ -184,7 +178,7 @@ void cGMD::save( Pair& _pp, std::vector<sGMD_Advanced1_s>* _vecAdv1, sGMD_Advanc
     }
 
     ///// Set Pair info
-    if ( this->isPairInfoSet() ) this->GetPairInfo( _pp );
+    if (this->isPairInfoSet()) this->GetPairInfo(_pp);
     else
     {
         _pp.info.DecSize         = totalSize;
@@ -195,7 +189,7 @@ void cGMD::save( Pair& _pp, std::vector<sGMD_Advanced1_s>* _vecAdv1, sGMD_Advanc
 }
 
 
-void cGMD::printHeader( void )
+void cGMD::printHeader(void)
 {
     sGMD_Header_s* gmd = this->__data;
 
@@ -217,7 +211,7 @@ void cGMD::printHeader( void )
     printf("FilenameSize:   %d\n", gmd->FilenameSize);
 }
 
-void cGMD::readAll( void )
+void cGMD::readAll(void)
 {
     sGMD_Header_s*  gmd                 = this->__data;
     u8*             p_Start             = nullptr;
@@ -241,7 +235,7 @@ void cGMD::readAll( void )
     // Calculate offsets
     o_Filename      = sizeof(sGMD_Header_s);
 
-    if ( isAdv )
+    if (isAdv)
     {
         o_sGMD_Advanced1_s  = o_Filename + gmd->FilenameSize + NULL_TERMINATOR;
         o_sGMD_Advanced2_s  = o_sGMD_Advanced1_s + dataAdv1Size;
@@ -257,11 +251,11 @@ void cGMD::readAll( void )
 
 
     // Filename
-    this->__filename = reinterpret_cast<const char*>( p_Start + o_Filename );
+    this->__filename = reinterpret_cast<const char*>(p_Start + o_Filename);
 
 
     // sGMD_Advanced1_s
-    for ( auto& a : this->__dataAdv1 )
+    for (auto& a : this->__dataAdv1)
     {
         u8* p = p_Start + o_sGMD_Advanced1_s + shift;
         Utils::copybytes(&a, p, sizeof(sGMD_Advanced1_s));
@@ -271,7 +265,7 @@ void cGMD::readAll( void )
 
 
     // sGMD_Advanced2_s
-    if ( isAdv )
+    if (isAdv)
     {
         this->__dataAdv2 = reinterpret_cast<sGMD_Advanced2_s*>(
                     calloc( 1, sizeof(sGMD_Advanced2_s)) );
@@ -280,7 +274,7 @@ void cGMD::readAll( void )
 
 
     // Labels
-    for ( auto& str : this->__labelStrings )
+    for (auto& str : this->__labelStrings)
     {
         char* pStr = reinterpret_cast<char*>( p_Start ) + o_Labels + shift;
 
@@ -291,7 +285,7 @@ void cGMD::readAll( void )
 
 
     // Items
-    for ( auto& str : this->__itemStrings )
+    for (auto& str : this->__itemStrings)
     {
         char* pStr = reinterpret_cast<char*>( p_Start ) + o_Items + shift;
 
@@ -301,7 +295,7 @@ void cGMD::readAll( void )
     }
 }
 
-void cGMD::setHeader( sGMD_Header_s& _header, u32 _labelsSize, u32 _itemsSize )
+void cGMD::setHeader(sGMD_Header_s& _header, u32 _labelsSize, u32 _itemsSize)
 {
     _header.Unk          = this->__unk;
 
@@ -314,90 +308,90 @@ void cGMD::setHeader( sGMD_Header_s& _header, u32 _labelsSize, u32 _itemsSize )
     _header.FilenameSize = this->__filename.size();
 }
 
-bool cGMD::printFilename( void )
+bool cGMD::printFilename(void)
 {
-    if ( this->__filename.empty() ) return false;
+    if (this->__filename.empty()) return false;
 
     this->print(this->__filename);
 
     return true;
 }
 
-bool cGMD::printAllLabels( void )
+bool cGMD::printAllLabels(void)
 {
-    if ( this->__labelStrings.empty() ) return false;
+    if (this->__labelStrings.empty()) return false;
 
-    for ( auto& str : this->__labelStrings)
+    for (auto& str : this->__labelStrings)
         this->print(str);
 
     return true;
 }
-bool cGMD::printAllItems( void )
+bool cGMD::printAllItems(void)
 {
-    if ( this->__itemStrings.empty() ) return false;
+    if (this->__itemStrings.empty()) return false;
 
-    for ( auto& str : this->__itemStrings)
+    for (auto& str : this->__itemStrings)
         this->print(str);
 
     return true;
 }
 
-void cGMD::print( std::string& _str ) { printf("%s\n\n", _str.c_str()); }
-void cGMD::print( const char* _str ) { printf("%s\n\n", _str); }
+void cGMD::print(std::string& _str) { printf("%s\n\n", _str.c_str()); }
+void cGMD::print(const char* _str) { printf("%s\n\n", _str); }
 
 ////////// Getters //////////
 
-u32             cGMD::getItemsNum( void ) const { return this->__data->ItemsNum; }
-u32             cGMD::getLabelsNum( void ) const { return this->__data->LabelsNum; }
+u32 cGMD::getItemsNum(void) const { return this->__data->ItemsNum; }
+u32 cGMD::getLabelsNum(void) const { return this->__data->LabelsNum; }
 
-std::string     cGMD::getFilenameStr() const {
+std::string cGMD::getFilenameStr() const {
     return std::string( reinterpret_cast<const char*>( this->__data + sizeof(sGMD_Header_s)) );
 }
 
-std::string    cGMD::getLabelStr( u32 _id ) const {
-    if ( _id > this->__labelStrings.size() ) return "";
+std::string cGMD::getLabelStr(u32 _id) const
+{
+    if (_id > this->__labelStrings.size()) return "";
     else return this->__labelStrings.at(_id);
 }
 
-std::string    cGMD::getItemStr( u32 _id ) const {
-    if ( _id > this->__itemStrings.size() ) return "";
+std::string cGMD::getItemStr(u32 _id) const
+{
+    if (_id > this->__itemStrings.size()) return "";
     else return this->__itemStrings.at(_id);
 }
 
-
 ////////// Setters //////////
-
-void    cGMD::setFilenameStr( std::string _str ) { this->__filename = _str; }
-
-bool    cGMD::setLabelStr( std::string _str, u32 _id ) {
-    if ( _id > this->__labelStrings.size() ) return false;
+void cGMD::setFilenameStr(std::string _str) { this->__filename = _str; }
+bool cGMD::setLabelStr(std::string _str, u32 _id)
+{
+    if (_id > this->__labelStrings.size()) return false;
     else this->__labelStrings.at(_id) = _str;
 
     return true;
 }
 
-bool    cGMD::setItemStr( std::string _str, u32 _id ) {
-    if ( _id > this->__itemStrings.size() ) return false;
+bool cGMD::setItemStr(std::string _str, u32 _id)
+{
+    if (_id > this->__itemStrings.size()) return false;
     else this->__itemStrings.at(_id) = _str;
 
     return true;
 }
 
-void    cGMD::appendLabelStr( std::string _str ) { this->__labelStrings.push_back(_str); }
-void    cGMD::appendItemStr( std::string _str ) { this->__itemStrings.push_back(_str); }
+void cGMD::appendLabelStr(std::string _str) { this->__labelStrings.push_back(_str); }
+void cGMD::appendItemStr(std::string _str) { this->__itemStrings.push_back(_str); }
 
-
-bool    cGMD::removeLabelStr( u32 _id )
+bool cGMD::removeLabelStr(u32 _id)
 {
-    if ( _id > this->__labelStrings.size() ) return false;
+    if (_id > this->__labelStrings.size()) return false;
     else this->__labelStrings.erase(this->__labelStrings.begin() + _id);
 
     return true;
 }
 
-bool    cGMD::removeItemStr( u32 _id )
+bool cGMD::removeItemStr(u32 _id)
 {
-    if ( _id > this->__itemStrings.size() ) return false;
+    if (_id > this->__itemStrings.size()) return false;
     else this->__itemStrings.erase(this->__itemStrings.begin() + _id);
 
     return true;

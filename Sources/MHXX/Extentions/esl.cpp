@@ -7,9 +7,9 @@ cEmSetList::cEmSetList()
 {
 }
 
-cEmSetList::cEmSetList( Pair& _pp )
+cEmSetList::cEmSetList(Pair& _pp)
 {
-    if ( _pp.info.ResourceHash == RESOURCE_HASH )
+    if (_pp.info.ResourceHash == RESOURCE_HASH)
     {
         this->SetPairInfo(_pp);
 
@@ -22,7 +22,7 @@ cEmSetList::~cEmSetList()
 {
 }
 
-void cEmSetList::read( Pair &_pp )
+void cEmSetList::read(Pair &_pp)
 {
     u32 shift = 0;
 
@@ -31,14 +31,14 @@ void cEmSetList::read( Pair &_pp )
     shift += sizeof(sESLHeader_s);
 
     this->__ESD.resize(2);
-    for ( u32 i = 0; i < 2; i++ )
+    for (u32 i = 0; i < 2; i++)
     {
         Utils::copybytes(&this->__ESD.at(i), _pp.cc.data() + shift, sizeof(sESData_s));
         shift += sizeof (sESData_s);
 
         this->__ESD.at(i).second.resize(this->__ESD.at(i).first.EmSmallNum);
 
-        for ( u32 j = 0; j < this->__ESD.at(i).second.size(); j++ )
+        for (u32 j = 0; j < this->__ESD.at(i).second.size(); j++)
         {
             sEmSmallData_s pos;
 
@@ -51,20 +51,20 @@ void cEmSetList::read( Pair &_pp )
     }
 }
 
-void cEmSetList::print( void )
+void cEmSetList::print(void)
 {
     printf("\n##### EmSetList file #####\n");
 
     printf("Magic:      0x%08X\n", this->__header.Magic);
     printf("Version:    0x%08X\n", this->__header.Version);
 
-    for ( auto& esd : this->__ESD )
+    for (auto& esd : this->__ESD)
     {
         printf("Magic0:     0x%08X\n", esd.first.Magic0);
         printf("Magic1:     0x%08X\n", esd.first.Magic1);
         printf("EmSmallNum: %hd\n\n", esd.first.EmSmallNum);
 
-        for ( auto& esdpos : esd.second )
+        for (auto& esdpos : esd.second)
         {
             printf("Enemy:      %s\n", getEnemyStr(esdpos.EnemyID));
             printf("Area:       %hhd\n", esdpos.Area);

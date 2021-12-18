@@ -1,23 +1,13 @@
 #include "Tools/CContainer.hpp"
 #include "Tools/Utils.hpp"
 
-CContainer::CContainer( const char* _fname ) {
-    this->readFromFile(_fname);
-}
-
-CContainer::CContainer( std::string& _fname ) {
-    this->readFromFile(_fname.c_str());
-}
-
-CContainer::~CContainer()
-{
-    this->_free();
-}
-
-CContainer& CContainer::operator=( const CContainer& _cc )
+CContainer::CContainer(const char* _fname) { this->readFromFile(_fname); }
+CContainer::CContainer(std::string& _fname) { this->readFromFile(_fname.c_str()); }
+CContainer::~CContainer() { this->_free(); }
+CContainer& CContainer::operator=(const CContainer& _cc)
 {
     // Guard self assignment
-    if ( this == &_cc ) return *this;
+    if (this == &_cc) return *this;
 
     this->resize(_cc.size(), true);
 
@@ -26,18 +16,18 @@ CContainer& CContainer::operator=( const CContainer& _cc )
     return *this;
 }
 
-void    CContainer::_free( void ) { if (this->__root != nullptr) free(this->__root); }
+void CContainer::_free(void) { if (this->__root != nullptr) free(this->__root); }
 
-bool    CContainer::allocate( u32 _size, bool _zeroed )
+bool CContainer::allocate(u32 _size, bool _zeroed)
 {
-    if ( this->__root != nullptr) this->_free();
+    if (this->__root != nullptr) this->_free();
 
     u32 extra       = this->RESERVED_Before + this->RESERVED_After;
     u32 allocSize   = _size + extra;
 
     this->__size    = _size;
 
-    if ( _zeroed )
+    if (_zeroed)
         this->__root    = static_cast<u8*>( ::calloc(allocSize, sizeof(u8)) );
     else
         this->__root    = static_cast<u8*>( ::malloc(allocSize) );
@@ -47,9 +37,9 @@ bool    CContainer::allocate( u32 _size, bool _zeroed )
     return true;
 }
 
-bool    CContainer::addBefore( u32 _size )
+bool CContainer::addBefore(u32 _size)
 {
-    if ( _size <= this->RESERVED_Before && this->RESERVED_Before != 0 )
+    if (_size <= this->RESERVED_Before && this->RESERVED_Before != 0)
     {
         this->RESERVED_Before   -= _size;
         this->__data            -= _size;
@@ -62,9 +52,9 @@ bool    CContainer::addBefore( u32 _size )
     return false;
 }
 
-void    CContainer::addAfter( u32 _size )
+void CContainer::addAfter(u32 _size)
 {
-    if ( _size <= this->RESERVED_After && this->RESERVED_After != 0 )
+    if (_size <= this->RESERVED_After && this->RESERVED_After != 0)
     {
         this->RESERVED_After    -= _size;
         this->__size            += _size;
@@ -76,9 +66,9 @@ void    CContainer::addAfter( u32 _size )
     }
 }
 
-bool    CContainer::subBefore( u32 _size )
+bool CContainer::subBefore(u32 _size)
 {
-    if ( _size < this->__size )
+    if (_size < this->__size)
     {
         this->RESERVED_Before   += _size;
         this->__data            += _size;
@@ -90,9 +80,9 @@ bool    CContainer::subBefore( u32 _size )
     return false;
 }
 
-bool    CContainer::subAfter( u32 _size )
+bool CContainer::subAfter(u32 _size)
 {
-    if ( _size < this->__size )
+    if (_size < this->__size)
     {
         this->RESERVED_After    += _size;
         this->__size            -= _size;
@@ -103,17 +93,12 @@ bool    CContainer::subAfter( u32 _size )
     return false;
 }
 
-void    CContainer::resize( u32 _size, bool _zeroed )
+void CContainer::resize(u32 _size, bool _zeroed)
 {
-    if ( this->__root == nullptr ) this->allocate(_size, _zeroed);
-    else if ( this->__root != nullptr && _zeroed ) this->allocate(_size, _zeroed);
+    if (this->__root == nullptr) this->allocate(_size, _zeroed);
+    else if (this->__root != nullptr && _zeroed) this->allocate(_size, _zeroed);
     else this->addAfter(_size);
 }
 
-bool    CContainer::readFromFile( const char* _fname ) {
-    return Utils::File::FileToCC(_fname, this);
-}
-
-bool    CContainer::writeToFile( const char* _fname, bool _makedir ) {
-    return Utils::File::CCtoFile(_fname, this, _makedir);
-}
+bool CContainer::readFromFile(const char* _fname) { return Utils::File::FileToCC(_fname, this); }
+bool CContainer::writeToFile(const char* _fname, bool _makedir) { return Utils::File::CCtoFile(_fname, this, _makedir); }

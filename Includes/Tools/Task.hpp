@@ -2,15 +2,17 @@
 #include "types.h"
 #include <future>
 
+
 // how to pass non const ref?
 template <typename ReturnType = void, typename... ArgType>
-class Task
+struct Task
 {
-    template<typename T, typename... TT>
-    using FunctionPointer = T(*)(TT...);
+//#define USE_GET
+
+    using FunctionPointer = ReturnType(*)(ArgType...);
 
 public:
-    Task( FunctionPointer<ReturnType, ArgType...> _f ) { this->__func = _f; }
+    Task( FunctionPointer _f ) { this->__func = _f; }
     ~Task()
     {
         if ( this->__cThread )
@@ -27,7 +29,12 @@ public:
     {
         if ( std::is_void<ReturnType>::value )
         {
+#ifdef USE_GET
             this->__cThread = new std::thread(this->__func, Task::get<ArgType>()(_args)...);
+#else
+            this->__cThread = new std::thread(this->__func, std::ref(_args)...);
+            //this->__cThread = new std::thread(this->__func, _args...);
+#endif
         }
         else
         {
@@ -38,13 +45,18 @@ public:
 
     std::future<ReturnType> runFuture( ArgType... _args )
     {
+#ifdef USE_GET
         return std::async(this->__func, Task::get<ArgType>()(_args)...);
+#else
+        return std::async(this->__func, _args...);
+#endif
     }
 
 private:
-    std::thread*                            __cThread   = nullptr;
-    FunctionPointer<ReturnType, ArgType...> __func      = nullptr;
+    std::thread*    __cThread   = nullptr;
+    FunctionPointer __func      = nullptr;
 
+#ifdef USE_GET
     template<typename T>
     struct get      { constexpr T&& operator()( T& t ) const { return std::move(t); } };
 
@@ -53,7 +65,7 @@ private:
 
     template<typename T>
     struct get<T&&> { constexpr T&& operator()( T& t ) const { return std::move(t); } };
-
+#endif
 };
 
 

@@ -1,8 +1,3 @@
-/*
- * Just random tests
-*/
-#pragma once
-
 #include "Tools/Test.hpp"
 #include "Tools/Task.hpp"
 
@@ -150,47 +145,6 @@ void lambdaTest()
         a();
     }
 }
-
-
-
-
-
-
-
-
-// virtual:
-//struct Shared
-//{
-//    int a;
-//};
-
-//class A : virtual public Shared
-//{
-//public:
-//    int sum() const { return this->a + 5; }
-//};
-
-//class B : virtual public Shared
-//{
-//public:
-//    int sum() const { return this->a + 10; }
-//};
-
-//class C : A, B
-//{
-//public:
-//    C()
-//    {
-//        A::a = 1;
-//        B::a = 2;
-//    }
-
-//    void print()
-//    {
-//        printf("A a: %d | B a: %d\n", A::a, B::a);
-//        printf("SUM A: %d | B: %d\n", A::sum(), B::sum());
-//    }
-//};
 
 
 
@@ -362,169 +316,58 @@ void timeTest( void )
 }
 
 
-
-template <typename... Args>
-void doPrint(Args... args)
+template<typename T>
+struct Question
 {
-    using expander = int[];
-    (void)expander{0, (void(std::cout << ',' << std::forward<Args>(args)), 0)...};
-}
+    //Question( std::vector<T> _strings ) : __answers(_strings) {};
+    Question( std::initializer_list<T> _strings ) : __answers(_strings) {};
 
-void ff(std::thread& t)
-{
-    t.join();
-}
+    void setTitle(std::string&& _str) { this->__title = _str; }
 
-template< typename... Args >
-class variadics
-{
-public:
-
-
-    template<typename T>
-//    typename std::enable_if<std::is_literal_type<T>::value, void>::type
-//    //void wrap( typename std::remove_reference<T>::type& t)
-    T& check( T& t)
+    void operator()()
     {
-        auto a = 3;
-
-        if ( a == 1 )
-        {
-            if ( std::is_literal_type<T>::value ) printf("is_literal_type ");
-            if ( std::is_reference<T>:: value ) printf("is_reference ");
-            if ( std::is_lvalue_reference<T>::value ) printf("is_lvalue_reference ");
-            if ( std::is_rvalue_reference<T>::value ) printf("is_rvalue_reference ");
-            if ( std::is_pointer<T>::value ) printf("is_pointer ");
-            if ( std::is_object<T>::value ) printf("is_object ");
-        }
-        else if ( a == 2 )
-        {
-            if ( std::is_literal_type<std::remove_reference<T>>::value ) printf("is_literal_type ");
-            if ( std::is_reference<std::remove_reference<T>>::value ) printf("is_reference ");
-            if ( std::is_lvalue_reference<std::remove_reference<T>>::value ) printf("is_lvalue_reference ");
-            if ( std::is_rvalue_reference<std::remove_reference<T>>::value ) printf("is_rvalue_reference ");
-            if ( std::is_pointer<std::remove_reference<T>>::value ) printf("is_pointer ");
-            if ( std::is_object<std::remove_reference<T>>::value ) printf("is_object ");
-        }
-        else if ( a == 3 )
-        {
-            if ( std::is_literal_type<typename std::decay<T>::type>::value ) printf("is_literal_type ");
-            if ( std::is_reference<typename std::decay<T>::type>::value ) printf("is_reference ");
-            if ( std::is_lvalue_reference<typename std::decay<T>::type>::value ) printf("is_lvalue_reference ");
-            if ( std::is_rvalue_reference<typename std::decay<T>::type>::value ) printf("is_rvalue_reference ");
-            if ( std::is_pointer<typename std::decay<T>::type>::value ) printf("is_pointer ");
-            if ( std::is_object<typename std::decay<T>::type>::value ) printf("is_object ");
-        }
-        printf("\n");
-
-        return std::ref(t);
+        printf("%s\n", this->__title.c_str());
+        for ( auto& str : this->__answers )
+            printf("%s\n", str.c_str());
     }
 
-    void operator()( Args&&... args)
-    {
-        printf("##### variadic start #####\n");
-        ( this->check<Args>(args), ... );
-        printf("##### variadic end #####\n");
-    }
-
-    //    template<typename T>
-    //    T&
-    //    get( typename std::remove_reference<T>::type& t)
-    //    {
-    //        printf("ref\n");
-    //        return std::ref(t);
-    //    }
-
-    //    template<typename T>
-    //    T&&
-    //    get( typename std::remove_reference<T>::type&& t)
-    //    {
-    //        printf("move\n");
-    //        return std::move(t);
-    //    }
-
-#define TYPE 1
-#if TYPE == 0
-    template<typename T>
-    typename std::enable_if<std::is_rvalue_reference<T>::value, T&&>::type
-    get(T& t)
-    {
-        printf("r_move\n");
-        return std::move(t);
-    }
-    template<typename T>
-    typename std::enable_if<std::is_object<T>::value, T&>::type
-    get(T& t)
-    {
-        printf("o_ref\n");
-        return std::ref(t);
-    }
-    template<typename T>
-    typename std::enable_if<std::is_lvalue_reference<T>::value, T&>::type
-    get(T& t)
-    {
-        printf("l_ref\n");
-        return std::ref(t);
-    }
-#elif TYPE == 1
-    template<typename T>
-    struct get      { constexpr T&& operator()(T& t) const { return std::move(t); } };
-
-    template<typename T>
-    struct get<T&>  { constexpr T&  operator()(T& t) const { return std::ref(t);  } };
-
-    template<typename T>
-    struct get<T&&> { constexpr T&& operator()(T& t) const { return std::move(t); } };
-#elif TYPE == 2
-    template<typename T>
-    T&& get(T&& t) const{ return std::move(t); }
-
-    template<typename T>
-    T get(T& t) const { return std::reference_wrapper<T>( std::ref(t) ); }
-
-//    template<typename T>
-//    T&& get(T& t) const { return std::move(t); }
-#endif
-
-
-
-
-
-
-    std::thread getcall( Args... args)
-    {
-        return std::thread(doPrint<Args...>, get<Args>()(args)...);
-    }
+private:
+    std::vector<T>  __answers;
+    std::string     __title;
 };
 
-
-
-
-
-void isTest()
+void initializerListTest( void )
 {
-    printf("true: %s\n", Utils::bool_to_str<std::is_void<void>::value>::value);
-    printf("false: %s\n", Utils::bool_to_str<false>::value);
+    Question<std::string> a({"aa", "sss", "www"});
+    a.setTitle("ss");
+    a();
 }
 
 
 void runTests( void )
 {
-    int aaa = 14;
+//    int a = 1;
+//    int& aa = a;
+//    Task<void, int&> inc([](int& a){ a++;});
 
-    variadics<int, int&, int&&>()(10, aaa, 10);
+//    std::thread([](int& _a){++_a;}, aa).join();
+//    std::thread([](int& _a){++_a;}, std::ref(a)).join();
 
-    auto t0 = variadics<int&&, int, const int&>()
-            .getcall( 42, aaa, aaa );
+//    inc(a);
 
-    [&](){ t0.join(); }();
+//    if ( int b = a*2 > 2)
+//    {
+//        printf("%d\n", b);
+//    }
 
-    //isTest();
+
+
     //memberTest();
     //lambdaTest();
     //copyAsignTest();
     //virtualTest();
     //timeTest();
+    //initializerListTest();
 }
 
 } // TEST

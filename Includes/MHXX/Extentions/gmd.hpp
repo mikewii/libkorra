@@ -43,16 +43,16 @@ class cGMD : public PairInfoKeeper
 public:
 
     cGMD();
-    cGMD( Pair& _pp );
-    cGMD( const cGMD& ) = delete;
+    cGMD(Pair& _pp);
+    cGMD(const cGMD&) = delete;
     ~cGMD();
 
-    cGMD& operator=( const cGMD& ) = delete; // maybe later
+    cGMD& operator=(const cGMD&) = delete; // maybe later
 
-    void printHeader( void );
-    bool printFilename( void );
-    bool printAllLabels( void );
-    bool printAllItems( void );
+    void printHeader(void);
+    bool printFilename(void);
+    bool printAllLabels(void);
+    bool printAllItems(void);
 
     /**
      * @brief Save loaded gmd to new Pair
@@ -60,13 +60,13 @@ public:
      * @param _vecAdv1  Vector of sGMD_Advanced1_s data
      * @param _adv2     sGMD_Advanced2_s data
      */
-    void save( Pair& _pp, std::vector<sGMD_Advanced1_s>* _vecAdv1 = nullptr, sGMD_Advanced2_s* _adv2 = nullptr );
+    void save(Pair& _pp, std::vector<sGMD_Advanced1_s>* _vecAdv1 = nullptr, sGMD_Advanced2_s* _adv2 = nullptr);
 
     /**
      * @brief Make new gmd and save it to Pair
      * @param _pp       Pair to save data to
      */
-    void make( Pair& _pp );
+    void make(Pair& _pp);
 
 
     /**
@@ -75,24 +75,24 @@ public:
      * @param _vecAdv1  Vector of sGMD_Advanced1_s data
      * @param _adv2     sGMD_Advanced2_s data
      */
-    void makeAdv( Pair& _pp, std::vector<sGMD_Advanced1_s>* _vecAdv1 = nullptr, sGMD_Advanced2_s* _adv2 = nullptr);
+    void makeAdv(Pair& _pp, std::vector<sGMD_Advanced1_s>* _vecAdv1 = nullptr, sGMD_Advanced2_s* _adv2 = nullptr);
 
     // Getters
-    u32             getItemsNum( void ) const;
-    u32             getLabelsNum( void ) const;
-    std::string     getFilenameStr( void ) const;
-    std::string     getLabelStr( u32 _id ) const;
-    std::string     getItemStr( u32 _id ) const;
+    u32             getItemsNum(void) const;
+    u32             getLabelsNum(void) const;
+    std::string     getFilenameStr(void) const;
+    std::string     getLabelStr(u32 _id) const;
+    std::string     getItemStr(u32 _id) const;
 
     // Setters
-    void            setFilenameStr( std::string _str );
-    bool            setLabelStr( std::string _str, u32 _id );
-    bool            setItemStr( std::string _str, u32 _id );
-    void            appendLabelStr( std::string _str );
-    void            appendItemStr( std::string _str );
+    void            setFilenameStr(std::string _str);
+    bool            setLabelStr(std::string _str, u32 _id);
+    bool            setItemStr(std::string _str, u32 _id);
+    void            appendLabelStr(std::string _str);
+    void            appendItemStr(std::string _str);
 
-    bool            removeLabelStr( u32 _id );
-    bool            removeItemStr( u32 _id );
+    bool            removeLabelStr(u32 _id);
+    bool            removeItemStr(u32 _id);
 
 private:
     sGMD_Header_s*                  __data = nullptr;
@@ -103,11 +103,11 @@ private:
     std::vector<sGMD_Advanced1_s>   __dataAdv1;
     sGMD_Advanced2_s*               __dataAdv2 = nullptr;
 
-    void print( std::string& _str );
-    void print( const char* _str );
-    void readAll( void );
+    void print(std::string& _str);
+    void print(const char* _str);
+    void readAll(void);
 
-    void setHeader( sGMD_Header_s& _header, u32 _labelsSize, u32 _itemsSize );
+    void setHeader(sGMD_Header_s& _header, u32 _labelsSize, u32 _itemsSize);
 
 };
 

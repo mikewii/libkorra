@@ -40,31 +40,31 @@ class cRewardEm : public PairInfoKeeper
 public:
 
     cRewardEm();
-    cRewardEm( Pair& _pp );
+    cRewardEm(Pair& _pp);
     ~cRewardEm();
 
-    void make( Pair& _pp );
-    void save( Pair& _pp );
+    void make(Pair& _pp);
+    void save(Pair& _pp);
 
-    void print( void );
-    void printFlagNums( void );
-    void printRewardFlags( void );
-    void printRewardItems( bool _useNames = false );
+    void print(void);
+    void printFlagNums(void);
+    void printRewardFlags(void);
+    void printRewardItems(bool _useNames = false);
 
     //Getters
-    sRewardFlag_s   getFlag( u32 _id ) const;
-    u8              getFlagNum( u32 _id ) const;
-    sRewardItem_s   getRewardItem( u32 _id ) const;
+    sRewardFlag_s   getFlag(u32 _id) const;
+    u8              getFlagNum(u32 _id) const;
+    sRewardItem_s   getRewardItem(u32 _id) const;
 
     //Setters
-    bool            setFlag( sRewardFlag_s _flag, u32 _id );
-    bool            setFlagNum( s8 _flagNum, u32 _id );
-    bool            setRewardItem( sRewardItem_s _item, u32 _id );
+    bool            setFlag(sRewardFlag_s _flag, u32 _id);
+    bool            setFlagNum(s8 _flagNum, u32 _id);
+    bool            setRewardItem(sRewardItem_s _item, u32 _id);
 
 private:
     sRewardEm_s     __data;
 
-    u32 getResourceHash( void ) { return MHXX::REM::RESOURCE_HASH; }
+    u32 getResourceHash(void) { return MHXX::REM::RESOURCE_HASH; }
 
     friend class Export<cRewardEm>;
 

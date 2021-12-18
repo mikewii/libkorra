@@ -11,6 +11,22 @@ namespace Utils {
 #define SEPARATOR_WIN   '\\'
 
 
+static USED void print_help(const char* name, const u32 item)
+{
+    printf("%-20s%08X | %d\n", name, item, item);
+}
+
+template <typename T>
+static void print_help_arr(const char* name, const u32 item, T arr)
+{
+    //auto arrSize = sizeof(arr)/sizeof(arr[0]);
+    auto arrSize = arr.size();
+
+    if (item <= arrSize)
+        printf("%-20s%s\n", name, arr[item]);
+    else printf("----->%s out of range! %08X | %d\n", name, item, item);
+}
+
 template<bool>
 struct bool_to_str
 {

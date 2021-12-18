@@ -21,28 +21,28 @@ class cSetEmMain : public PairInfoKeeper
 public:
 
     cSetEmMain();
-    cSetEmMain( Pair& _pp );
+    cSetEmMain(Pair& _pp);
     ~cSetEmMain(){};
 
-    void print( void );
+    void print(void);
 
-    void make( Pair& _pp );
-    void save( Pair& _pp );
+    void make(Pair& _pp);
+    void save(Pair& _pp);
 
     // Getters
-    u32                 getWaveNo( void ) const;
-    u32                 getAreaNo( void ) const;
-    Geometry4<float>    getPosition( void ) const;
+    u32                 getWaveNo(void) const;
+    u32                 getAreaNo(void) const;
+    Geometry4<float>    getPosition(void) const;
 
     // Setters
-    void                setWaveNo( u32 _num );
-    void                setAreaNo( u32 _num );
-    void                setPosition( float _rot, float _x, float _y, float _z );
+    void                setWaveNo(u32 _num);
+    void                setAreaNo(u32 _num);
+    void                setPosition(float _rot, float _x, float _y, float _z);
 
 private:
     sSetEmMain_s    __data;
 
-    u32 getResourceHash( void ) const { return MHXX::SEM::RESOURCE_HASH; }
+    u32 getResourceHash(void) const { return MHXX::SEM::RESOURCE_HASH; }
 
     friend class Export<cSetEmMain>;
 

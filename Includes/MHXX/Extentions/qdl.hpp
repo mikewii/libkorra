@@ -34,11 +34,11 @@ struct sQDLItem_s {
     char    Name[QDL_NAME_MAX];
 
     // Getters
-    std::string getName( void ) const;
+    std::string getName(void) const;
 
     // Setters
-    bool        setName( std::string& _str );
-    bool        setName( const char* _str );
+    bool        setName(std::string& _str);
+    bool        setName(const char* _str);
 };
 
 struct sQuestDataLink_s {
@@ -58,25 +58,25 @@ class cQuestDataLink : public PairInfoKeeper
 {
 public:
     cQuestDataLink();
-    cQuestDataLink( Pair& _pp );
+    cQuestDataLink(Pair& _pp);
     ~cQuestDataLink();
 
-    void make( Pair& _pp );
-    void save( Pair& _pp );
+    void make(Pair& _pp);
+    void save(Pair& _pp);
 
-    void print( void );
-    void printItem( sQDLItem_s& _item );
+    void print(void);
+    void printItem(sQDLItem_s& _item);
 
     // Getters
-    sQDLItem_s  getItem( sQDLItemOrder _id ) const;
+    sQDLItem_s  getItem(sQDLItemOrder _id) const;
 
     // Setters
-    void        setItem( sQDLItem_s& _item, sQDLItemOrder _id );
+    void        setItem(sQDLItem_s& _item, sQDLItemOrder _id);
 
 private:
     sQuestDataLink_s    __data;
 
-    u32 getResourceHash( void ) const { return MHXX::QDL::RESOURCE_HASH; }
+    u32 getResourceHash(void) const { return MHXX::QDL::RESOURCE_HASH; }
 
     friend class Export<cQuestDataLink>;
 

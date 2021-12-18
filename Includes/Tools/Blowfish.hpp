@@ -32,7 +32,7 @@ public:
 
 #ifdef ORDER_DCBA  	// DCBA - little endian - intel
     union aword {
-      u32 u32;
+      u32 raw;
       u8  byte[4];
       struct {
         unsigned int byte3:8;

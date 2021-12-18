@@ -27,15 +27,15 @@ inline static int GUI_RUN(int argc, char *argv[])
 
 int main(int argc, char *argv[])
 {
-//#define AAA
-#ifdef AAA
-    #include <locale.h>
-    setlocale(LC_ALL, "rus");
+////#define AAA
+//#ifdef AAA
+//    #include <locale.h>
+//    setlocale(LC_ALL, "rus");
 
 
-#endif
-    TEST::runTests();
-    return 0;
+//#endif
+//    TEST::runTests();
+//    return 0;
 
 
     Utils::File::SetCWD();
@@ -46,7 +46,8 @@ int main(int argc, char *argv[])
     std::string fname;
 
 
-    fpath = "/run/media/mw/data2/test/q0000226.arc";
+    //fpath = "/home/mw/test/q0000226.arc";
+    fpath = "/home/mw/test/q0000226_en.arc";
     //fpath = "/run/media/mw/data2/test/q0000101.arc";
     //fpath = "/run/media/mw/data2/test/quest.arc";
     //fpath = "/run/media/mw/data2/test/q0001053.arc"; // Beware the Comet of Disaster
@@ -57,61 +58,64 @@ int main(int argc, char *argv[])
 
     ARC a(arc, &list);
     a.ExtractAll();
-    a.PrintPairsInfo();
+    //a.PrintPairsInfo();
 
     // Run tests
-    for ( auto& pair : list )
+    for (auto& pair : list)
     {
-        if ( pair.info.ResourceHash == MHXX::GMD::RESOURCE_HASH )
-        {
-            TEST::test<MHXX::GMD::cGMD>( pair );
+        switch(pair.info.ResourceHash){
+        case MHXX::GMD::RESOURCE_HASH:{
+            TEST::test<MHXX::GMD::cGMD>(pair);
 
-//            MHXX::GMD::cGMD gmd(pair);
-//            gmd.printAllItems();
+            MHXX::GMD::cGMD gmd(pair);
+            gmd.printAllItems();
+            break;
         }
-
-        if ( pair.info.ResourceHash == MHXX::QDP::RESOURCE_HASH )
-            TEST::test<MHXX::QDP::cQuestPlus>( pair );
-
-        if ( pair.info.ResourceHash == MHXX::SEM::RESOURCE_HASH )
-        {
-            TEST::test<MHXX::SEM::cSetEmMain>( pair );
+        case MHXX::QDP::RESOURCE_HASH:{
+            TEST::test<MHXX::QDP::cQuestPlus>(pair);
+            break;
+        }
+        case MHXX::SEM::RESOURCE_HASH:{
+            TEST::test<MHXX::SEM::cSetEmMain>(pair);
 
             MHXX::SEM::cSetEmMain sem(pair);
-            sem.print();
+            //sem.print();
+            break;
         }
-
-        if ( pair.info.ResourceHash == MHXX::REM::RESOURCE_HASH )
-        {
-            TEST::test<MHXX::REM::cRewardEm>( pair );
+        case MHXX::REM::RESOURCE_HASH:{
+            TEST::test<MHXX::REM::cRewardEm>(pair);
 
             MHXX::REM::cRewardEm rem(pair);
             //rem.print();
+            break;
         }
-
-        if ( pair.info.ResourceHash == MHXX::SUP::RESOURCE_HASH )
-        {
-            TEST::test<MHXX::SUP::cSupply>( pair );
+        case MHXX::SUP::RESOURCE_HASH:{
+            TEST::test<MHXX::SUP::cSupply>(pair);
 
             MHXX::SUP::cSupply sup(pair);
             //sup.print(true);
+            break;
         }
-
-        if ( pair.info.ResourceHash == MHXX::QDL::RESOURCE_HASH )
-        {
-            TEST::test<MHXX::QDL::cQuestDataLink>( pair );
+        case MHXX::QDL::RESOURCE_HASH:{
+            TEST::test<MHXX::QDL::cQuestDataLink>(pair);
 
             MHXX::QDL::cQuestDataLink qdl(pair);
             //qdl.print();
-
+            break;
         }
-
-        if ( pair.info.ResourceHash == MHXX::ESL::RESOURCE_HASH )
-        {
-            MHXX::ESL::cEmSetList esl( pair );
-
+        case MHXX::ESL::RESOURCE_HASH:{
+            MHXX::ESL::cEmSetList esl(pair);
             //esl.print();
+            break;
         }
+        case MHXX::EXT::RESOURCE_HASH:{
+            MHXX::EXT::cEXT ext(pair);
+            ext.print();
+
+            //pair.cc.writeToFile((fpath + ".ext").c_str());
+            break;
+        }
+        } // switch
     }
 
     //Utils::File::PairVectorToFiles(list, fname, "/run/media/mw/data2/test/");

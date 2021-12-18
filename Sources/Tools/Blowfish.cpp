@@ -8,7 +8,7 @@
 
 #define S(x,i) (SBoxes[i][x.w.byte##i])
 #define bf_F(x) (((S(x,0) + S(x,1)) ^ S(x,2)) + S(x,3))
-#define ROUND(a,b,n) (a.u32 ^= bf_F(b) ^ PArray[n])
+#define ROUND(a,b,n) (a.raw ^= bf_F(b) ^ PArray[n])
 
 
 BlowFish::BlowFish ()
@@ -28,10 +28,10 @@ void BlowFish::Blowfish_encipher (u32 *xl, u32 *xr)
 {
     union aword  Xl, Xr;
 
-    Xl.u32 = *xl;
-    Xr.u32 = *xr;
+    Xl.raw = *xl;
+    Xr.raw = *xr;
 
-    Xl.u32 ^= PArray [0];
+    Xl.raw ^= PArray [0];
     ROUND (Xr, Xl, 1);  ROUND (Xl, Xr, 2);
     ROUND (Xr, Xl, 3);  ROUND (Xl, Xr, 4);
     ROUND (Xr, Xl, 5);  ROUND (Xl, Xr, 6);
@@ -40,10 +40,10 @@ void BlowFish::Blowfish_encipher (u32 *xl, u32 *xr)
     ROUND (Xr, Xl, 11); ROUND (Xl, Xr, 12);
     ROUND (Xr, Xl, 13); ROUND (Xl, Xr, 14);
     ROUND (Xr, Xl, 15); ROUND (Xl, Xr, 16);
-    Xr.u32 ^= PArray [17];
+    Xr.raw ^= PArray [17];
 
-    *xr = Xl.u32 ;
-    *xl = Xr.u32 ;
+    *xr = Xl.raw ;
+    *xl = Xr.raw ;
 }
 
     // the low level (private) decryption function
@@ -52,10 +52,10 @@ void BlowFish::Blowfish_decipher (u32 *xl, u32 *xr)
    union aword  Xl;
    union aword  Xr;
 
-   Xl.u32 = *xl;
-   Xr.u32 = *xr;
+   Xl.raw = *xl;
+   Xr.raw = *xr;
 
-   Xl.u32 ^= PArray [17];
+   Xl.raw ^= PArray [17];
    ROUND (Xr, Xl, 16);  ROUND (Xl, Xr, 15);
    ROUND (Xr, Xl, 14);  ROUND (Xl, Xr, 13);
    ROUND (Xr, Xl, 12);  ROUND (Xl, Xr, 11);
@@ -64,10 +64,10 @@ void BlowFish::Blowfish_decipher (u32 *xl, u32 *xr)
    ROUND (Xr, Xl, 6);   ROUND (Xl, Xr, 5);
    ROUND (Xr, Xl, 4);   ROUND (Xl, Xr, 3);
    ROUND (Xr, Xl, 2);   ROUND (Xl, Xr, 1);
-   Xr.u32 ^= PArray[0];
+   Xr.raw ^= PArray[0];
 
-   *xl = Xr.u32;
-   *xr = Xl.u32;
+   *xl = Xr.raw;
+   *xr = Xl.raw;
 }
 
 
@@ -92,12 +92,12 @@ void BlowFish::Initialize (const u8 key[], int keybytes)
     j = 0 ;
     for (i = 0 ; i < NPASS + 2 ; ++i)
     {
-        temp.u32 = 0 ;
+        temp.raw = 0 ;
         temp.w.byte0 = key[j];
         temp.w.byte1 = key[(j+1) % keybytes] ;
         temp.w.byte2 = key[(j+2) % keybytes] ;
         temp.w.byte3 = key[(j+3) % keybytes] ;
-        data = temp.u32 ;
+        data = temp.raw ;
         PArray [i] ^= data ;
         j = (j + 4) % keybytes ;
     }
