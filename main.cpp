@@ -45,12 +45,22 @@ int main(int argc, char *argv[])
     std::string fpath;
     std::string fname;
 
+    // const char* test_folder = "test";
+    const char* test_folder = "test/MHXX_CQs/from_MHXX_ENG";
+    const char* test_files[] =
+    {
+        "q0000226.arc",
+        "q0000226_en.arc",
+        "q0000101.arc",
+        "quest.arc",
+        "q0001053.arc", // Beware the Comet of Disaster
+        "q0001053_en.arc", // Beware the Comet of Disaster
+        "q0000420_en.arc", // Hunt-a-thon: Daimyo Hermitaur, Village **** 3/5 4
+        "q0000419.arc", // Hunt-a-thon: Daimyo Hermitaur, Village **** 3/5 4
+    };
+    auto selected = test_files[7];
 
-    //fpath = "/home/mw/test/q0000226.arc";
-    fpath = "/home/mw/test/q0000226_en.arc";
-    //fpath = "/run/media/mw/data2/test/q0000101.arc";
-    //fpath = "/run/media/mw/data2/test/quest.arc";
-    //fpath = "/run/media/mw/data2/test/q0001053.arc"; // Beware the Comet of Disaster
+    fpath = Utils::GetUserHome() + '/' + test_folder + '/' + selected;
     fname = Utils::File::extractName(fpath);
 
 

@@ -12,7 +12,7 @@ struct Em {
     const EmID  ID;
 };
 
-static const std::array<const Em, EM_MAX> EnemyStr =
+constexpr static const std::array<const Em, EM_MAX> EnemyStr =
 {{
     {"(None)",                  {0,  NORMAL}},
     {"Rathian",                 {1,  NORMAL}},

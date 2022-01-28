@@ -1,6 +1,7 @@
 #include "Tools/Utils.hpp"
 #include <string.h>
 #include <algorithm>
+#include <cstdlib>
 
 #ifdef __linux__
     //#include <stdio.h>
@@ -334,6 +335,16 @@ std::string     File::extractExt( CContainer& _cc, bool BE )
 
     if(BE) std::reverse(out.begin(), out.end());
     return out;
+}
+
+std::string GetUserHome(void)
+{
+#ifdef __linux__
+    return std::getenv("HOME");
+#else
+    // TODO
+    return "";
+#endif
 }
 
 } // Utils

@@ -13,7 +13,12 @@ namespace Utils {
 
 static USED void print_help(const char* name, const u32 item)
 {
-    printf("%-20s%08X | %d\n", name, item, item);
+    printf("%-25s%08X | %d\n", name, item, item);
+}
+
+static USED void print_help_numered(const u32 id, const char* name, const u32 item)
+{
+    printf("[%d] %-21s%08X | %d\n", id, name, item, item);
 }
 
 template <typename T>
@@ -91,6 +96,8 @@ u32             CalculateChecksum( u8* _data, u32 _size );
  */
 std::pair<u8*, u8*> FindDiff( u8* _data0, u8* _data1, u32 _size );
 
+
+std::string GetUserHome(void);
 
 
 

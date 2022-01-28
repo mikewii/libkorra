@@ -14,7 +14,7 @@ struct sEmSmallData_s {
     u16                 Unk1;
     Geometry4<float>    Position;
     u32                 Unk2[3];
-};
+} PACKED;
 
 struct sESData_s {
     static const u32 MAGIC0 = 0x00445345; // ESD

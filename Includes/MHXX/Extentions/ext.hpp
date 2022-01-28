@@ -56,10 +56,10 @@ struct sEXTHeader_s {
     u8          RemAddLotMax;
 
     // done
-    Supply_s	Supply[2];
+    Supply_s	Supply[2];  // aligned
 
     // done
-    Boss_s		Boss[5];
+    Boss_s		Boss[5];    // non aligned
 
     // done
     u8          SmallEmHP;	// also known as Zako
@@ -71,7 +71,7 @@ struct sEXTHeader_s {
     u8          isHuntaton;
 
     Appear_s	Appear[5];
-    u8          StrayRand;
+    u8          StrayRand;      // invader boss?
     u8          StrayStartTime;
     u8          StrayStartRand;
     u8          StrayLimit[3];
@@ -126,11 +126,41 @@ public:
     inline void print_VillagePoints(void) const { Utils::print_help("Village points", this->header.VillagePoints); }
     inline void print_MainRewardMoney(void) const { Utils::print_help("Main reward money", this->header.MainRewardMoney); }
     inline void print_SubRewardMoney(void) const { Utils::print_help("Sub reward money", this->header.SubRewardMoney); }
+    void print_Rem(void) const;
+    void print_Supply0(void) const;
+    void print_Supply1(void) const;
+    void print_Boss1(void) const { this->print_Boss(0); };
+    void print_Boss2(void) const { this->print_Boss(1); };
+    void print_Boss3(void) const { this->print_Boss(2); };
+    void print_Boss4(void) const { this->print_Boss(3); };
+    void print_Boss5(void) const { this->print_Boss(4); };
+    void print_SmallEm(void) const;
+    void print_Em0(void) const { this->print_Em(0); }
+    void print_Em1(void) const { this->print_Em(0); }
+    void print_IsHuntaton(void) const { Utils::print_help("isHuntaton", this->header.isHuntaton); }
+    void print_Appear1(void) const { this->print_Appear(0); }
+    void print_Appear2(void) const { this->print_Appear(1); }
+    void print_Appear3(void) const { this->print_Appear(2); }
+    void print_Appear4(void) const { this->print_Appear(3); }
+    void print_Appear5(void) const { this->print_Appear(4); }
+    void print_Stray(void) const;
+    void print_ExtraTicketNum(void) const { Utils::print_help("ExtraTicketNum", this->header.ExtraTicketNum); }
+    void print_Icons(void) const;
+    void print_ProgNo(void) const { Utils::print_help("ProgNo", this->header.ProgNo); }
+    void print_Resource(void) const { Utils::print_help("Resource", this->header.Resource); }
+    void print_Message(void) const { Utils::print_help("Message", this->header.Message); }
+    void print_VillagePointG(void) const { Utils::print_help("VillagePointG", this->header.VillagePointG); }
+    void print_Flag(void) const { Utils::print_help("Flag", this->header.Flag); }
 
 private:
     sEXTHeader_s header;
 
     void read(Pair& _pp);
+
+    void print_Boss(const u32 id) const;
+    void print_Em(const u32 id) const;
+    void print_Appear(const u32 id) const;
+    void print_Icon(const u32 id) const;
 
 };
 
