@@ -55,29 +55,32 @@ struct sEXTHeader_s {
     u8          RemAddFrame[2];
     u8          RemAddLotMax;
 
-    // done
-    Supply_s	Supply[2];  // aligned
+    // done, aligned
+    Supply_s	Supply[2];  // 0 available from start, 1 available later on quest
 
-    // done
-    Boss_s		Boss[5];    // non aligned
+    // done, aligned
+    Boss_s		Boss[5];
 
-    // done
-    u8          SmallEmHP;	// also known as Zako
-    u8          SmallEmAttack;
-    u8          SmallEmOther;
+    // done, aligned
+    u8          SmallEmHP_tbl;	// also known as Zako
+    u8          SmallEmAttack_tbl;
+    u8          SmallEmOther_tbl;
 
-    // done
+    // done, aligned
     Em_s		Em[2];
-    u8          isHuntaton;
+    u8          isBossRushType; // not
 
+    // done, aligned
     Appear_s	Appear[5];
+
     u8          StrayRand;      // invader boss?
     u8          StrayStartTime;
     u8          StrayStartRand;
     u8          StrayLimit[3];
-    u8          StrayRand2[2];
+    u8          StrayRand2[3];
     u8          ExtraTicketNum;
-    u8          Icon[5];
+
+    u8          Icon[5];        // broken, 1 bytes after
     u32         ProgNo;
     u32         Resource;
     u32         Message;
@@ -136,15 +139,19 @@ public:
     void print_Boss5(void) const { this->print_Boss(4); };
     void print_SmallEm(void) const;
     void print_Em0(void) const { this->print_Em(0); }
-    void print_Em1(void) const { this->print_Em(0); }
-    void print_IsHuntaton(void) const { Utils::print_help("isHuntaton", this->header.isHuntaton); }
-    void print_Appear1(void) const { this->print_Appear(0); }
+    void print_Em1(void) const { this->print_Em(1); }
+    void print_IsBossRushType(void) const { Utils::print_help("isBossRushType", this->header.isBossRushType); }
+    void print_Appear1(void) const { this->print_Appear(1); }
     void print_Appear2(void) const { this->print_Appear(1); }
     void print_Appear3(void) const { this->print_Appear(2); }
     void print_Appear4(void) const { this->print_Appear(3); }
     void print_Appear5(void) const { this->print_Appear(4); }
     void print_Stray(void) const;
-    void print_ExtraTicketNum(void) const { Utils::print_help("ExtraTicketNum", this->header.ExtraTicketNum); }
+    void print_ExtraTicketNum(void) const
+    {
+        Utils::print_help("ExtraTicketNum", this->header.ExtraTicketNum);
+        Utils::print_help("ExtraTicketNum_pos", Utils::GetHeaderRelativePos(&this->header, &this->header.ExtraTicketNum));
+    }
     void print_Icons(void) const;
     void print_ProgNo(void) const { Utils::print_help("ProgNo", this->header.ProgNo); }
     void print_Resource(void) const { Utils::print_help("Resource", this->header.Resource); }
@@ -158,8 +165,8 @@ private:
     void read(Pair& _pp);
 
     void print_Boss(const u32 id) const;
-    void print_Em(const u32 id) const;
     void print_Appear(const u32 id) const;
+    void print_Em(const u32 id) const;
     void print_Icon(const u32 id) const;
 
 };

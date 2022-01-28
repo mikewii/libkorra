@@ -144,7 +144,7 @@ struct Supply_s {
     u8  SuppType;
     u16	SuppTarget;
     u16	SuppTargetNum;
-};
+} PACKED;
 
 struct Boss_s {
     u16 EmType;
@@ -158,18 +158,24 @@ struct Boss_s {
     u16 Scale;
     u8  ScaleTbl;
     u8  StaminaTbl;
-};
+} PACKED;
 
 struct Em_s {
     u8  EmSetType;
     u16	EmSetTargetID;
     u16	EmSetTargetNum;
-};
+} PACKED;
 
 struct Appear_s {
     u8	AppearType;
     u16	AppearTargetType;
     u16	AppearTargetNum;
-};
+} PACKED;
+
+struct Appear1_s {
+    u16	AppearType;
+    u16	AppearTargetType;
+    u16	AppearTargetNum;
+} PACKED;
 
 }

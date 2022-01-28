@@ -347,4 +347,9 @@ std::string GetUserHome(void)
 #endif
 }
 
+u32 GetHeaderRelativePos(const void* const header, const void* const member)
+{
+    return reinterpret_cast<u64>(member) - reinterpret_cast<u64>(header);
+}
+
 } // Utils

@@ -10,6 +10,7 @@ namespace Utils {
 #define SEPARATOR       '/'
 #define SEPARATOR_WIN   '\\'
 
+u32 GetHeaderRelativePos(const void* const header, const void* const member);
 
 static USED void print_help(const char* name, const u32 item)
 {

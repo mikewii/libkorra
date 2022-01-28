@@ -77,7 +77,7 @@ void cEXT::print(void)
     this->print_Em1();
 
     printf("\n");
-    this->print_IsHuntaton();
+    this->print_IsBossRushType();
 
     this->print_Appear1();
     this->print_Appear2();
@@ -178,6 +178,7 @@ void cEXT::print_Boss(const u32 id) const
 {
     printf("\nBoss #%d\n", id);
     Utils::print_help_numered(id, "EmType", this->header.Boss[id].EmType);
+    Utils::print_help("EmType_pos", Utils::GetHeaderRelativePos(&this->header, &this->header.Boss[id].EmType));
     Utils::print_help_numered(id, "EmSubType", this->header.Boss[id].EmSubType);
     Utils::print_help_numered(id, "AuraType", this->header.Boss[id].AuraType);
     Utils::print_help_numered(id, "RestoreNum", this->header.Boss[id].RestoreNum);
@@ -193,17 +194,9 @@ void cEXT::print_Boss(const u32 id) const
 void cEXT::print_SmallEm(void) const
 {
     printf("\nSmallEm\n");
-    Utils::print_help("SmallEmHP", this->header.SmallEmHP);
-    Utils::print_help("SmallEmAttack", this->header.SmallEmAttack);
-    Utils::print_help("SmallEmOther", this->header.SmallEmOther);
-}
-
-void cEXT::print_Em(const u32 id) const
-{
-    printf("\nEm #%d\n", id);
-    Utils::print_help_numered(id, "EmSetType", this->header.Em[id].EmSetType);
-    Utils::print_help_numered(id, "EmSetTargetID", this->header.Em[id].EmSetTargetID);
-    Utils::print_help_numered(id, "EmSetTargetNum", this->header.Em[id].EmSetTargetNum);
+    Utils::print_help("SmallEmHP", this->header.SmallEmHP_tbl);
+    Utils::print_help("SmallEmAttack", this->header.SmallEmAttack_tbl);
+    Utils::print_help("SmallEmOther", this->header.SmallEmOther_tbl);
 }
 
 void cEXT::print_Appear(const u32 id) const
@@ -225,6 +218,7 @@ void cEXT::print_Stray(void) const
     Utils::print_help("StrayLimit[2]", this->header.StrayLimit[2]);
     Utils::print_help("StrayRand2[0]", this->header.StrayRand2[0]);
     Utils::print_help("StrayRand2[1]", this->header.StrayRand2[1]);
+    Utils::print_help("StrayRand2[2]", this->header.StrayRand2[2]);
 }
 
 void cEXT::print_Icons(void) const
@@ -235,6 +229,14 @@ void cEXT::print_Icons(void) const
     this->print_Icon(2);
     this->print_Icon(3);
     this->print_Icon(4);
+}
+
+void cEXT::print_Em(const u32 id) const
+{
+    printf("\nEm #%d\n", id);
+    Utils::print_help_numered(id, "EmSetType", this->header.Em[id].EmSetType);
+    Utils::print_help_numered(id, "EmSetTargetID", this->header.Em[id].EmSetTargetID);
+    Utils::print_help_numered(id, "EmSetTargetNum", this->header.Em[id].EmSetTargetNum);
 }
 
 void cEXT::print_Icon(const u32 id) const
