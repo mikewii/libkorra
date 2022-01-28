@@ -38,6 +38,7 @@ struct sESLHeader_s { // 0x40 ?
     u32     Unk[14];
 };
 
+// broken for MHGU
 class cEmSetList : public PairInfoKeeper
 {
 public:

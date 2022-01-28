@@ -178,4 +178,10 @@ struct Appear1_s {
     u16	AppearTargetNum;
 } PACKED;
 
+struct GMDLink_s {
+    u32         ProgNo;             // or just padding? always null
+    u32         Resource;
+    char        Message[11 + 1];    // 11+1 byte per gmd file
+};
+
 }

@@ -47,7 +47,8 @@ int main(int argc, char *argv[])
 
     // const char* test_folder = "test";
     //const char* test_folder = "test/MHXX_CQs/from_MHXX_ENG";
-    const char* test_folder = "test/MHXX_CQs/from_MHXX_ENG";
+    const char* test_folder = "test/MHXX_CQs/from_MHXX";
+    //const char* test_folder = "test/MHXX_CQs/from_MHGU";
     const char* test_files[] =
     {
         "q0001053.arc", // Beware the Comet of Disaster
@@ -111,8 +112,8 @@ int main(int argc, char *argv[])
             //qdl.print();
             break;
         }
-        case MHXX::ESL::RESOURCE_HASH:{
-            MHXX::ESL::cEmSetList esl(pair);
+        case MHXX::ESL::RESOURCE_HASH:{ // broken for MHGU
+            //MHXX::ESL::cEmSetList esl(pair);
             //esl.print();
             break;
         }
