@@ -135,7 +135,7 @@ enum EntryType_e:u8 {
 
 struct Target_s {
     u8      isClearParam;
-    u16     ClearID;
+    u16     ClearID;        // monsted id,
     u16     ClearNum;
 } PACKED;
 
@@ -181,7 +181,7 @@ struct Appear1_s {
 struct GMDLink_s {
     u32         ProgNo;             // or just padding? always null
     u32         Resource;
-    char        Message[11 + 1];    // 11+1 byte per gmd file
+    char        GMDFileName[11 + 1];    // 11+1 byte per gmd file
 };
 
 }

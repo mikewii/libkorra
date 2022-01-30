@@ -29,7 +29,7 @@ static void print_help_arr(const char* name, const u32 item, T arr)
     auto arrSize = arr.size();
 
     if (item <= arrSize)
-        printf("%-20s%s\n", name, arr[item]);
+        printf("%-25s%-20s | %08X | %d\n", name, arr[item], item, item);
     else printf("----->%s out of range! %08X | %d\n", name, item, item);
 }
 

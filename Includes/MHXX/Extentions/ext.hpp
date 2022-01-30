@@ -25,10 +25,10 @@ struct sEXTHeader_p1_s {
     Maps_e      MapNo;
     StartType_e StartType;
     u8          QuestTime;
-    u8          QuestLifes;
+    u8          QuestLives;
 
-    u8          AcEquipSetNo;           // 0x18
-    u8          BGMType;
+    u8          AcEquipSetNo;           // arena related?
+    u8          BGMType;                // used where?
     // print
     EntryType_e EntryType[2];
     u8          EntryTypeCombo;
@@ -75,7 +75,7 @@ struct sEXTHeader_p1_s {
     // done, aligned
     Appear_s	Appear[5];
 
-    u8          StrayRand;      // invader boss?
+    u8          StrayRand;      // invader boss id?
     u8          StrayStartTime;
     u8          StrayStartRand;
     u8          StrayLimit[3];
@@ -98,11 +98,34 @@ class cEXT : public PairInfoKeeper
 {
 public:
 
-    cEXT();
+    cEXT(bool isMHGU = false);
     cEXT(Pair& _pp);
     ~cEXT();
 
-    void print(void);
+    void make(Pair& _pp);
+    bool save(Pair& _pp);
+
+    bool Set_QuestID(const u32 id);
+    void Set_QuestType(const QuestType_e type);
+    void Set_QuestLevel(const QuestLv_e level);
+    void Set_BossLevel(const EnemyLv_e level);
+    //void Set_MapNo()
+    void Set_StartType(const StartType_e type);
+    void Set_QuestTime(const u8 minutes);
+    void Set_QuestLives(const u8 ammount);
+
+    void Set_EntryFee(const u32 ammount);
+    void Set_VillagePoints(const u32 ammount);
+    void Set_MainRewardMoney(const u32 ammount);
+    void Set_SubRewardMoney(const u32 ammount);
+    void Set_ClearRemVillagePoint(const u32 ammount);
+    void Set_FailedRemVillagePoint(const u32 ammount);
+    void Set_SubRemVillagePoint(const u32 ammount);
+    void Set_ClearRemHunterPoint(const u32 ammount);
+    void Set_SubRemHunterPoint(const u32 ammount);
+
+// prints:
+    void print(void) const;
 
     void print_Magic(void) const { Utils::print_help("Magic", this->header0.Magic); }
     void print_Version(void) const { Utils::print_help("Version", this->header0.Version); }
@@ -115,7 +138,7 @@ public:
     void print_Map(void) const;
     void print_StartType(void) const;
     void print_QuestTime(void) const { Utils::print_help("Quest time", this->header0.QuestTime); }
-    void print_QuestLifes(void) const { Utils::print_help("Quest lifes", this->header0.QuestLifes); }
+    void print_QuestLifes(void) const { Utils::print_help("Quest lifes", this->header0.QuestLives); }
     void print_AcEquipSetNo(void) const { Utils::print_help("AcEquipSetNo", this->header0.AcEquipSetNo); }
     void print_BGMType(void) const { Utils::print_help("BGM type", this->header0.BGMType); }
     void print_EntryType0(void) const { Utils::print_help("Entry type 0", this->header0.EntryType[0]); }
@@ -127,12 +150,17 @@ public:
     void print_TargetMain1(void) const;
     void print_TargetSub(void) const;
     void print_CarvingLevel(void) const { Utils::print_help("Carging level", this->header0.CarvingLv); }
-    inline void print_GatheringLevel(void) const { Utils::print_help("Gathering level", this->header0.GatherLv); }
-    inline void print_FishingLevel(void) const { Utils::print_help("Fishing level", this->header0.FishingLv); }
-    inline void print_EntryFee(void) const { Utils::print_help("Entry fee", this->header0.EntryFee); }
-    inline void print_VillagePoints(void) const { Utils::print_help("Village points", this->header0.VillagePoints); }
-    inline void print_MainRewardMoney(void) const { Utils::print_help("Main reward money", this->header0.MainRewardMoney); }
-    inline void print_SubRewardMoney(void) const { Utils::print_help("Sub reward money", this->header0.SubRewardMoney); }
+    void print_GatheringLevel(void) const { Utils::print_help("Gathering level", this->header0.GatherLv); }
+    void print_FishingLevel(void) const { Utils::print_help("Fishing level", this->header0.FishingLv); }
+    void print_EntryFee(void) const { Utils::print_help("Entry fee", this->header0.EntryFee); }
+    void print_VillagePoints(void) const { Utils::print_help("Village points", this->header0.VillagePoints); }
+    void print_MainRewardMoney(void) const { Utils::print_help("Main reward money", this->header0.MainRewardMoney); }
+    void print_SubRewardMoney(void) const { Utils::print_help("Sub reward money", this->header0.SubRewardMoney); }
+    void print_ClearRemVillagePoint(void) const { Utils::print_help("ClearRemVillagePoint", this->header0.ClearRemVillagePoint); }
+    void print_FailedRemVillagePoint(void) const { Utils::print_help("FailedRemVillagePoint", this->header0.FailedRemVillagePoint); }
+    void print_SubRemVillagePoint(void) const { Utils::print_help("SubRemVillagePoint", this->header0.SubRemVillagePoint); }
+    void print_ClearRemHunterPoint(void) const { Utils::print_help("ClearRemHunterPoint", this->header0.ClearRemHunterPoint); }
+    void print_SubRemHunterPoint(void) const { Utils::print_help("SubRemHunterPoint", this->header0.SubRemHunterPoint); }
     void print_Rem(void) const;
     void print_Supply0(void) const;
     void print_Supply1(void) const;
@@ -145,7 +173,7 @@ public:
     void print_Em0(void) const { this->print_Em(0); }
     void print_Em1(void) const { this->print_Em(1); }
     void print_IsBossRushType(void) const { Utils::print_help("isBossRushType", this->header0.isBossRushType); }
-    void print_Appear1(void) const { this->print_Appear(1); }
+    void print_Appear1(void) const { this->print_Appear(0); }
     void print_Appear2(void) const { this->print_Appear(1); }
     void print_Appear3(void) const { this->print_Appear(2); }
     void print_Appear4(void) const { this->print_Appear(3); }
@@ -161,10 +189,12 @@ private:
     sEXTHeader_p1_s header0;
     sEXTHeader_p2_s header1;
     GMDLink_s       links[5];
+    u32             linksAmmount = 1;
+    u32             dataSize = 0;
 
-    u32 dataSize = 0;
+    u32 getResourceHash(void) const { return MHXX::EXT::RESOURCE_HASH; }
 
-    void read(Pair& _pp);
+    bool read(Pair& _pp);
 
     void print_Boss(const u32 id) const;
     void print_Appear(const u32 id) const;

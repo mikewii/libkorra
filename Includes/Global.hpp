@@ -8,15 +8,15 @@ template <class T>
 class Export
 {
 public:
-    static void save( T& _t, Pair& _pp )
+    static void save(T& _t, Pair& _pp)
     {
-        u32 size = sizeof( _t.__data );
+        u32 size = sizeof(_t.__data);
 
-        _pp.cc.resize( size );
+        _pp.cc.resize(size);
 
-        Utils::copybytes( _pp.cc.data(), &_t.__data, size );
+        Utils::copybytes(_pp.cc.data(), &_t.__data, size);
 
-        if ( _t.isPairInfoSet() ) _t.GetPairInfo( _pp );
+        if (_t.isPairInfoSet()) _t.GetPairInfo(_pp);
         else
         {
             _pp.info.DecSize        = size;

@@ -4,8 +4,10 @@
 namespace MHXX {
 namespace EXT {
 
-cEXT::cEXT()
+cEXT::cEXT(bool isMHGU)
 {
+    if (isMHGU) this->dataSize = EXT::MHGU_EXT_SIZE;
+    else this->dataSize = EXT::MHXX_EXT_SIZE;
 }
 
 cEXT::cEXT(Pair& _pp)
@@ -23,7 +25,64 @@ cEXT::~cEXT()
 {
 }
 
-void cEXT::print(void)
+bool cEXT::save(Pair& _pp)
+{
+    if (this->dataSize == EXT::MHXX_EXT_SIZE) this->linksAmmount = 1;
+    else if (this->dataSize == EXT::MHGU_EXT_SIZE) this->linksAmmount = 5;
+    else return false;
+
+    _pp.cc.resize(this->dataSize);
+
+    Utils::copybytes(
+                _pp.cc.data(),
+                &this->header0,
+                sizeof(sEXTHeader_p1_s));
+    Utils::copybytes(
+                _pp.cc.data() + sizeof(sEXTHeader_p1_s),
+                &this->links,
+                sizeof(GMDLink_s));
+    Utils::copybytes(
+                _pp.cc.data() + sizeof(sEXTHeader_p1_s) + (sizeof(GMDLink_s) * this->linksAmmount),
+                &this->header1,
+                sizeof(sEXTHeader_p2_s));
+
+    if (cEXT::isPairInfoSet()) cEXT::GetPairInfo(_pp);
+    else
+    {
+        _pp.info.DecSize        = this->dataSize;
+        _pp.info.ResourceHash   = cEXT::getResourceHash();
+        _pp.info.XORLock        = MHXX_XORLock;
+        _pp.info.isDecompressed = true;
+    }
+
+    return true;
+}
+bool cEXT::Set_QuestID(const u32 id)
+{
+    // id check?
+    this->header0.QuestID = id;
+    return true;
+}
+
+void cEXT::Set_QuestType(const QuestType_e type) { this->header0.QuestType = type; }
+void cEXT::Set_QuestLevel(const QuestLv_e level) { this->header0.QuestLv = level; }
+void cEXT::Set_BossLevel(const EnemyLv_e level) { this->header0.BossLv = level; }
+void cEXT::Set_StartType(const StartType_e type) { this->header0.StartType = type; }
+void cEXT::Set_QuestTime(const u8 minutes) { this->header0.QuestTime = minutes; }
+void cEXT::Set_QuestLives(const u8 ammount) { this->header0.QuestLives = ammount; }
+
+void cEXT::Set_EntryFee(const u32 ammount) { this->header0.EntryFee = ammount; }
+void cEXT::Set_VillagePoints(const u32 ammount) { this->header0.VillagePoints = ammount; }
+void cEXT::Set_MainRewardMoney(const u32 ammount) { this->header0.MainRewardMoney = ammount; }
+void cEXT::Set_SubRewardMoney(const u32 ammount) { this->header0.SubRewardMoney = ammount; }
+void cEXT::Set_ClearRemVillagePoint(const u32 ammount) { this->header0.ClearRemVillagePoint = ammount; }
+void cEXT::Set_FailedRemVillagePoint(const u32 ammount) { this->header0.FailedRemVillagePoint = ammount; }
+void cEXT::Set_SubRemVillagePoint(const u32 ammount) { this->header0.SubRemVillagePoint = ammount; }
+void cEXT::Set_ClearRemHunterPoint(const u32 ammount) { this->header0.ClearRemHunterPoint = ammount; }
+void cEXT::Set_SubRemHunterPoint(const u32 ammount) { this->header0.SubRemHunterPoint = ammount; }
+
+
+void cEXT::print(void) const
 {
     this->print_Magic();
     this->print_Version();
@@ -60,6 +119,12 @@ void cEXT::print(void)
     this->print_VillagePoints();
     this->print_MainRewardMoney();
     this->print_SubRewardMoney();
+
+    this->print_ClearRemVillagePoint();
+    this->print_FailedRemVillagePoint();
+    this->print_SubRemVillagePoint();
+    this->print_ClearRemHunterPoint();
+    this->print_SubRemHunterPoint();
 
     this->print_Rem();
 
@@ -178,7 +243,6 @@ void cEXT::print_Boss(const u32 id) const
 {
     printf("\nBoss #%d\n", id);
     Utils::print_help_numered(id, "EmType", this->header0.Boss[id].EmType);
-    Utils::print_help("EmType_pos", Utils::GetHeaderRelativePos(&this->header0, &this->header0.Boss[id].EmType));
     Utils::print_help_numered(id, "EmSubType", this->header0.Boss[id].EmSubType);
     Utils::print_help_numered(id, "AuraType", this->header0.Boss[id].AuraType);
     Utils::print_help_numered(id, "RestoreNum", this->header0.Boss[id].RestoreNum);
@@ -267,46 +331,31 @@ void cEXT::print_GMDLink(const u32 id) const
     printf("\nGMDLink #%d\n", id);
     Utils::print_help("ProgNo", this->links[id].ProgNo);
     Utils::print_help("Resource", this->links[id].Resource);
-    printf("%-25s%s\n", "Message", this->links[id].Message);
+    printf("%-25s%s\n", "Message", this->links[id].GMDFileName);
 }
 
-void cEXT::read(Pair &_pp)
+bool cEXT::read(Pair &_pp)
 {
     cEXT::dataSize = _pp.cc.size();
 
-    switch(cEXT::dataSize){
-    default:break;
-    case MHXX_EXT_SIZE:{
-        Utils::copybytes(
-                    &this->header0,
-                    _pp.cc.data(),
-                    sizeof(sEXTHeader_p1_s));
-        Utils::copybytes(
-                    &this->links,
-                    _pp.cc.data() + sizeof(sEXTHeader_p1_s),
-                    sizeof(GMDLink_s));
-        Utils::copybytes(
-                    &this->header1,
-                    _pp.cc.data() + sizeof(sEXTHeader_p1_s) + sizeof(GMDLink_s),
-                    sizeof(sEXTHeader_p2_s));
-        break;
-    }
-    case MHGU_EXT_SIZE:{
-        Utils::copybytes(
-                    &this->header0,
-                    _pp.cc.data(),
-                    sizeof(sEXTHeader_p1_s));
-        Utils::copybytes(
-                    &this->links,
-                    _pp.cc.data() + sizeof(sEXTHeader_p1_s),
-                    sizeof(GMDLink_s) * 5);
-        Utils::copybytes(
-                    &this->header1,
-                    _pp.cc.data() + sizeof(sEXTHeader_p1_s) + (sizeof(GMDLink_s) * 5),
-                    sizeof(sEXTHeader_p2_s));
-        break;
-    }
-    }
+    if (this->dataSize == EXT::MHXX_EXT_SIZE) this->linksAmmount = 1;
+    else if (this->dataSize == EXT::MHGU_EXT_SIZE) this->linksAmmount = 5;
+    else return false;
+
+    Utils::copybytes(
+                &this->header0,
+                _pp.cc.data(),
+                sizeof(sEXTHeader_p1_s));
+    Utils::copybytes(
+                &this->links,
+                _pp.cc.data() + sizeof(sEXTHeader_p1_s),
+                sizeof(GMDLink_s));
+    Utils::copybytes(
+                &this->header1,
+                _pp.cc.data() + sizeof(sEXTHeader_p1_s) + (sizeof(GMDLink_s) * this->linksAmmount),
+                sizeof(sEXTHeader_p2_s));
+
+    return true;
 }
 
 }
