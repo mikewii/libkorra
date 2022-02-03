@@ -6,7 +6,8 @@
 
 #include "Tools/Test.hpp"
 
-
+#include <dirent.h>
+#include <string.h>
 //#define USE_GUI
 
 #ifdef USE_GUI
@@ -23,6 +24,23 @@ inline static int GUI_RUN(int argc, char *argv[])
     return gui.exec();
 }
 #endif
+
+static std::vector<u32> unique;
+void AddUnique(u32 value)
+{
+    if (unique.empty()) unique.push_back(value);
+    else
+    {
+        if (unique.back() != value) unique.push_back(value);
+    }
+}
+
+void PrintUnique(void)
+{
+    for (auto& value : unique)
+        printf("%d\n", value);
+}
+void PrintDebug(std::vector<Pair>& vector, const char* filename);
 
 
 int main(int argc, char *argv[])
@@ -69,15 +87,56 @@ int main(int argc, char *argv[])
     a.ExtractAll();
     //a.PrintPairsInfo();
 
-    // Run tests
-    for (auto& pair : list)
+
+
+    DIR *d = nullptr;
+    struct dirent *dir;
+    d = opendir((Utils::GetUserHome() + '/' + test_folder).c_str());
+    if (d)
+    {
+        std::string single_file = "q0000817.arc";
+
+        while ((dir = readdir(d)) != NULL)
+        {
+            if (!single_file.empty() && single_file.compare(dir->d_name) != 0) continue;
+
+            if (strlen(dir->d_name) == 12) // filename 8 + dot 1 + extention 3
+            {
+                std::vector<Pair>   vector;
+                std::string         fpath = Utils::GetUserHome() + '/' + test_folder + '/' + dir->d_name;
+
+
+                CContainer arc(fpath);
+                ARC(arc, &vector).ExtractAll();
+
+                PrintDebug(vector, dir->d_name);
+            }
+        }
+        closedir(d);
+
+        PrintUnique();
+
+        //Utils::File::PairVectorToFiles(list, fname, "/run/media/mw/data2/test/");
+    }
+
+#ifdef USE_GUI
+    return GUI_RUN(argc, argv);
+#else
+    return 0;
+#endif
+}
+
+void PrintDebug(std::vector<Pair>& vector, const char* filename)
+{
+    printf("\n%s\n", filename);
+    for (auto& pair : vector)
     {
         switch(pair.info.ResourceHash){
         case MHXX::GMD::RESOURCE_HASH:{
             TEST::test<MHXX::GMD::cGMD>(pair);
 
             MHXX::GMD::cGMD gmd(pair);
-            gmd.printAllItems();
+            //gmd.printAllItems();
             break;
         }
         case MHXX::QDP::RESOURCE_HASH:{
@@ -119,19 +178,13 @@ int main(int argc, char *argv[])
         }
         case MHXX::EXT::RESOURCE_HASH:{
             MHXX::EXT::cEXT ext(pair);
-            ext.print();
+            //ext.print_AcEquipSetNo();
+            AddUnique(ext.header0.AcEquipSetNo);
+
 
             //pair.cc.writeToFile((fpath + ".ext").c_str());
             break;
         }
         } // switch
     }
-
-    //Utils::File::PairVectorToFiles(list, fname, "/run/media/mw/data2/test/");
-
-#ifdef USE_GUI
-    return GUI_RUN(argc, argv);
-#else
-    return 0;
-#endif
 }

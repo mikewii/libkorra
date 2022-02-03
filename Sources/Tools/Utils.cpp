@@ -74,7 +74,7 @@ int             File::makedir( const char* dir )
     return res;
 }
 
-std::string     File::makepath( const char* _path )
+std::string File::makepath(const char* _path)
 {
     std::string     out;
     int             len;
@@ -91,10 +91,9 @@ std::string     File::makepath( const char* _path )
     return out;
 }
 
-std::string     File::makepath( std::string& _path )
+std::string File::makepath(std::string& _path)
 {
     std::string     out;
-
 
     out.append(CWD);
 
@@ -104,20 +103,20 @@ std::string     File::makepath( std::string& _path )
     return out += _path;
 }
 
-std::string     File::extractName( std::string& _path ) {
+std::string File::extractName(std::string& _path) {
     return std::string( _path.substr(_path.find_last_of(SEPARATOR) + 1) );
 }
 
-std::string     File::extractName( const char* _path ) {
-    std::string     res(_path);
+std::string File::extractName(const char* _path) {
+    std::string res(_path);
     return extractName(res);
 }
 
-std::string     File::popName( std::string& _path ) {
+std::string File::popName(std::string& _path) {
     return std::string(_path.substr(0, _path.find_last_of(SEPARATOR)));
 }
 
-void File::PairToFile( Pair& _pair, std::string& _fname, std::string _firstPath )
+void File::PairToFile(Pair& _pair, std::string& _fname, std::string _firstPath)
 {
     std::string     first;
     std::string     last;
@@ -164,11 +163,11 @@ void File::PairVectorToFiles(std::vector<Pair>& _vec, std::string& _fname, std::
     }
 }
 
-bool        File::FileToCC( std::string& _fpath, CContainer* _cc ) {
+bool File::FileToCC(std::string& _fpath, CContainer* _cc) {
     return File::FileToCC(_fpath.c_str(), _cc);
 }
 
-bool        File::FileToCC( const char* _fpath, CContainer* _cc )
+bool File::FileToCC(const char* _fpath, CContainer* _cc)
 {
     FILE*   f = nullptr;
     u32     fsize = 0;
@@ -199,16 +198,16 @@ bool        File::FileToCC( const char* _fpath, CContainer* _cc )
     return false;
 }
 
-bool        File::CCtoFile( std::string& _fpath, CContainer* _cc, bool _makedir ) {
+bool File::CCtoFile(std::string& _fpath, CContainer* _cc, bool _makedir) {
     return File::CCtoFile(_fpath.c_str(), _cc, _makedir);
 }
 
-bool        File::CCtoFile( const char* _fpath, CContainer* _cc, bool _makedir )
+bool File::CCtoFile(const char* _fpath, CContainer* _cc, bool _makedir)
 {
     FILE*   f = nullptr;
     u32     wsize = 0;
 
-    if ( _cc->size() == 0) {
+    if (_cc->size() == 0) {
         NotifyError("CCtoFile: CContainer is empty!");
         return false;
     }
@@ -231,7 +230,7 @@ bool        File::CCtoFile( const char* _fpath, CContainer* _cc, bool _makedir )
     return false;
 }
 
-u32         CalculateChecksum( CContainer& _data )
+u32 CalculateChecksum(CContainer& _data)
 {
     u32 i = 0, checksum = 0;
 
@@ -242,11 +241,11 @@ u32         CalculateChecksum( CContainer& _data )
     return checksum;
 }
 
-u32         CalculateChecksum( u8* _data, u32 _size )
+u32 CalculateChecksum(u8* _data, u32 _size)
 {
     u32 i = 0, checksum = 0;
 
-    while( i < _size ) {
+    while (i < _size) {
         checksum += _data[i] & 0xFF; i++;
     }
 
@@ -254,17 +253,18 @@ u32         CalculateChecksum( u8* _data, u32 _size )
 }
 
 
-std::pair<u8*, u8*>     FindDiff( u8* _data0, u8* _data1, u32 _size )
+std::pair<u8*, u8*> FindDiff(u8* _data0, u8* _data1, u32 _size)
 {
     u32 i = 0, sum0 = 0, sum1 = 0;
     u8* p0 = nullptr;
     u8* p1 = nullptr;
 
-    while( i < _size ) {
+    while (i < _size)
+    {
         sum0 += _data0[i] & 0xFF;
         sum1 += _data1[i] & 0xFF;
 
-        if ( sum0 != sum1 )
+        if (sum0 != sum1)
         {
             p0 = &_data0[i];
             p1 = &_data1[i];
@@ -275,10 +275,10 @@ std::pair<u8*, u8*>     FindDiff( u8* _data0, u8* _data1, u32 _size )
         i++;
     }
 
-    return { p0, p1 };
+    return {p0, p1};
 }
 
-void        File::FixPathSeparators( char* _str, bool revert )
+void File::FixPathSeparators(char* _str, bool revert)
 {
     char    find;
     char    replace;
@@ -295,12 +295,12 @@ void        File::FixPathSeparators( char* _str, bool revert )
             replace = SEPARATOR_WIN;
         }
 
-        for ( int i = 0; i < len; i++ )
+        for (int i = 0; i < len; i++)
             if (_str[i] == find) _str[i] = replace;
     }
 }
 
-void        File::FixPathSeparators( std::string& _str, bool revert )
+void File::FixPathSeparators(std::string& _str, bool revert)
 {
     char    find    = SEPARATOR_WIN;
     char    replace = SEPARATOR;
@@ -310,10 +310,10 @@ void        File::FixPathSeparators( std::string& _str, bool revert )
         replace = SEPARATOR_WIN;
     }
 
-    std::replace( _str.begin(), _str.end(), find, replace);
+    std::replace(_str.begin(), _str.end(), find, replace);
 }
 
-std::string     File::extractExt( CContainer& _cc, bool BE )
+std::string File::extractExt(CContainer& _cc, bool BE)
 {
     std::string out;
     char ext[5]{0};
@@ -321,19 +321,19 @@ std::string     File::extractExt( CContainer& _cc, bool BE )
     std::copy(_cc.data(), _cc.data() + 4, ext);
 
 
-    for(u32 i = 0; i < 4; i++)
+    for (u32 i = 0; i < 4; i++)
     {
-        if(isalpha(ext[i]))
+        if (isalpha(ext[i]))
             out.push_back(tolower( ext[i] ));
         else
         {
-            if(ext[i] > 0)
+            if (ext[i] > 0)
                 out.append(std::to_string(ext[i]));
         }
 
     }
 
-    if(BE) std::reverse(out.begin(), out.end());
+    if (BE) std::reverse(out.begin(), out.end());
     return out;
 }
 

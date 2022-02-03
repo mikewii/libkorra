@@ -19,7 +19,7 @@ struct sEXTHeader_p1_s {
     u32         QuestID;
 
     QuestType_e QuestType;              // 0x10
-    u8          RequestVillage;
+    u8          RequestVillage;         // village id
     QuestLv_e   QuestLv;
     EnemyLv_e   BossLv;
     Maps_e      MapNo;
@@ -27,7 +27,7 @@ struct sEXTHeader_p1_s {
     u8          QuestTime;
     u8          QuestLives;
 
-    u8          AcEquipSetNo;           // arena related?
+    u8          AcEquipSetNo;           // arena related? null in every quest
     u8          BGMType;                // used where?
     // print
     EntryType_e EntryType[2];
@@ -138,7 +138,7 @@ public:
     void print_Map(void) const;
     void print_StartType(void) const;
     void print_QuestTime(void) const { Utils::print_help("Quest time", this->header0.QuestTime); }
-    void print_QuestLifes(void) const { Utils::print_help("Quest lifes", this->header0.QuestLives); }
+    void print_QuestLives(void) const { Utils::print_help("Quest lives", this->header0.QuestLives); }
     void print_AcEquipSetNo(void) const { Utils::print_help("AcEquipSetNo", this->header0.AcEquipSetNo); }
     void print_BGMType(void) const { Utils::print_help("BGM type", this->header0.BGMType); }
     void print_EntryType0(void) const { Utils::print_help("Entry type 0", this->header0.EntryType[0]); }
@@ -185,8 +185,9 @@ public:
     void print_VillagePointG(void) const { Utils::print_help("VillagePointG", this->header1.VillagePointG); }
     void print_Flag(void) const { Utils::print_help("Flag", this->header1.Flag); }
 
+    sEXTHeader_p1_s header0; // moving to public for test
 private:
-    sEXTHeader_p1_s header0;
+    //sEXTHeader_p1_s header0;
     sEXTHeader_p2_s header1;
     GMDLink_s       links[5];
     u32             linksAmmount = 1;

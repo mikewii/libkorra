@@ -96,7 +96,7 @@ void cEXT::print(void) const
     this->print_Map();
     this->print_StartType();
     this->print_QuestTime();
-    this->print_QuestLifes();
+    this->print_QuestLives();
     this->print_AcEquipSetNo();
     this->print_BGMType();
     this->print_EntryType0();

@@ -134,8 +134,8 @@ enum EntryType_e:u8 {
 };
 
 struct Target_s {
-    u8      isClearParam;
-    u16     ClearID;        // monsted id,
+    u8      isClearParam;   // 1 hunt, 5 deliver
+    u16     ClearID;        // monsted id, item id
     u16     ClearNum;
 } PACKED;
 
