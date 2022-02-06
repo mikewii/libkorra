@@ -189,7 +189,7 @@ void cGMD::save(Pair& _pp, std::vector<sGMD_Advanced1_s>* _vecAdv1, sGMD_Advance
 }
 
 
-void cGMD::printHeader(void)
+void cGMD::print_Header(void)
 {
     sGMD_Header_s* gmd = this->__data;
 
@@ -308,7 +308,7 @@ void cGMD::setHeader(sGMD_Header_s& _header, u32 _labelsSize, u32 _itemsSize)
     _header.FilenameSize = this->__filename.size();
 }
 
-bool cGMD::printFilename(void)
+bool cGMD::print_Filename(void)
 {
     if (this->__filename.empty()) return false;
 
@@ -317,7 +317,7 @@ bool cGMD::printFilename(void)
     return true;
 }
 
-bool cGMD::printAllLabels(void)
+bool cGMD::print_AllLabels(void)
 {
     if (this->__labelStrings.empty()) return false;
 
@@ -326,7 +326,7 @@ bool cGMD::printAllLabels(void)
 
     return true;
 }
-bool cGMD::printAllItems(void)
+bool cGMD::print_AllItems(void)
 {
     if (this->__itemStrings.empty()) return false;
 

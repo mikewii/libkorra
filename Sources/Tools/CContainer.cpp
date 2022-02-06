@@ -3,6 +3,15 @@
 
 CContainer::CContainer(const char* _fname) { this->readFromFile(_fname); }
 CContainer::CContainer(std::string& _fname) { this->readFromFile(_fname.c_str()); }
+CContainer::CContainer(const CContainer& cc)
+{
+    // copy data
+    this->resize(cc.size(), true);
+    Utils::copybytes(this->data(), cc.data(), cc.size());
+
+    this->RESERVED_After = cc.RESERVED_After;
+    this->RESERVED_Before = cc.RESERVED_Before;
+}
 CContainer::~CContainer() { this->_free(); }
 CContainer& CContainer::operator=(const CContainer& _cc)
 {
@@ -16,7 +25,14 @@ CContainer& CContainer::operator=(const CContainer& _cc)
     return *this;
 }
 
-void CContainer::_free(void) { if (this->__root != nullptr) free(this->__root); }
+void CContainer::_free(void)
+{
+    if (this->__root != nullptr)
+    {
+        free(this->__root);
+        this->__root = nullptr;
+    }
+}
 
 bool CContainer::allocate(u32 _size, bool _zeroed)
 {
@@ -101,4 +117,5 @@ void CContainer::resize(u32 _size, bool _zeroed)
 }
 
 bool CContainer::readFromFile(const char* _fname) { return Utils::File::FileToCC(_fname, this); }
+bool CContainer::writeToFile(const std::string& _fname, bool _makedir) { return Utils::File::CCtoFile(_fname.c_str(), this, _makedir); }
 bool CContainer::writeToFile(const char* _fname, bool _makedir) { return Utils::File::CCtoFile(_fname, this, _makedir); }

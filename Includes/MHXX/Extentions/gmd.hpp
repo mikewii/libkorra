@@ -49,10 +49,10 @@ public:
 
     cGMD& operator=(const cGMD&) = delete; // maybe later
 
-    void printHeader(void);
-    bool printFilename(void);
-    bool printAllLabels(void);
-    bool printAllItems(void);
+    void print_Header(void);
+    bool print_Filename(void);
+    bool print_AllLabels(void);
+    bool print_AllItems(void);
 
     /**
      * @brief Save loaded gmd to new Pair

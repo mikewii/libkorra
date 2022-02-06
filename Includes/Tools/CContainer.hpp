@@ -7,6 +7,7 @@ public:
     CContainer(){};
     CContainer(const char* _fname);
     CContainer(std::string& _fname);
+    CContainer(const CContainer& cc);
     ~CContainer();
 
     CContainer& operator=(const CContainer& _cc);
@@ -16,6 +17,7 @@ public:
     void    resize(u32 _size, bool zeroed = false);
 
     bool    readFromFile(const char* _fname);
+    bool    writeToFile(const std::string& _fname, bool _makedir = false);
     bool    writeToFile(const char* _fname, bool _makedir = false);
 
     /* for in-memory ops */

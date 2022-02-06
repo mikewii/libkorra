@@ -67,6 +67,7 @@ bool cEXT::Set_QuestID(const u32 id)
 void cEXT::Set_QuestType(const QuestType_e type) { this->header0.QuestType = type; }
 void cEXT::Set_QuestLevel(const QuestLv_e level) { this->header0.QuestLv = level; }
 void cEXT::Set_BossLevel(const EnemyLv_e level) { this->header0.BossLv = level; }
+void cEXT::Set_MapNo(const Maps_e id) { this->header0.MapNo = id; }
 void cEXT::Set_StartType(const StartType_e type) { this->header0.StartType = type; }
 void cEXT::Set_QuestTime(const u8 minutes) { this->header0.QuestTime = minutes; }
 void cEXT::Set_QuestLives(const u8 ammount) { this->header0.QuestLives = ammount; }
@@ -178,9 +179,28 @@ void cEXT::print_BossLevel() const
     Utils::print_help_arr<decltype (EnemyLv_str)>("Boss level", this->header0.BossLv, EnemyLv_str);
 }
 
+u32 cEXT::GetMapStrID(const Maps_e id) const
+{
+    switch(id){
+    case Maps_e::J_Frontier_D:{return id;}
+    case Maps_e::J_Frontier_N:{return (id - SpecialMap) + 1;}
+    case Maps_e::V_Hills_D:{return id + 1;}
+    case Maps_e::V_Hills_N:{return (id - SpecialMap) + 2;}
+    case Maps_e::A_Ridge_D:{return id + 2;}
+    case Maps_e::A_Ridge_N:{return (id - SpecialMap) + 3;}
+    case Maps_e::M_Peaks_D:{return id + 3;}
+    case Maps_e::M_Peaks_N:{return (id - SpecialMap) + 4;}
+    default:
+    {
+        if (id > Maps_e::Forlorn_Citadel) return Maps_e::ErrorMapID;
+        else return id + 4;
+    }
+    }
+}
+
 void cEXT::print_Map(void) const
 {
-    Utils::print_help_arr<decltype (Maps_str)>("Map", this->header0.MapNo, Maps_str);
+    printf("%-25s%s | %08X|%d\n", "Map", Maps_str[cEXT::GetMapStrID(this->header0.MapNo)], this->header0.MapNo, this->header0.MapNo);
 }
 
 void cEXT::print_StartType() const

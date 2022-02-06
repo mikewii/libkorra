@@ -103,8 +103,12 @@ std::string File::makepath(std::string& _path)
     return out += _path;
 }
 
-std::string File::extractName(std::string& _path) {
-    return std::string( _path.substr(_path.find_last_of(SEPARATOR) + 1) );
+std::string File::extractName(std::string& _path)
+{
+    int pos = _path.find_last_of(SEPARATOR);
+    if (pos == -1) pos = _path.find_last_of(SEPARATOR_WIN);
+
+    return std::string( _path.substr(pos + 1) );
 }
 
 std::string File::extractName(const char* _path) {

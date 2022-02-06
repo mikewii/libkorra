@@ -109,7 +109,7 @@ public:
     void Set_QuestType(const QuestType_e type);
     void Set_QuestLevel(const QuestLv_e level);
     void Set_BossLevel(const EnemyLv_e level);
-    //void Set_MapNo()
+    void Set_MapNo(const Maps_e id);
     void Set_StartType(const StartType_e type);
     void Set_QuestTime(const u8 minutes);
     void Set_QuestLives(const u8 ammount);
@@ -197,6 +197,7 @@ private:
 
     bool read(Pair& _pp);
 
+    u32 GetMapStrID(const Maps_e id) const;
     void print_Boss(const u32 id) const;
     void print_Appear(const u32 id) const;
     void print_Em(const u32 id) const;

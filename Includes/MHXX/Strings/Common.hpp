@@ -27,7 +27,8 @@ constexpr std::array<const char*, 15> QuestLv_str = {
     "Special"
 };
 
-constexpr std::array<const char*, 31> Maps_str = {
+constexpr std::array<const char*, 33> Maps_str = {
+    "(None)",
     "J. Frontier (D)",
     "J. Frontier (N)",
     "V. Hills (D)",
@@ -40,25 +41,27 @@ constexpr std::array<const char*, 31> Maps_str = {
     "D. Island",
     "Marshlands",
     "Volcano",
-    "A. Steppe",
-    "Primal Forest",
-    "F. Seaway",
-    "V. Hollow",
-    "Forlorn Arena",
-    "Sanctuary",
-    "Ingle Isle",
-    "Polar Field",
-    "S. Pinnacle",
-    "Wyvern's End",
     "Arena",
     "V. Slayground",
+    "A. Steppe",
+    "V. Hollow",
+    "Primal Forest",
+    "F. Seaway",
     "F. Slayground",
+    "Sanctuary",
+    "Forlorn Arena",
+    "S. Pinnacle",
+    "Ingle Isle",
+    "Polar Field",
+    "Wyvern's End",
     "Desert",
     "Jungle",
     "Ruined Pinnacle",
     "Castle Schrade",
     "Fortress",
-    "Forlorn Citadel"
+    "Forlorn Citadel",
+
+    "Error Map ID"
 };
 
 constexpr std::array<const char*, 50> EntryType = {
