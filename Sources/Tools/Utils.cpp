@@ -356,4 +356,42 @@ u32 GetHeaderRelativePos(const void* const header, const void* const member)
     return reinterpret_cast<u64>(member) - reinterpret_cast<u64>(header);
 }
 
+void Collector::Add(const Collector::Info& in)
+{
+    switch(Collector::_operation){
+    default:break;
+    case Collector::Op::Equal:          { if (in.Value == Collector::_value) Collector::_vec.push_back(in); break; }
+    case Collector::Op::NotEqual:       { if (in.Value != Collector::_value) Collector::_vec.push_back(in); break; }
+    case Collector::Op::Less:           { if (in.Value <  Collector::_value) Collector::_vec.push_back(in); break; }
+    case Collector::Op::Greater:        { if (in.Value >  Collector::_value) Collector::_vec.push_back(in); break; }
+    case Collector::Op::LessEqual:      { if (in.Value <= Collector::_value) Collector::_vec.push_back(in); break; }
+    case Collector::Op::GreaterEqual:   { if (in.Value >= Collector::_value) Collector::_vec.push_back(in); break; }
+    case Collector::Op::Unique:
+    {
+        if (!Collector::_vec.empty())
+            for (const auto& item : Collector::_vec)
+                if (in.Value == item.Value) return;
+
+        Collector::_vec.push_back(in);
+        break;
+    }
+    }
+}
+
+void Collector::Print(const bool sorted)
+{
+    if (sorted)
+        std::sort
+        (
+            Collector::_vec.begin(),
+            Collector::_vec.end(),
+            [](const Collector::Info& a, const Collector::Info& b){ return a.QuestID < b.QuestID; }
+        );
+
+    printf("\n");
+    for (const auto& item : Collector::_vec)
+        printf("q%07d %-30s lv:%-3d | %d\n",
+               item.QuestID, item.Name.c_str(), item.QuestLevel, item.Value);
+}
+
 } // Utils

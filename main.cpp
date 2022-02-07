@@ -25,49 +25,11 @@ inline static int GUI_RUN(int argc, char *argv[])
 }
 #endif
 
-struct debug {
-    u32             QuestID;
-    std::string     Name;
-    u32             QuestLevel;
 
-    u32             Value;
-};
-
-static std::vector<debug> unique;
 static std::vector<Pair> out;
 static bool isUnique = true;
+static Utils::Collector col(2);
 
-void AddUnique(const debug& in)
-{
-    if (unique.empty()) unique.push_back(in);
-    else
-    {
-        bool skip = false;
-
-        for (auto& item : unique)
-            if (item.Value == in.Value)
-            {
-                skip = true;
-                break;
-            }
-        if (!skip) unique.push_back(in);
-    }
-}
-
-void AddAllEqual(const u32 value, const debug& in) { if (in.Value == value) unique.push_back(in); }
-void AddAllNonEqual(const u32 value, const debug& in) { if (in.Value != value) unique.push_back(in); }
-
-#include <algorithm>
-void PrintUnique(const bool sorted = true)
-{
-    if (sorted)
-        std::sort(unique.begin(), unique.end(), [](const debug a, const debug b){ return a.QuestID < b.QuestID; });
-
-    printf("\n");
-    for (auto& item : unique)
-        printf("q%07d %-30s lv:%-3d | %d\n",
-               item.QuestID, item.Name.c_str(), item.QuestLevel, item.Value);
-}
 void PrintDebug(std::vector<Pair>& vector, const char* filename);
 
 
@@ -75,9 +37,10 @@ int main(int argc, char *argv[])
 {
     Utils::File::SetCWD();
 
-    const char*     test_folder = "test/MHXX_CQs/from_MHXX_ENG";
-    DIR*            d = nullptr;
-    struct dirent*  dir;
+    const char*         test_folder = "test/MHXX_CQs/from_MHXX_ENG";
+    DIR*                d = nullptr;
+    struct dirent*      dir;
+
 
     d = opendir((Utils::GetUserHome() + '/' + test_folder).c_str());
 
@@ -128,7 +91,7 @@ int main(int argc, char *argv[])
         }
         closedir(d);
 
-        if (isUnique) PrintUnique();
+        if (isUnique) col.Print();
 
         if (!out.empty())
             for (auto& pair : out)
@@ -205,16 +168,14 @@ void PrintDebug(std::vector<Pair>& vector, const char* filename)
 
             if (isUnique)
             {
-                AddUnique
-                (
-                    //1,
-                    {
-                        ext.header0.QuestID,
-                        name,
-                        ext.header0.QuestLv,
-                        ext.header0.QuestType1
-                    }
-                );
+                col.Set_Operator(Utils::Collector::Op::Unique);
+                col.Add
+                ({
+                    ext.header0.QuestID,
+                    name,
+                    ext.header0.QuestLv,
+                    ext.header0.ClearType
+                });
                 //out.push_back(pair);
             }
             else

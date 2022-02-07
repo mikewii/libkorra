@@ -168,4 +168,40 @@ public:
     static bool CCtoFile(std::string& _path, CContainer* _cc, bool _makedir = false);
 };
 
+class Collector {
+public:
+    struct Info {
+        u32             QuestID;
+        std::string     Name;
+        u32             QuestLevel;
+
+        u32             Value;
+    };
+
+    enum class Op {
+        Equal,
+        NotEqual,
+        Less,
+        Greater,
+        LessEqual,
+        GreaterEqual,
+        Unique
+    };
+
+    Collector(){}
+    Collector(const u32 value) : _value(value) {}
+
+    void Set_Operator(const Collector::Op operation) { Collector::_operation = operation; }
+    void Set_Value(const u32 value) { Collector::_value = value; }
+
+    void Add(const Collector::Info& in);
+
+    void Print(const bool sorted = true);
+
+private:
+    Op                  _operation = Op::Equal;
+    u32                 _value = 0;
+    std::vector<Info>   _vec;
+};
+
 } // Utils
