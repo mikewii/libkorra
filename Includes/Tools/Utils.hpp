@@ -175,7 +175,7 @@ public:
         std::string     Name;
         u32             QuestLevel;
 
-        u32             Value;
+        s32             Value;
     };
 
     enum class Op {
@@ -185,23 +185,36 @@ public:
         Greater,
         LessEqual,
         GreaterEqual,
-        Unique
+
+        Unique,
+
+        Collect
     };
 
     Collector(){}
     Collector(const u32 value) : _value(value) {}
 
+    void Disable(void) { Collector::_active = false; }
+    bool IsActive(void) const { return Collector::_active; }
+
     void Set_Operator(const Collector::Op operation) { Collector::_operation = operation; }
     void Set_Value(const u32 value) { Collector::_value = value; }
+    void Set_Path(const std::string& path) { Collector::_path = path; }
 
     void Add(const Collector::Info& in);
 
-    void Print(const bool sorted = true);
+    void Show(const bool sorted = true);
 
 private:
+    bool                _active = true;
     Op                  _operation = Op::Equal;
-    u32                 _value = 0;
+    s32                 _value = 0;
+    std::string         _path;
+    std::string         _name = "collected_data.txt";
     std::vector<Info>   _vec;
+    std::vector<s32>    _vec_unique_ids;
+
+    bool Flush(void);
 };
 
 } // Utils

@@ -2,6 +2,8 @@
 #include <string.h>
 #include <algorithm>
 #include <cstdlib>
+#include <ostream>
+#include <fstream>
 
 #ifdef __linux__
     //#include <stdio.h>
@@ -358,6 +360,8 @@ u32 GetHeaderRelativePos(const void* const header, const void* const member)
 
 void Collector::Add(const Collector::Info& in)
 {
+    if (!Collector::IsActive()) return;
+
     switch(Collector::_operation){
     default:break;
     case Collector::Op::Equal:          { if (in.Value == Collector::_value) Collector::_vec.push_back(in); break; }
@@ -375,11 +379,39 @@ void Collector::Add(const Collector::Info& in)
         Collector::_vec.push_back(in);
         break;
     }
+    case Collector::Op::Collect:
+    {
+        Collector::_vec.push_back(in);
+
+        if (!Collector::_vec_unique_ids.empty())
+            for (const auto& value : Collector::_vec_unique_ids)
+                if (in.Value == value) return;
+
+        Collector::_vec_unique_ids.push_back(in.Value);
+    }
     }
 }
 
-void Collector::Print(const bool sorted)
+void Collector::Show(const bool sorted)
 {
+    if (!Collector::IsActive()) return;
+
+    if (Collector::_operation == Collector::Op::Collect)
+    {
+        if (Collector::_path.empty())
+        {
+            printf("Collector:: Path is not set! Aborting\n");
+            return;
+        }
+        else
+        {
+            if (Collector::Flush())
+                printf("Collector:: data saved as %s at path %s\n", Collector::_name.c_str(), Collector::_path.c_str());
+            else printf("Collector:: Error happened trying to write file at path %s\n!", Collector::_path.c_str());
+            return;
+        }
+    }
+
     if (sorted)
         std::sort
         (
@@ -389,9 +421,54 @@ void Collector::Print(const bool sorted)
         );
 
     printf("\n");
-    for (const auto& item : Collector::_vec)
-        printf("q%07d %-30s lv:%-3d | %d\n",
-               item.QuestID, item.Name.c_str(), item.QuestLevel, item.Value);
+    for (const auto& info : Collector::_vec)
+        printf("q%07d %-30s lv:%-3d | dec: %d - hex: %X\n",
+               info.QuestID, info.Name.c_str(), info.QuestLevel, info.Value, info.Value);
+}
+
+bool Collector::Flush(void)
+{
+    if (!Collector::IsActive()) return false;
+
+    char            buffer[128];
+    std::fstream    fout(Collector::_path + Collector::_name, std::ios::out);
+
+
+    std::sort
+    (
+        Collector::_vec.begin(),
+        Collector::_vec.end(),
+        [](const Collector::Info& a, const Collector::Info& b){ return a.QuestID < b.QuestID; }
+    );
+
+    std::sort
+    (
+        Collector::_vec_unique_ids.begin(),
+        Collector::_vec_unique_ids.end(),
+        [](const s32& a, const s32& b){ return a < b; }
+    );
+
+    if (!fout.is_open()) return false;
+
+    for (u32 i = 0; i < Collector::_vec_unique_ids.size(); i++)
+    {
+        const auto& token = Collector::_vec_unique_ids.at(i);
+
+        for (const auto& info : Collector::_vec)
+            if (info.Value == token) // format and write to file
+            {
+                const auto size = sprintf(buffer, "q%07d %-30s lv:%-3d | dec: %d - hex: %X\n",
+                       info.QuestID, info.Name.c_str(), info.QuestLevel, info.Value, info.Value);
+
+                fout.write(buffer, size);
+            }
+        // add 3 new lines
+        for (auto i = 0; i < 3; i++)
+            fout.write("\n", 1);
+    }
+
+    fout.close();
+    return true;
 }
 
 } // Utils

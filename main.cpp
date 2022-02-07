@@ -27,10 +27,9 @@ inline static int GUI_RUN(int argc, char *argv[])
 
 
 static std::vector<Pair> out;
-static bool isUnique = true;
 static Utils::Collector col(2);
 
-void PrintDebug(std::vector<Pair>& vector, const char* filename);
+void Debug(std::vector<Pair>& vector, const char* filename);
 
 
 int main(int argc, char *argv[])
@@ -41,7 +40,7 @@ int main(int argc, char *argv[])
     DIR*                d = nullptr;
     struct dirent*      dir;
 
-
+    col.Set_Path(Utils::GetUserHome() + "/test/");
     d = opendir((Utils::GetUserHome() + '/' + test_folder).c_str());
 
     if (d)
@@ -86,12 +85,12 @@ int main(int argc, char *argv[])
                 CContainer arc(fpath);
                 ARC(arc, &vector).ExtractAll();
 
-                PrintDebug(vector, dir->d_name);
+                Debug(vector, dir->d_name);
             }
         }
         closedir(d);
 
-        if (isUnique) col.Print();
+        col.Show();
 
         if (!out.empty())
             for (auto& pair : out)
@@ -110,9 +109,9 @@ int main(int argc, char *argv[])
 #endif
 }
 
-void PrintDebug(std::vector<Pair>& vector, const char* filename)
+void Debug(std::vector<Pair>& vector, const char* filename)
 {
-    std::string name;
+    std::string quest_name;
     //printf("\n%s ", filename);
     for (auto& pair : vector)
     {
@@ -121,7 +120,7 @@ void PrintDebug(std::vector<Pair>& vector, const char* filename)
             TEST::test<MHXX::GMD::cGMD>(pair);
 
             MHXX::GMD::cGMD gmd(pair);
-            name = gmd.get_ItemStr(0);
+            quest_name = gmd.get_ItemStr(0);
             //printf("%s \n", gmd.get_ItemStr(0).c_str());
             //gmd.print_AllItems();
             break;
@@ -166,15 +165,20 @@ void PrintDebug(std::vector<Pair>& vector, const char* filename)
         case MHXX::EXT::RESOURCE_HASH:{
             MHXX::EXT::cEXT ext(pair);
 
-            if (isUnique)
+            auto header0 = ext.GetHeader0();
+            auto header1 = ext.GetHeader1();
+
+            if (col.IsActive())
             {
+                col.Set_Value(4);
                 col.Set_Operator(Utils::Collector::Op::Unique);
                 col.Add
                 ({
-                    ext.header0.QuestID,
-                    name,
-                    ext.header0.QuestLv,
-                    ext.header0.ClearType
+                    header0.QuestID,
+                    quest_name,
+                    header0.QuestLv,
+
+                    header1.Flag
                 });
                 //out.push_back(pair);
             }

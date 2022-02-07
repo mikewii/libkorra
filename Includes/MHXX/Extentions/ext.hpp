@@ -195,9 +195,11 @@ public:
     void print_VillagePointG(void) const { Utils::print_help("VillagePointG", this->header1.VillagePointG); }
     void print_Flag(void) const { Utils::print_help("Flag", this->header1.Flag); }
 
-    sEXTHeader_p1_s header0; // moving to public for test
+    const sEXTHeader_p1_s& GetHeader0(void) const { return this->header0; }
+    const sEXTHeader_p2_s& GetHeader1(void) const { return this->header1; }
+
 private:
-    //sEXTHeader_p1_s header0;
+    sEXTHeader_p1_s header0;
     sEXTHeader_p2_s header1;
     GMDLink_s       links[5];
     u32             linksAmmount = 1;
