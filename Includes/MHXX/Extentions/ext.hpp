@@ -19,19 +19,20 @@ struct sEXTHeader_p1_s {
     u32         QuestID;
 
     QuestType_e QuestType;              // 0x10
-    u8          RequestVillage;         // village id
+    Village_e   RequestVillage;         // village id
     QuestLv_e   QuestLv;
     EnemyLv_e   BossLv;
     Maps_e      MapNo;
     StartType_e StartType;
+
     u8          QuestTime;
     u8          QuestLives;
 
-    u8          AcEquipSetNo;           // arena related? null in every quest
-    u8          BGMType;                // used where?
-    // print
+    u8          AcEquipSetNo;           // null in every quest | arena related?
+    BGMType_e   BGMType;
+
     EntryType_e EntryType[2];
-    u8          EntryTypeCombo;
+    u8          EntryTypeCombo;         //  null in every quest
     u8          ClearType;
     u8          GekitaiHp; // fierce team / small mons?
 
@@ -107,12 +108,20 @@ public:
 
     bool Set_QuestID(const u32 id);
     void Set_QuestType(const QuestType_e type);
-    void Set_QuestLevel(const QuestLv_e level);
+    void Set_QuestLevel(const QuestLv_e level, const bool SpecialPermit = false);
     void Set_BossLevel(const EnemyLv_e level);
     void Set_MapNo(const Maps_e id);
     void Set_StartType(const StartType_e type);
     void Set_QuestTime(const u8 minutes);
     void Set_QuestLives(const u8 ammount);
+
+    void Set_AcEquipSetNo(const u8 value);
+    void Set_BGMType(const BGMType_e type);
+
+    void Set_EntryType0(const EntryType_e type) { this->Set_EntryType(0, type); }
+    void Set_EntryType1(const EntryType_e type) { this->Set_EntryType(1, type); }
+    //void Set_EntryTypeCombo(const bool isUseBoth); // nope
+
 
     void Set_EntryFee(const u32 ammount);
     void Set_VillagePoints(const u32 ammount);
@@ -196,6 +205,8 @@ private:
     u32 getResourceHash(void) const { return MHXX::EXT::RESOURCE_HASH; }
 
     bool read(Pair& _pp);
+
+    void Set_EntryType(const u8 id, const EntryType_e type);
 
     u32 GetMapStrID(const Maps_e id) const;
     void print_Boss(const u32 id) const;

@@ -9,7 +9,8 @@ constexpr std::array<const char*, 3> StartType_str = {
     "Elder Dragon Fight"
 };
 
-constexpr std::array<const char*, 15> QuestLv_str = {
+constexpr std::array<const char*, 17> QuestLv_str = {
+    "(None)",
     "1*",
     "2*",
     "3*",
@@ -24,7 +25,8 @@ constexpr std::array<const char*, 15> QuestLv_str = {
     "G2",
     "G3",
     "G4",
-    "Special"
+    "G5",
+    "EX"
 };
 
 constexpr std::array<const char*, 33> Maps_str = {

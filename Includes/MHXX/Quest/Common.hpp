@@ -3,17 +3,17 @@
 
 namespace MHXX {
 
-static const u32 SpecialMap = 0x64;
+static const u32 Special = 100;
 
 enum Maps_e:s8 {
     J_Frontier_D        = 1,
-    J_Frontier_N        = J_Frontier_D + SpecialMap,
+    J_Frontier_N        = J_Frontier_D + Special,
     V_Hills_D           = 2,
-    V_Hills_N           = V_Hills_D + SpecialMap,
+    V_Hills_N           = V_Hills_D + Special,
     A_Ridge_D           = 3,
-    A_Ridge_N           = A_Ridge_D + SpecialMap,
+    A_Ridge_N           = A_Ridge_D + Special,
     M_Peaks_D           = 4,
-    M_Peaks_N           = M_Peaks_D + SpecialMap,
+    M_Peaks_N           = M_Peaks_D + Special,
     Dunes               = 5,
     D_Island            = 6,
     Marshlands          = 7,
@@ -42,7 +42,7 @@ enum Maps_e:s8 {
 };
 
 enum QuestLv_e:u8 {
-    Star1 = 0,
+    Star1 = 1,
     Star2,
     Star3,
     Star4,
@@ -56,7 +56,8 @@ enum QuestLv_e:u8 {
     G2,
     G3,
     G4,
-    Special
+    G5,
+    EX
 };
 
 enum EnemyLv_e:u8 { // signed?
@@ -78,10 +79,42 @@ enum QuestType_e:u8 {
     hunt_a_ton__arena
 };
 
+enum Village_e:u8 { // research
+    Kokoto_0        = 1,
+    Pokke_0         = 2,
+    Yukumo_0        = 3,
+    Bherna_0        = 4,
+    Kokoto_1        = 5,
+    Pokke_1         = 6,
+    Yukumo_1        = 7,
+    Bherna_1        = 8,
+    Prowler         = 9,
+    Hunter          = 10,
+    SpecialPermit   = 11
+};
+
 enum StartType_e:u8 {
     BaseCamp,
     Random,
     ElderDragonFight // ?
+};
+
+
+//  BMGType 1 in these, 0 is everything else
+//  q0120002.arc Grudge Match: Gypceros
+//  q0120003.arc Grudge Match: Bird Wyverns
+//  q0110704.arc Meownster Hunter
+//  q0100603.arc Surrounded by Blue and Green
+//  q0120006.arc Grudge Match: Congalala
+//  q0120005.arc Grudge Match: Tetsucabra
+//  q0120001.arc Grudge Match: Great Maccao
+//  q0110303.arc Out of the Frying Pan
+//  q0111405.arc Meownster Hunter Ultimate
+//  q0120004.arc Grudge Match: Barroth
+//  q0101005.arc Drome Rush!
+enum BGMType_e:u8 {
+    DefaultBGM = 0,
+    SpecialBGM
 };
 
 enum EntryType_e:u8 {

@@ -25,22 +25,48 @@ inline static int GUI_RUN(int argc, char *argv[])
 }
 #endif
 
-static std::vector<u32> unique;
-static std::vector<Pair> out;
+struct debug {
+    u32             QuestID;
+    std::string     Name;
+    u32             QuestLevel;
 
-void AddUnique(u32 value)
+    u32             Value;
+};
+
+static std::vector<debug> unique;
+static std::vector<Pair> out;
+static bool isUnique = true;
+
+void AddUnique(const debug& in)
 {
-    if (unique.empty()) unique.push_back(value);
+    if (unique.empty()) unique.push_back(in);
     else
     {
-        if (unique.back() != value) unique.push_back(value);
+        bool skip = false;
+
+        for (auto& item : unique)
+            if (item.Value == in.Value)
+            {
+                skip = true;
+                break;
+            }
+        if (!skip) unique.push_back(in);
     }
 }
 
-void PrintUnique(void)
+void AddAllEqual(const u32 value, const debug& in) { if (in.Value == value) unique.push_back(in); }
+void AddAllNonEqual(const u32 value, const debug& in) { if (in.Value != value) unique.push_back(in); }
+
+#include <algorithm>
+void PrintUnique(const bool sorted = true)
 {
-    for (auto& value : unique)
-        printf("%d\n", value);
+    if (sorted)
+        std::sort(unique.begin(), unique.end(), [](const debug a, const debug b){ return a.QuestID < b.QuestID; });
+
+    printf("\n");
+    for (auto& item : unique)
+        printf("q%07d %-30s lv:%-3d | %d\n",
+               item.QuestID, item.Name.c_str(), item.QuestLevel, item.Value);
 }
 void PrintDebug(std::vector<Pair>& vector, const char* filename);
 
@@ -59,37 +85,17 @@ int main(int argc, char *argv[])
     {
         std::vector<std::string> selected_files =
         {
-            "q0000101.arc", // J. Frontier (D)  01
-            "q0000107.arc", // J. Frontier (N)  65
-            "q0000203.arc", // V. Hills (D)     02
-            "q0000316.arc", // V. Hills (N)     66
-            "q0000321.arc", // A. Ridge (D)     03
-            "q0000322.arc", // A. Ridge (N)     67
-            "q0000416.arc", // M. Peaks (D)     04
-            "q0000415.arc", // M. Peaks (N)     68
-            "q0000408.arc", // Dunes            05
-            "q0000610.arc", // D. Island        06
-            "q0000611.arc", // Marshlands       07
-            "q0001038.arc", // Volcano          08
-            "q0000636.arc", // Arena            09
-            "q0020005.arc", // V. Slayground    0A
-            "q0000924.arc", // A. Steppe        0B
-            "q0000903.arc", // V. Hollow        0C
-            "q0000628.arc", // Primal Forest    0D
-            "q0000820.arc", // F. Seaway        0E
-            "q0020006.arc", // F. Slayground    0F
-            "q0000632.arc", // Sanctuary        10
-            "q0000621.arc", // Forlorn Arena    11
-            "q0001019.arc", // S. Pinnacle      12
-            "q0001039.arc", // Ingle Isle       13
-            "q0001018.arc", // Polar Field      14
-            "q0001026.arc", // Wyvern's End     15
-            "q0000914.arc", // Desert           16
-            "q0000904.arc", // Jungle           17
-            "q0000917.arc", // Ruined Pinnacle  18
-            "q0011454.arc", // Castle Schrade   19
-            "q0011319.arc", // Fortress         1A
-            "q0011432.arc", // Forlorn Citadel  1B
+//            "q0010405.arc",
+//            "q0110101.arc",
+//            "q0040505.arc",
+//            "q0000633.arc",
+//            "q0000712.arc",
+//            "q0011424.arc",
+//            "q0000914.arc",
+//            "q0011213.arc",
+//            "q0000234.arc",
+//            "q0000223.arc",
+//            "q0010661.arc",
         };
 
         while ((dir = readdir(d)) != NULL)
@@ -122,7 +128,7 @@ int main(int argc, char *argv[])
         }
         closedir(d);
 
-        //PrintUnique();
+        if (isUnique) PrintUnique();
 
         if (!out.empty())
             for (auto& pair : out)
@@ -143,7 +149,8 @@ int main(int argc, char *argv[])
 
 void PrintDebug(std::vector<Pair>& vector, const char* filename)
 {
-    printf("\n%s ", filename);
+    std::string name;
+    //printf("\n%s ", filename);
     for (auto& pair : vector)
     {
         switch(pair.info.ResourceHash){
@@ -151,6 +158,8 @@ void PrintDebug(std::vector<Pair>& vector, const char* filename)
             TEST::test<MHXX::GMD::cGMD>(pair);
 
             MHXX::GMD::cGMD gmd(pair);
+            name = gmd.get_ItemStr(0);
+            //printf("%s \n", gmd.get_ItemStr(0).c_str());
             //gmd.print_AllItems();
             break;
         }
@@ -193,11 +202,26 @@ void PrintDebug(std::vector<Pair>& vector, const char* filename)
         }
         case MHXX::EXT::RESOURCE_HASH:{
             MHXX::EXT::cEXT ext(pair);
-            ext.print_Map();
 
-//            AddUnique(ext.header0.AcEquipSetNo);
-//            out.push_back(pair);
+            if (isUnique)
+            {
+                AddAllEqual
+                (
+                    1,
+                    {
+                        ext.header0.QuestID,
+                        name,
+                        ext.header0.QuestLv,
+                        ext.header0.RequestVillage
+                    }
+                );
+                //out.push_back(pair);
+            }
+            else
+            {
+                ext.print_RequestVillage();
 
+            }
             //pair.cc.writeToFile((fpath + ".ext").c_str());
             break;
         }

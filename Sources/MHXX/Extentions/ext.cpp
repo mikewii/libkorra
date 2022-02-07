@@ -65,13 +65,20 @@ bool cEXT::Set_QuestID(const u32 id)
 }
 
 void cEXT::Set_QuestType(const QuestType_e type) { this->header0.QuestType = type; }
-void cEXT::Set_QuestLevel(const QuestLv_e level) { this->header0.QuestLv = level; }
+void cEXT::Set_QuestLevel(const QuestLv_e level, const bool SpecialPermit)
+{
+    if (SpecialPermit) this->header0.QuestLv = QuestLv_e(level + MHXX::Special);
+    else this->header0.QuestLv = level;
+}
 void cEXT::Set_BossLevel(const EnemyLv_e level) { this->header0.BossLv = level; }
 void cEXT::Set_MapNo(const Maps_e id) { this->header0.MapNo = id; }
 void cEXT::Set_StartType(const StartType_e type) { this->header0.StartType = type; }
 void cEXT::Set_QuestTime(const u8 minutes) { this->header0.QuestTime = minutes; }
 void cEXT::Set_QuestLives(const u8 ammount) { this->header0.QuestLives = ammount; }
-
+void cEXT::Set_AcEquipSetNo(const u8 value) { this->header0.AcEquipSetNo = value; }
+void cEXT::Set_BGMType(const BGMType_e type) { this->header0.BGMType = type; }
+void cEXT::Set_EntryType(const u8 id, const EntryType_e type) { this->header0.EntryType[id] = type; }
+//void cEXT::Set_EntryTypeCombo(const bool isUseBoth) { this->header0.EntryTypeCombo = isUseBoth; }
 void cEXT::Set_EntryFee(const u32 ammount) { this->header0.EntryFee = ammount; }
 void cEXT::Set_VillagePoints(const u32 ammount) { this->header0.VillagePoints = ammount; }
 void cEXT::Set_MainRewardMoney(const u32 ammount) { this->header0.MainRewardMoney = ammount; }
@@ -171,7 +178,10 @@ void cEXT::print_QuestType() const
 
 void cEXT::print_QuestLevel() const
 {
-    Utils::print_help_arr<decltype (QuestLv_str)>("Quest level", this->header0.QuestLv, QuestLv_str);
+    u32 level = this->header0.QuestLv;
+
+    if (this->header0.QuestLv > MHXX::Special) level -= MHXX::Special;
+    Utils::print_help_arr<decltype (QuestLv_str)>("Quest level", level, QuestLv_str);
 }
 
 void cEXT::print_BossLevel() const
@@ -183,16 +193,16 @@ u32 cEXT::GetMapStrID(const Maps_e id) const
 {
     switch(id){
     case Maps_e::J_Frontier_D:{return id;}
-    case Maps_e::J_Frontier_N:{return (id - SpecialMap) + 1;}
+    case Maps_e::J_Frontier_N:{return (id - Special) + 1;}
     case Maps_e::V_Hills_D:{return id + 1;}
-    case Maps_e::V_Hills_N:{return (id - SpecialMap) + 2;}
+    case Maps_e::V_Hills_N:{return (id - Special) + 2;}
     case Maps_e::A_Ridge_D:{return id + 2;}
-    case Maps_e::A_Ridge_N:{return (id - SpecialMap) + 3;}
+    case Maps_e::A_Ridge_N:{return (id - Special) + 3;}
     case Maps_e::M_Peaks_D:{return id + 3;}
-    case Maps_e::M_Peaks_N:{return (id - SpecialMap) + 4;}
+    case Maps_e::M_Peaks_N:{return (id - Special) + 4;}
     default:
     {
-        if (id > Maps_e::Forlorn_Citadel) return Maps_e::ErrorMapID;
+        if (id > Maps_e::Forlorn_Citadel || id < 0) return Maps_e::ErrorMapID;
         else return id + 4;
     }
     }

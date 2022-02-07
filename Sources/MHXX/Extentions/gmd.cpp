@@ -132,7 +132,7 @@ void cGMD::save(Pair& _pp, std::vector<sGMD_Advanced1_s>* _vecAdv1, sGMD_Advance
 
 
     ///// Making header
-    setHeader(header, labelsSize, itemsSize);
+    Set_Header(header, labelsSize, itemsSize);
 
     ///// Resize container to fit data
     _pp.cc.resize(totalSize, true);
@@ -295,7 +295,7 @@ void cGMD::readAll(void)
     }
 }
 
-void cGMD::setHeader(sGMD_Header_s& _header, u32 _labelsSize, u32 _itemsSize)
+void cGMD::Set_Header(sGMD_Header_s& _header, u32 _labelsSize, u32 _itemsSize)
 {
     _header.Unk          = this->__unk;
 
@@ -341,28 +341,28 @@ void cGMD::print(const char* _str) { printf("%s\n\n", _str); }
 
 ////////// Getters //////////
 
-u32 cGMD::getItemsNum(void) const { return this->__data->ItemsNum; }
-u32 cGMD::getLabelsNum(void) const { return this->__data->LabelsNum; }
+u32 cGMD::get_ItemsNum(void) const { return this->__data->ItemsNum; }
+u32 cGMD::get_LabelsNum(void) const { return this->__data->LabelsNum; }
 
-std::string cGMD::getFilenameStr() const {
+std::string cGMD::get_FilenameStr() const {
     return std::string( reinterpret_cast<const char*>( this->__data + sizeof(sGMD_Header_s)) );
 }
 
-std::string cGMD::getLabelStr(u32 _id) const
+std::string cGMD::get_LabelStr(u32 _id) const
 {
     if (_id > this->__labelStrings.size()) return "";
     else return this->__labelStrings.at(_id);
 }
 
-std::string cGMD::getItemStr(u32 _id) const
+std::string cGMD::get_ItemStr(u32 _id) const
 {
     if (_id > this->__itemStrings.size()) return "";
     else return this->__itemStrings.at(_id);
 }
 
 ////////// Setters //////////
-void cGMD::setFilenameStr(std::string _str) { this->__filename = _str; }
-bool cGMD::setLabelStr(std::string _str, u32 _id)
+void cGMD::set_FilenameStr(std::string _str) { this->__filename = _str; }
+bool cGMD::set_LabelStr(std::string _str, u32 _id)
 {
     if (_id > this->__labelStrings.size()) return false;
     else this->__labelStrings.at(_id) = _str;
@@ -370,7 +370,7 @@ bool cGMD::setLabelStr(std::string _str, u32 _id)
     return true;
 }
 
-bool cGMD::setItemStr(std::string _str, u32 _id)
+bool cGMD::set_ItemStr(std::string _str, u32 _id)
 {
     if (_id > this->__itemStrings.size()) return false;
     else this->__itemStrings.at(_id) = _str;
@@ -378,10 +378,10 @@ bool cGMD::setItemStr(std::string _str, u32 _id)
     return true;
 }
 
-void cGMD::appendLabelStr(std::string _str) { this->__labelStrings.push_back(_str); }
-void cGMD::appendItemStr(std::string _str) { this->__itemStrings.push_back(_str); }
+void cGMD::append_LabelStr(std::string _str) { this->__labelStrings.push_back(_str); }
+void cGMD::append_ItemStr(std::string _str) { this->__itemStrings.push_back(_str); }
 
-bool cGMD::removeLabelStr(u32 _id)
+bool cGMD::remove_LabelStr(u32 _id)
 {
     if (_id > this->__labelStrings.size()) return false;
     else this->__labelStrings.erase(this->__labelStrings.begin() + _id);
@@ -389,7 +389,7 @@ bool cGMD::removeLabelStr(u32 _id)
     return true;
 }
 
-bool cGMD::removeItemStr(u32 _id)
+bool cGMD::remove_ItemStr(u32 _id)
 {
     if (_id > this->__itemStrings.size()) return false;
     else this->__itemStrings.erase(this->__itemStrings.begin() + _id);

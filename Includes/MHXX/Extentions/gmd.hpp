@@ -78,21 +78,21 @@ public:
     void makeAdv(Pair& _pp, std::vector<sGMD_Advanced1_s>* _vecAdv1 = nullptr, sGMD_Advanced2_s* _adv2 = nullptr);
 
     // Getters
-    u32             getItemsNum(void) const;
-    u32             getLabelsNum(void) const;
-    std::string     getFilenameStr(void) const;
-    std::string     getLabelStr(u32 _id) const;
-    std::string     getItemStr(u32 _id) const;
+    u32             get_ItemsNum(void) const;
+    u32             get_LabelsNum(void) const;
+    std::string     get_FilenameStr(void) const;
+    std::string     get_LabelStr(u32 _id) const;
+    std::string     get_ItemStr(u32 _id) const;
 
     // Setters
-    void            setFilenameStr(std::string _str);
-    bool            setLabelStr(std::string _str, u32 _id);
-    bool            setItemStr(std::string _str, u32 _id);
-    void            appendLabelStr(std::string _str);
-    void            appendItemStr(std::string _str);
+    void            set_FilenameStr(std::string _str);
+    bool            set_LabelStr(std::string _str, u32 _id);
+    bool            set_ItemStr(std::string _str, u32 _id);
+    void            append_LabelStr(std::string _str);
+    void            append_ItemStr(std::string _str);
 
-    bool            removeLabelStr(u32 _id);
-    bool            removeItemStr(u32 _id);
+    bool            remove_LabelStr(u32 _id);
+    bool            remove_ItemStr(u32 _id);
 
 private:
     sGMD_Header_s*                  __data = nullptr;
@@ -107,7 +107,7 @@ private:
     void print(const char* _str);
     void readAll(void);
 
-    void setHeader(sGMD_Header_s& _header, u32 _labelsSize, u32 _itemsSize);
+    void Set_Header(sGMD_Header_s& _header, u32 _labelsSize, u32 _itemsSize);
 
 };
 
