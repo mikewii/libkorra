@@ -13,77 +13,77 @@ struct sEXTHeader_p1_s {
     static const u32 MAGIC      = 0x434B0000;
     static const u32 VERSION    = 1;
 
-    u32         Magic = MAGIC;          // 0x00
-    u32         Version = VERSION;
-    u32         Index; // ?
-    u32         QuestID;
+    u32             Magic = MAGIC;          // 0x00
+    u32             Version = VERSION;
+    u32             Index; // ?
+    u32             QuestID;
 
-    QuestType_e QuestType;              // 0x10
-    Village_e   RequestVillage;         // village id
-    QuestLv_e   QuestLv;
-    EnemyLv_e   BossLv;
-    Maps_e      MapNo;
-    StartType_e StartType;
+    QuestType0_e    QuestType0;              // 0x10
+    QuestType1_e    QuestType1;
+    QuestLv_e       QuestLv;
+    EnemyLv_e       BossLv;
+    Maps_e          MapNo;
+    StartType_e     StartType;
 
-    u8          QuestTime;
-    u8          QuestLives;
+    u8              QuestTime;
+    u8              QuestLives;
 
-    u8          AcEquipSetNo;           // null in every quest | arena related?
-    BGMType_e   BGMType;
+    u8              AcEquipSetNo;           // null in every quest | arena related?
+    BGMType_e       BGMType;
 
-    EntryType_e EntryType[2];
-    u8          EntryTypeCombo;         //  null in every quest
-    u8          ClearType;
-    u8          GekitaiHp; // fierce team / small mons?
+    EntryType_e     EntryType[2];
+    u8              EntryTypeCombo;         //  null in every quest
+    u8              ClearType;
+    u8              GekitaiHp; // fierce team / small mons?
 
-    Target_s 	TargetMain[2]; // second u8 is u16 ?
-    Target_s    TargetSub;
+    Target_s        TargetMain[2]; // second u8 is u16 ?
+    Target_s        TargetSub;
 
-    u8          CarvingLv;
-    u8          GatherLv;
-    u8          FishingLv; // is u16 ?
+    u8              CarvingLv;
+    u8              GatherLv;
+    u8              FishingLv; // is u16 ?
 
-    u32         EntryFee;
-    u32         VillagePoints;
-    u32         MainRewardMoney;
-    u32         SubRewardMoney;
-    u32         ClearRemVillagePoint;
-    u32         FailedRemVillagePoint;
-    u32         SubRemVillagePoint;
-    u32         ClearRemHunterPoint;
-    u32         SubRemHunterPoint;
+    u32             EntryFee;
+    u32             VillagePoints;
+    u32             MainRewardMoney;
+    u32             SubRewardMoney;
+    u32             ClearRemVillagePoint;
+    u32             FailedRemVillagePoint;
+    u32             SubRemVillagePoint;
+    u32             ClearRemHunterPoint;
+    u32             SubRemHunterPoint;
 
     // done
     // flags for reward panels
-    u8          RemAddFrame[2];
-    u8          RemAddLotMax;
+    u8              RemAddFrame[2];
+    u8              RemAddLotMax;
 
     // done, aligned
-    Supply_s	Supply[2];  // 0 available from start, 1 available later on quest
+    Supply_s        Supply[2];  // 0 available from start, 1 available later on quest
 
     // done, aligned
-    Boss_s		Boss[5];
+    Boss_s          Boss[5];
 
     // done, aligned
-    u8          SmallEmHP_tbl;	// also known as Zako
-    u8          SmallEmAttack_tbl;
-    u8          SmallEmOther_tbl;
+    u8              SmallEmHP_tbl;	// also known as Zako
+    u8              SmallEmAttack_tbl;
+    u8              SmallEmOther_tbl;
 
     // done, aligned
-    Em_s		Em[2];
-    u8          isBossRushType; // not
+    Em_s            Em[2];
+    u8              isBossRushType; // not
 
     // done, aligned
-    Appear_s	Appear[5];
+    Appear_s        Appear[5];
 
-    u8          StrayRand;      // invader boss id?
-    u8          StrayStartTime;
-    u8          StrayStartRand;
-    u8          StrayLimit[3];
-    u8          StrayRand2[3];
-    u8          ExtraTicketNum;
+    u8              StrayRand;      // invader boss id?
+    u8              StrayStartTime;
+    u8              StrayStartRand;
+    u8              StrayLimit[3];
+    u8              StrayRand2[3];
+    u8              ExtraTicketNum;
 
-    u8          Icon[5];        // broken, 1 bytes after
+    u8              Icon[5];        // broken, 1 bytes after
 } PACKED;
 
 struct sEXTHeader_p2_s {
@@ -107,7 +107,8 @@ public:
     bool save(Pair& _pp);
 
     bool Set_QuestID(const u32 id);
-    void Set_QuestType(const QuestType_e type);
+    void Set_QuestType0(const QuestType0_e type);
+    void Set_QuestType1(const QuestType1_e type);
     void Set_QuestLevel(const QuestLv_e level, const bool SpecialPermit = false);
     void Set_BossLevel(const EnemyLv_e level);
     void Set_MapNo(const Maps_e id);
@@ -140,8 +141,8 @@ public:
     void print_Version(void) const { Utils::print_help("Version", this->header0.Version); }
     void print_Index(void) const { Utils::print_help("Index", this->header0.Index); }
     void print_QuestID(void) const { Utils::print_help("Quest ID", this->header0.QuestID); }
-    void print_QuestType(void) const;
-    void print_RequestVillage(void) const { Utils::print_help("Request village", this->header0.RequestVillage); }
+    void print_QuestType0(void) const;
+    void print_QuestType1(void) const;
     void print_QuestLevel(void) const;
     void print_BossLevel(void) const;
     void print_Map(void) const;

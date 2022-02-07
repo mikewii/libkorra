@@ -64,7 +64,8 @@ bool cEXT::Set_QuestID(const u32 id)
     return true;
 }
 
-void cEXT::Set_QuestType(const QuestType_e type) { this->header0.QuestType = type; }
+void cEXT::Set_QuestType0(const QuestType0_e type) { this->header0.QuestType0 = type; }
+void cEXT::Set_QuestType1(const QuestType1_e type) { this->header0.QuestType1 = type; }
 void cEXT::Set_QuestLevel(const QuestLv_e level, const bool SpecialPermit)
 {
     if (SpecialPermit) this->header0.QuestLv = QuestLv_e(level + MHXX::Special);
@@ -97,8 +98,8 @@ void cEXT::print(void) const
     this->print_Index();
     this->print_QuestID();
     /////
-    this->print_QuestType();
-    this->print_RequestVillage();
+    this->print_QuestType0();
+    this->print_QuestType1();
     this->print_QuestLevel();
     this->print_BossLevel();
     this->print_Map();
@@ -171,12 +172,17 @@ void cEXT::print(void) const
     this->print_Flag();
 }
 
-void cEXT::print_QuestType() const
+void cEXT::print_QuestType0(void) const
 {
-    Utils::print_help_arr<decltype (QuestType_str)>("Quest type", this->header0.QuestType, QuestType_str);
+    Utils::print_help_arr<decltype (QuestType0_str)>("Quest type0", this->header0.QuestType0, QuestType0_str);
 }
 
-void cEXT::print_QuestLevel() const
+void cEXT::print_QuestType1(void) const
+{
+    Utils::print_help_arr<decltype (QuestType1_str)>("Quest type1", this->header0.QuestType1 - 1, QuestType1_str);
+}
+
+void cEXT::print_QuestLevel(void) const
 {
     u32 level = this->header0.QuestLv;
 
@@ -184,7 +190,7 @@ void cEXT::print_QuestLevel() const
     Utils::print_help_arr<decltype (QuestLv_str)>("Quest level", level, QuestLv_str);
 }
 
-void cEXT::print_BossLevel() const
+void cEXT::print_BossLevel(void) const
 {
     Utils::print_help_arr<decltype (EnemyLv_str)>("Boss level", this->header0.BossLv, EnemyLv_str);
 }
@@ -213,7 +219,7 @@ void cEXT::print_Map(void) const
     printf("%-25s%s | %08X|%d\n", "Map", Maps_str[cEXT::GetMapStrID(this->header0.MapNo)], this->header0.MapNo, this->header0.MapNo);
 }
 
-void cEXT::print_StartType() const
+void cEXT::print_StartType(void) const
 {
     Utils::print_help_arr<decltype (StartType_str)>("Start type", this->header0.StartType, StartType_str);
 }

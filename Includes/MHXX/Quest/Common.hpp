@@ -70,7 +70,7 @@ enum EnemyLv_e:u8 { // signed?
     G_Plus
 };
 
-enum QuestType_e:u8 {
+enum QuestType0_e:u8 {
     Hunting,
     Slaying,
     Capture,
@@ -79,18 +79,20 @@ enum QuestType_e:u8 {
     hunt_a_ton__arena
 };
 
-enum Village_e:u8 { // research
-    Kokoto_0        = 1,
-    Pokke_0         = 2,
-    Yukumo_0        = 3,
-    Bherna_0        = 4,
-    Kokoto_1        = 5,
-    Pokke_1         = 6,
-    Yukumo_1        = 7,
-    Bherna_1        = 8,
-    Prowler         = 9,
-    Hunter          = 10,
-    SpecialPermit   = 11
+enum QuestType1_e:u8 {
+    Kokoto_Unlockable = 1,
+    Pokke_Unlockable,
+    Yukumo_Unlockable,
+    Bherna_Unlockable,
+
+    Kokoto_Main,
+    Pokke_Main,
+    Yukumo_Main,
+    Bherna_Main,
+
+    ProwlerOnly,
+    Default,
+    SpecialPermit
 };
 
 enum StartType_e:u8 {

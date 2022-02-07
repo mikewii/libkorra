@@ -205,21 +205,21 @@ void PrintDebug(std::vector<Pair>& vector, const char* filename)
 
             if (isUnique)
             {
-                AddAllEqual
+                AddUnique
                 (
-                    1,
+                    //1,
                     {
                         ext.header0.QuestID,
                         name,
                         ext.header0.QuestLv,
-                        ext.header0.RequestVillage
+                        ext.header0.QuestType1
                     }
                 );
                 //out.push_back(pair);
             }
             else
             {
-                ext.print_RequestVillage();
+                ext.print_QuestType1();
 
             }
             //pair.cc.writeToFile((fpath + ".ext").c_str());

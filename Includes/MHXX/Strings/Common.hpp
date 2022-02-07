@@ -135,13 +135,29 @@ constexpr std::array<const char*, 3> clearType = {
     "Or"
 };
 
-constexpr std::array<const char*, 6> QuestType_str = {
+constexpr std::array<const char*, 6> QuestType0_str = {
     "Hunting",
     "Slaying",
     "Capture",
     "Gathering",
     "hunt-a-ton",
     "hunt-a-ton arena",
+};
+
+constexpr std::array<const char*, 11> QuestType1_str = {
+    "Kokoto (Unlockable)",
+    "Pokke (Unlockable",
+    "Yukumo (Unlockable",
+    "Bherna (Unlockable",
+
+    "Kokoto (Main)",
+    "Pokke (Main)",
+    "Yukumo (Main)",
+    "Bherna (Main)",
+
+    "ProwlerOnly",
+    "Default",
+    "SpecialPermit"
 };
 
 constexpr std::array<const char*, 9> clearParam = {
