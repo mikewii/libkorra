@@ -13,12 +13,12 @@ struct sEXTHeader_p1_s {
     static const u32 MAGIC      = 0x434B0000;
     static const u32 VERSION    = 1;
 
-    u32             magic = MAGIC;          // 0x00
+    u32             magic = MAGIC;
     u32             version = VERSION;
-    u32             index; // ?
+    u32             index;                  // ?
     u32             questID;
 
-    QuestType0::e   questType0;              // 0x10
+    QuestType0::e   questType0;
     QuestType1::e   questType1;
     QuestLv::e      questLv;
     EnemyLv::e      bossLv;
@@ -33,15 +33,15 @@ struct sEXTHeader_p1_s {
 
     EntryType::e    entryType[2];
     u8              entryTypeCombo;         //  null in every quest
-    u8              clearType;
-    u8              gekitaiHp; // fierce team / small mons?
+    ClearType::e    clearType;
+    u8              gekitaiHp; // fierce team / small mons? / repel, oppose
 
-    Target_s        TargetMain[2]; // second u8 is u16 ?
+    Target_s        TargetMain[2];
     Target_s        TargetSub;
 
-    u8              CarvingLv;
-    u8              GatherLv;
-    u8              FishingLv; // is u16 ?
+    CarvingLv::e    carvingLv;
+    GatheringLv::e  gatherLv;
+    FishingLv::e    fishingLv;
 
     u32             EntryFee;
     u32             VillagePoints;
@@ -55,8 +55,8 @@ struct sEXTHeader_p1_s {
 
     // done
     // flags for reward panels
-    u8              RemAddFrame[2];
-    u8              RemAddLotMax;
+    u8              RemAddFrame[2]; // 0 - 4
+    s8              RemAddLotMax;   // -2 -1 0 1 2 4
 
     // done, aligned
     Supply_s        Supply[2];  // 0 available from start, 1 available later on quest
@@ -65,25 +65,25 @@ struct sEXTHeader_p1_s {
     Boss_s          Boss[5];
 
     // done, aligned
-    u8              SmallEmHP_tbl;	// also known as Zako
-    u8              SmallEmAttack_tbl;
-    u8              SmallEmOther_tbl;
+    u8              SmallEmHP_tbl;      // also known as Zako / bits?
+    u8              SmallEmAttack_tbl;  // bits?
+    u8              SmallEmOther_tbl;   // bits?
 
     // done, aligned
     Em_s            Em[2];
-    u8              isBossRushType; // 0 - 8
+    u8              isBossRushType;     // 0 - 8
 
     // done, aligned
     Appear_s        Appear[5];
 
-    u8              StrayRand;      // invader boss id?
-    u8              StrayStartTime;
-    u8              StrayStartRand;
-    u8              StrayLimit[3];
-    u8              StrayRand2[3];
-    u8              ExtraTicketNum;
+    u8              invader_AppearChance;       // invader boss id?
+    u8              invader_StartTime;
+    u8              invader_StartRandChance;
+    u8              strayLimit[3];              // bits?
+    u8              strayRand2[3];              // chance 0 - 100
+    u8              sp_ExtraTicketNum;          // 0 - 10
 
-    u8              Icon[5];        // broken, 1 bytes after
+    u8              icon[5];                    // 0 - 186
 } PACKED;
 
 struct sEXTHeader_p2_s {
@@ -135,6 +135,7 @@ public:
     void Set_EntryType0(const EntryType::e type) { this->Set_EntryType(0, type); }
     void Set_EntryType1(const EntryType::e type) { this->Set_EntryType(1, type); }
     //void Set_EntryTypeCombo(const bool isUseBoth); // nope
+    void Set_ClearType(const ClearType::e type) { this->header0.clearType = type; }
 
 
     void Set_EntryFee(const u32 ammount);
@@ -172,9 +173,9 @@ public:
     void print_TargetMain0(void) const;
     void print_TargetMain1(void) const;
     void print_TargetSub(void) const;
-    void print_CarvingLevel(void) const { Utils::print_help("Carging level", this->header0.CarvingLv); }
-    void print_GatheringLevel(void) const { Utils::print_help("Gathering level", this->header0.GatherLv); }
-    void print_FishingLevel(void) const { Utils::print_help("Fishing level", this->header0.FishingLv); }
+    void print_CarvingLevel(void) const { Utils::print_help("Carging level", this->header0.carvingLv); }
+    void print_GatheringLevel(void) const { Utils::print_help("Gathering level", this->header0.gatherLv); }
+    void print_FishingLevel(void) const { Utils::print_help("Fishing level", this->header0.fishingLv); }
     void print_EntryFee(void) const { Utils::print_help("Entry fee", this->header0.EntryFee); }
     void print_VillagePoints(void) const { Utils::print_help("Village points", this->header0.VillagePoints); }
     void print_MainRewardMoney(void) const { Utils::print_help("Main reward money", this->header0.MainRewardMoney); }
@@ -202,7 +203,7 @@ public:
     void print_Appear4(void) const { this->print_Appear(3); }
     void print_Appear5(void) const { this->print_Appear(4); }
     void print_Stray(void) const;
-    void print_ExtraTicketNum(void) const { Utils::print_help("ExtraTicketNum", this->header0.ExtraTicketNum); }
+    void print_SpecialPermitExtraTicketNum(void) const { Utils::print_help("ExtraTicketNum", this->header0.sp_ExtraTicketNum); }
     void print_Icons(void) const;
     void print_GMDLinks(void) const;
     void print_VillagePointG(void) const { Utils::print_help("VillagePointG", this->header1.VillagePointG); }

@@ -151,10 +151,7 @@ const std::array<const char*, 12> QuestType1::str = {
     "Default",
     "SpecialPermit"
 };
-const char* QuestType1::GetStr(const size type)
-{
-    return QuestType1::str.at(type);
-}
+const char* QuestType1::GetStr(const size type) { return QuestType1::str.at(type); }
 
 
 const std::array<const char*, 3> StartType::str = {
@@ -162,10 +159,7 @@ const std::array<const char*, 3> StartType::str = {
     "Random",
     "Elder Dragon Fight"
 };
-const char* StartType::GetStr(const size type)
-{
-    return StartType::str.at(type);
-}
+const char* StartType::GetStr(const size type) { return StartType::str.at(type); }
 
 
 const std::array<const char*, 3> BGMType::str = {
@@ -173,11 +167,7 @@ const std::array<const char*, 3> BGMType::str = {
     "Prowler Special",
     "Training"
 };
-
-const char* BGMType::GetStr(const size type)
-{
-    return BGMType::str.at(type);
-}
+const char* BGMType::GetStr(const size type) { return BGMType::str.at(type); }
 
 
 const std::array<const char*, 50> EntryType::str = {
@@ -232,10 +222,53 @@ const std::array<const char*, 50> EntryType::str = {
     "Two players max",
     "Three players max"
 };
-const char* EntryType::GetStr(const size type)
+const char* EntryType::GetStr(const size type) { return EntryType::str.at(type); }
+
+
+const std::array<const char*, 3> ClearType::str = {
+    "One target",
+    "Two targets",
+    "One target and ticket"
+};
+const char* ClearType::GetStr(const size type) { return ClearType::str.at(type); }
+
+
+const std::array<const char*, 5> CarvingLv::str = {
+    "LR Special",
+    "LR",
+    "HR",
+    "Arena",
+    "G"
+};
+const char* CarvingLv::GetStr(const size level) { return CarvingLv::str.at(level); }
+
+
+const std::array<const char*, 8> GatheringLv::str = {
+    "Arena 0",
+    "LR",
+    "HR",
+    "Arena 1",
+    "Special 0",
+    "Special 1",
+    "Special 2",
+    "G"
+};
+const char* GatheringLv::GetStr(const size level)
 {
-    return EntryType::str.at(type);
+    if (level == GatheringLv::e::G) return GatheringLv::str.at(7);
+    else return GatheringLv::str.at(level);
 }
+
+
+
+const std::array<const char*, 4> FishingLv::str = {
+    "LR",
+    "HR",
+    "Arena",
+    "G"
+};
+const char* FishingLv::GetStr(const size level) { return FishingLv::str.at(level); }
+
 
 
 

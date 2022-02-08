@@ -1,5 +1,6 @@
 #pragma once
 #include "types.h"
+#include "MHXX/Enemy/Enemy.hpp"
 #include <array>
 
 namespace MHXX {
@@ -158,30 +159,30 @@ struct BGMType { // complete
     static const char* GetStr(const size type);
 };
 
-struct EntryType {
+struct EntryType { // complete
     using size = u8;
 
     enum e:size {
         None,
-        HR_2_and_up,
-        HR_3_and_up,
-        HR_4_and_up,
-        HR_5_and_up,
-        HR_6_and_up,
-        HR_7_and_up,
-        HR_8_and_up,
-        HR_9_and_up,
-        HR_10_and_up,
-        HR_11_and_up,
-        HR_12_and_up,
-        HR_13_and_up,
-        HR_20_and_up,
-        HR_25_and_up,
-        HR_30_and_up,
-        HR_45_and_up,
-        HR_50_and_up,
-        HR_60_and_up,
-        HR_100_and_up,
+        HR2_and_up,
+        HR3_and_up,
+        HR4_and_up,
+        HR5_and_up,
+        HR6_and_up,
+        HR7_and_up,
+        HR8_and_up,
+        HR9_and_up,
+        HR10_and_up,
+        HR11_and_up,
+        HR12_and_up,
+        HR13_and_up,
+        HR20_and_up,
+        HR25_and_up,
+        HR30_and_up,
+        HR45_and_up,
+        HR50_and_up,
+        HR60_and_up,
+        HR100_and_up,
         Great_Swords_only,
         Long_Swords_only,
         Sword_n_Shields_only,
@@ -218,47 +219,122 @@ struct EntryType {
     static const char* GetStr(const size type);
 };
 
+struct ClearType { // complete
+    using size = u8;
+
+    enum e:size {
+        OneTarget = 0,
+        TwoTargets,
+        OneTargetAndTicket  // ex. special permit lv 6
+    };
+    static const std::array<const char*, 3> str;
+
+    static const char* GetStr(const size type);
+};
+
+struct Target {
+    struct ClearParam {
+        using size = u8;
+
+        enum e:size { // 0 - 13
+            Capture = 2,
+            HuntAllLargeMonsters = 3,
+            Slay_total_of_any_targets = 4,
+        };
+    };
+
+};
+
 struct Target_s {
     u8      isClearParam;   // 1 hunt, 5 deliver
     u16     ClearID;        // monsted id, item id
     u16     ClearNum;
 } PACKED;
 
+struct CarvingLv { // check later
+    using size = u8;
+
+    enum e:size {
+        LR_Special  = 0b000, // 0, is it?
+        LR          = 0b001, // 1
+        HR          = 0b010, // 2
+        Arena       = 0b011, // 3, training
+        G           = 0b100  // 4
+    };
+    static const std::array<const char*, 5> str;
+
+    static const char* GetStr(const size level);
+};
+
+
+struct GatheringLv {
+    using size = u8;
+
+    enum e:size {
+        Arena0      = 0b000,    // 0, is it?
+        LR          = 0b001,    // 1
+        HR          = 0b010,    // 2
+        Arena1      = 0b011,    // 3, training
+
+        Special0    = 0b100,    // 4
+        Special1    = 0b101,    // 5
+        Special2    = 0b110,    // 6
+
+        G           = 0b1001    // 9
+    };
+    static const std::array<const char*, 8> str;
+
+    static const char* GetStr(const size level);
+};
+
+
+struct FishingLv {
+    using size = u8;
+
+    enum e:size {
+        LR      = 0b001,    // 1
+        HR      = 0b010,    // 2
+        Arena   = 0b011,    // 3, training
+
+        G       = 0b100    // 4
+    };
+    static const std::array<const char*, 4> str;
+
+    static const char* GetStr(const size level);
+};
+
 struct Supply_s {
-    u8  SuppLabel;
-    u8  SuppType;
-    u16	SuppTarget;
-    u16	SuppTargetNum;
+    u8      Label;      // 0 - 4 / 2 = ticket after completing SuppTarget
+    u8      Type;       // 0 - 4 / 2 = monster, 3 = item
+    union{
+        EmID    Target_Em;
+        u16     Target_Item;
+    };
+    u16     TargetNum;
 } PACKED;
 
 struct Boss_s {
     u16 EmType;
-    u8  EmSubType;
-    u8  AuraType;
+    u8  EmSubType;      // 0 1 2 3 4 5 6 7 100 101 103
+    u8  AuraType;       // 0 1
     u8  RestoreNum;
-    u8  VitalTblNo;
-    u8  AttackTblNo;
-    u8  OtherTblNo;
-    u8  Difficulty;
+    u8  VitalTblNo;     // bits? 0 - 135
+    u8  AttackTblNo;    // bits? 0 - 135
+    u8  OtherTblNo;     // bits? 0 - 118
+    u8  Difficulty;     // 0 1 2
     u16 Scale;
-    u8  ScaleTbl;
-    u8  StaminaTbl;
+    u8  ScaleTbl;       // bits?
+    u8  StaminaTbl;     // bits? 0 1 3
 } PACKED;
 
 struct Em_s {
-    u8  EmSetType;
-    u16	EmSetTargetID;
-    u16	EmSetTargetNum;
+    u8      EmSetType;      // 0 - 4
+    EmID    EmSetTargetID;
+    u16     EmSetTargetNum;
 } PACKED;
 
 struct Appear_s {
-    u8	AppearType;
-    u16	AppearTargetType;
-    u16	AppearTargetNum;
-} PACKED;
-
-struct Appear1_s {
-    u16	AppearType;
+    u8	AppearType;         // 0 - 4
     u16	AppearTargetType;
     u16	AppearTargetNum;
 } PACKED;

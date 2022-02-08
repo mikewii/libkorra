@@ -459,8 +459,8 @@ bool Collector::Flush(void)
         for (const auto& info : Collector::_vec)
             if (info.Value == token) // format and write to file
             {
-                const auto& size = sprintf(buffer, "q%07d %-30s lv:%-3d | dec: %d - hex: %X\n",
-                       info.QuestID, info.Name.c_str(), info.QuestLevel, info.Value, info.Value);
+                const auto& size = sprintf(buffer, "q%07d %-30s %-3s | dec: %d - hex: %X\n",
+                       info.QuestID, info.Name.c_str(), MHXX::QuestLv::GetStr(info.QuestLevel), info.Value, info.Value);
 
                 fout.write(buffer, size);
             }

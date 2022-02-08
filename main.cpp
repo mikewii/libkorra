@@ -49,7 +49,7 @@ int main(int argc, char *argv[])
     {
         std::vector<std::string> selected_files =
         {
-            //"q0090100.arc",
+            "q1011012.arc",
 //            "q0110101.arc",
 //            "q0040505.arc",
 //            "q0000633.arc",
@@ -177,10 +177,10 @@ void Debug(std::vector<Pair>& vector, const char* filename)
             auto header0 = ext.GetHeader0();
             auto header1 = ext.GetHeader1();
 
-            //col.Disable();
+            col.Disable();
             if (col.IsActive())
             {
-                col.Set_Value(2);
+                col.Set_Value(1);
                 col.Set_Operator(Utils::Collector::Op::Unique);
                 col.Add
                 ({
@@ -188,13 +188,14 @@ void Debug(std::vector<Pair>& vector, const char* filename)
                     quest_name,
                     header0.questLv,
 
-                    header0.entryType[0]
+                    header0.Supply[0].Target_Item
                 });
                 //out.push_back(pair);
             }
             else
             {
-                ext.print();
+                ext.print_Supply0();
+                ext.print_Supply1();
             }
             //pair.cc.writeToFile((fpath + ".ext").c_str());
             break;

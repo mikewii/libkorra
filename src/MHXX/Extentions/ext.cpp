@@ -161,7 +161,7 @@ void cEXT::print(void) const
 
     this->print_Stray();
 
-    this->print_ExtraTicketNum();
+    this->print_SpecialPermitExtraTicketNum();
 
     this->print_Icons();
 
@@ -174,7 +174,7 @@ void cEXT::print(void) const
 
 void cEXT::print_QuestType0(void) const
 {
-    Utils::print_help_arr<decltype (QuestType0_str)>("Quest type0", this->header0.questType0, QuestType0_str);
+    Utils::print_help_arr<decltype (QuestType0::str)>("Quest type0", this->header0.questType0, QuestType0::str);
 }
 
 void cEXT::print_QuestType1(void) const
@@ -240,19 +240,19 @@ void cEXT::print_Rem(void) const
 void cEXT::print_Supply0(void) const
 {
     printf("\nSupply #0\n");
-    Utils::print_help("[0] SuppLabel", this->header0.Supply[0].SuppLabel);
-    Utils::print_help("[0] SuppType", this->header0.Supply[0].SuppType);
-    Utils::print_help("[0] SuppTarget", this->header0.Supply[0].SuppTarget);
-    Utils::print_help("[0] SuppTargetNum", this->header0.Supply[0].SuppTargetNum);
+    Utils::print_help("[0] SuppLabel", this->header0.Supply[0].Label);
+    Utils::print_help("[0] SuppType", this->header0.Supply[0].Type);
+    Utils::print_help_str("[0] SuppTarget", getEnemyStr(this->header0.Supply[0].Target_Em), this->header0.Supply[0].Target_Item);
+    Utils::print_help("[0] SuppTargetNum", this->header0.Supply[0].TargetNum);
 }
 
 void cEXT::print_Supply1(void) const
 {
     printf("\nSupply #1\n");
-    Utils::print_help("[1] SuppLabel", this->header0.Supply[1].SuppLabel);
-    Utils::print_help("[1] SuppType", this->header0.Supply[1].SuppType);
-    Utils::print_help("[1] SuppTarget", this->header0.Supply[1].SuppTarget);
-    Utils::print_help("[1] SuppTargetNum", this->header0.Supply[1].SuppTargetNum);
+    Utils::print_help("[1] SuppLabel", this->header0.Supply[1].Label);
+    Utils::print_help("[1] SuppType", this->header0.Supply[1].Type);
+    Utils::print_help_str("[1] SuppTarget", getEnemyStr(this->header0.Supply[1].Target_Em), this->header0.Supply[1].Target_Item);
+    Utils::print_help("[1] SuppTargetNum", this->header0.Supply[1].TargetNum);
 }
 
 
@@ -291,15 +291,15 @@ void cEXT::print_Appear(const u32 id) const
 void cEXT::print_Stray(void) const
 {
     printf("\nStray\n");
-    Utils::print_help("StrayRand", this->header0.StrayRand);
-    Utils::print_help("StrayStartTime", this->header0.StrayStartTime);
-    Utils::print_help("StrayStartRand", this->header0.StrayStartRand);
-    Utils::print_help("StrayLimit[0]", this->header0.StrayLimit[0]);
-    Utils::print_help("StrayLimit[1]", this->header0.StrayLimit[1]);
-    Utils::print_help("StrayLimit[2]", this->header0.StrayLimit[2]);
-    Utils::print_help("StrayRand2[0]", this->header0.StrayRand2[0]);
-    Utils::print_help("StrayRand2[1]", this->header0.StrayRand2[1]);
-    Utils::print_help("StrayRand2[2]", this->header0.StrayRand2[2]);
+    Utils::print_help("StrayRand", this->header0.invader_AppearChance);
+    Utils::print_help("StrayStartTime", this->header0.invader_StartTime);
+    Utils::print_help("StrayStartRand", this->header0.invader_StartRandChance);
+    Utils::print_help("StrayLimit[0]", this->header0.strayLimit[0]);
+    Utils::print_help("StrayLimit[1]", this->header0.strayLimit[1]);
+    Utils::print_help("StrayLimit[2]", this->header0.strayLimit[2]);
+    Utils::print_help("StrayRand2[0]", this->header0.strayRand2[0]);
+    Utils::print_help("StrayRand2[1]", this->header0.strayRand2[1]);
+    Utils::print_help("StrayRand2[2]", this->header0.strayRand2[2]);
 }
 
 void cEXT::print_Icons(void) const
@@ -334,13 +334,13 @@ void cEXT::print_Em(const u32 id) const
 {
     printf("\nEm #%d\n", id);
     Utils::print_help_numered(id, "EmSetType", this->header0.Em[id].EmSetType);
-    Utils::print_help_numered(id, "EmSetTargetID", this->header0.Em[id].EmSetTargetID);
+    Utils::print_help_str_numered(id, "EmSetTargetID", getEnemyStr(this->header0.Em[id].EmSetTargetID), this->header0.Em[id].EmSetTargetID.ID);
     Utils::print_help_numered(id, "EmSetTargetNum", this->header0.Em[id].EmSetTargetNum);
 }
 
 void cEXT::print_Icon(const u32 id) const
 {
-    Utils::print_help_numered(id, "Icon", this->header0.Icon[id]);
+    Utils::print_help_numered(id, "Icon", this->header0.icon[id]);
 }
 
 void cEXT::print_GMDLink(const u32 id) const

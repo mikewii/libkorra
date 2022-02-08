@@ -17,9 +17,19 @@ static USED void print_help(const char* name, const u32 item)
     printf("%-25s%08X | %d\n", name, item, item);
 }
 
+static USED void print_help_str(const char* name, const char* str, const u32 item)
+{
+    printf("%-25s%s : %08X | %d\n", name, str, item, item);
+}
+
 static USED void print_help_numered(const u32 id, const char* name, const u32 item)
 {
     printf("[%d] %-21s%08X | %d\n", id, name, item, item);
+}
+
+static USED void print_help_str_numered(const u32 id, const char* name, const char* str, const u32 item)
+{
+    printf("[%d] %-21s%s : %08X | %d\n", id, name, str, item, item);
 }
 
 template <typename T>

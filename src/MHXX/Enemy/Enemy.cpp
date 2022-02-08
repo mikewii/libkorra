@@ -3,10 +3,10 @@
 
 namespace MHXX {
 
-const char* getEnemyStr( EmID& _id )
+const char* getEnemyStr(const EmID& _id)
 {
-    for ( auto& a : EnemyStr )
-        if ( a.ID.ID == _id.ID && a.ID.IDSub == _id.IDSub )
+    for (auto& a : EnemyStr)
+        if (a.ID.ID == _id.ID && a.ID.IDSub == _id.IDSub)
             return a.Name;
 
     return "EmID not found!";

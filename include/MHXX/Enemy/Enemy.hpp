@@ -17,6 +17,6 @@ struct EmID {
     u8  IDSub;
 };
 
-const char* getEnemyStr( EmID& _id );
+const char* getEnemyStr(const EmID& id);
 
 } // MHXX
