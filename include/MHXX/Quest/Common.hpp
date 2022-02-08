@@ -77,7 +77,7 @@ struct QuestLv { // complete
 struct EnemyLv { // research if overlaping bits do anything
     using size = u8;  // signed?
 
-    enum e:u8 {
+    enum e:size {
         Training    = 0b000,
         LR          = 0b001,
         HR          = 0b011,
@@ -110,7 +110,7 @@ struct QuestType0 { // complete
 struct QuestType1 { // complete
     using size = u8;
 
-    enum e:u8 { // unlockable unlocks after completing main
+    enum e:size { // unlockable unlocks after completing main
         Training = 0, // or arena, or dummy
 
         Kokoto_Unlockable,
@@ -132,81 +132,90 @@ struct QuestType1 { // complete
     static const char* GetStr(const size type);
 };
 
-enum StartType_e:u8 {
-    BaseCamp,
-    Random,
-    ElderDragonFight // ?
+struct StartType { // complete
+    using size = u8;
+
+    enum e:size {
+        BaseCamp = 0,
+        Random,
+        ElderDragonFight
+    };
+    static const std::array<const char*, 3> str;
+
+    static const char* GetStr(const size type);
 };
 
+struct BGMType { // complete
+    using size = u8;
 
-//  BMGType 1 in these, 0 is everything else
-//  q0120002.arc Grudge Match: Gypceros
-//  q0120003.arc Grudge Match: Bird Wyverns
-//  q0110704.arc Meownster Hunter
-//  q0100603.arc Surrounded by Blue and Green
-//  q0120006.arc Grudge Match: Congalala
-//  q0120005.arc Grudge Match: Tetsucabra
-//  q0120001.arc Grudge Match: Great Maccao
-//  q0110303.arc Out of the Frying Pan
-//  q0111405.arc Meownster Hunter Ultimate
-//  q0120004.arc Grudge Match: Barroth
-//  q0101005.arc Drome Rush!
-enum BGMType_e:u8 {
-    DefaultBGM = 0,
-    SpecialBGM
+    enum e:size {
+        Default = 0,
+        ProwlerSpecial,
+        Training
+    };
+    static const std::array<const char*, 3> str;
+
+    static const char* GetStr(const size type);
 };
 
-enum EntryType_e:u8 {
-    None,
-    HR_2_and_up,
-    HR_3_and_up,
-    HR_4_and_up,
-    HR_5_and_up,
-    HR_6_and_up,
-    HR_7_and_up,
-    HR_8_and_up,
-    HR_9_and_up,
-    HR_10_and_up,
-    HR_11_and_up,
-    HR_12_and_up,
-    HR_13_and_up,
-    HR_20_and_up,
-    HR_25_and_up,
-    HR_30_and_up,
-    HR_45_and_up,
-    HR_50_and_up,
-    HR_60_and_up,
-    HR_100_and_up,
-    Great_Swords_only,
-    Long_Swords_only,
-    Sword_n_Shields_only,
-    Dual_Blades_only,
-    Lances_only,
-    Gunlances_only,
-    Hammers_only,
-    Hunting_Horns_only,
-    Switch_Axes_only,
-    Charge_Blades_only,
-    Insect_Glaives_only,
-    Light_Bowguns_only,
-    Heavy_Bowguns_only,
-    Bows_only,
-    Blademasters_only,
-    Gunners_only,
-    Guild_Style_only,
-    Striker_Style_only,
-    Aerial_Style_only,
-    Adept_Style_only,
-    Valor_Style_only,
-    Alchemy_Style_only,
-    No_Prowlers,
-    Prowlers_only,
-    RARE_1_weapons_only,
-    No_armor_and_talismans,
-    On_site_items_only,
-    One_player_max,
-    Two_players_max,
-    Three_players_max
+struct EntryType {
+    using size = u8;
+
+    enum e:size {
+        None,
+        HR_2_and_up,
+        HR_3_and_up,
+        HR_4_and_up,
+        HR_5_and_up,
+        HR_6_and_up,
+        HR_7_and_up,
+        HR_8_and_up,
+        HR_9_and_up,
+        HR_10_and_up,
+        HR_11_and_up,
+        HR_12_and_up,
+        HR_13_and_up,
+        HR_20_and_up,
+        HR_25_and_up,
+        HR_30_and_up,
+        HR_45_and_up,
+        HR_50_and_up,
+        HR_60_and_up,
+        HR_100_and_up,
+        Great_Swords_only,
+        Long_Swords_only,
+        Sword_n_Shields_only,
+        Dual_Blades_only,
+        Lances_only,
+        Gunlances_only,
+        Hammers_only,
+        Hunting_Horns_only,
+        Switch_Axes_only,
+        Charge_Blades_only,
+        Insect_Glaives_only,
+        Light_Bowguns_only,
+        Heavy_Bowguns_only,
+        Bows_only,
+        Blademasters_only,
+        Gunners_only,
+        Guild_Style_only,
+        Striker_Style_only,
+        Aerial_Style_only,
+        Adept_Style_only,
+        Valor_Style_only,
+        Alchemy_Style_only,
+        No_Prowlers,
+        Prowlers_only,
+        RARE_1_weapons_only,
+        No_armor_and_talismans,
+        On_site_items_only,
+        One_player_max,
+        Two_players_max,
+        Three_players_max
+    };
+    static const std::array<const char*, 50> str;
+
+    static const char* GetStr(const size type);
 };
 
 struct Target_s {

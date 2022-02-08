@@ -180,15 +180,15 @@ void Debug(std::vector<Pair>& vector, const char* filename)
             //col.Disable();
             if (col.IsActive())
             {
-                col.Set_Value(0);
-                col.Set_Operator(Utils::Collector::Op::Equal);
+                col.Set_Value(2);
+                col.Set_Operator(Utils::Collector::Op::Unique);
                 col.Add
                 ({
                     header0.questID,
                     quest_name,
                     header0.questLv,
 
-                    header0.questType1
+                    header0.entryType[0]
                 });
                 //out.push_back(pair);
             }
