@@ -78,7 +78,7 @@ void cEXT::Set_QuestTime(const u8 minutes) { this->header0.questTime = minutes; 
 void cEXT::Set_QuestLives(const u8 ammount) { this->header0.questLives = ammount; }
 void cEXT::Set_AcEquipSetNo(const u8 value) { this->header0.acEquipSetNo = value; }
 void cEXT::Set_BGMType(const BGMType::e type) { this->header0.bgmType = type; }
-void cEXT::Set_EntryType(const u8 id, const EntryType::e type) { this->header0.entryType[id] = type; }
+void cEXT::Set_EntryType(const EntryType::e type, const u8 id) { this->header0.entryType[id] = type; }
 //void cEXT::Set_EntryTypeCombo(const bool isUseBoth) { this->header0.EntryTypeCombo = isUseBoth; }
 void cEXT::Set_EntryFee(const u32 ammount) { this->header0.EntryFee = ammount; }
 void cEXT::Set_VillagePoints(const u32 ammount) { this->header0.VillagePoints = ammount; }
@@ -89,7 +89,7 @@ void cEXT::Set_FailedRemVillagePoint(const u32 ammount) { this->header0.FailedRe
 void cEXT::Set_SubRemVillagePoint(const u32 ammount) { this->header0.SubRemVillagePoint = ammount; }
 void cEXT::Set_ClearRemHunterPoint(const u32 ammount) { this->header0.ClearRemHunterPoint = ammount; }
 void cEXT::Set_SubRemHunterPoint(const u32 ammount) { this->header0.SubRemHunterPoint = ammount; }
-
+void cEXT::Set_Icon(const Icon::e icon, const u32 id) { this->header0.icon[id] = icon; }
 
 void cEXT::print(void) const
 {
@@ -209,7 +209,7 @@ void cEXT::print_TargetMain0(void) const
 {
     printf("\nTarget #0\n");
     Utils::print_help("[0]Is used", this->header0.TargetMain[0].isClearParam);
-    Utils::print_help("[0]Clear ID", this->header0.TargetMain[0].ClearID);
+    Utils::print_help("[0]Clear ID", this->header0.TargetMain[0].Target_Item);
     Utils::print_help("[0]Clear Num", this->header0.TargetMain[0].ClearNum);
 }
 
@@ -217,7 +217,7 @@ void cEXT::print_TargetMain1(void) const
 {
     printf("\nTarget #1\n");
     Utils::print_help("[1]Is used", this->header0.TargetMain[1].isClearParam);
-    Utils::print_help("[1]Clear ID", this->header0.TargetMain[1].ClearID);
+    Utils::print_help("[1]Clear ID", this->header0.TargetMain[1].Target_Item);
     Utils::print_help("[1]Clear Num", this->header0.TargetMain[1].ClearNum);
 }
 
@@ -225,7 +225,7 @@ void cEXT::print_TargetSub(void) const
 {
     printf("\nTarget sub\n");
     Utils::print_help("[sub]Is used", this->header0.TargetSub.isClearParam);
-    Utils::print_help("[sub]Clear ID", this->header0.TargetSub.ClearID);
+    Utils::print_help("[sub]Clear ID", this->header0.TargetSub.Target_Item);
     Utils::print_help("[sub]Clear Num", this->header0.TargetSub.ClearNum);
 }
 
@@ -242,7 +242,7 @@ void cEXT::print_Supply0(void) const
     printf("\nSupply #0\n");
     Utils::print_help("[0] SuppLabel", this->header0.Supply[0].Label);
     Utils::print_help("[0] SuppType", this->header0.Supply[0].Type);
-    Utils::print_help_str("[0] SuppTarget", getEnemyStr(this->header0.Supply[0].Target_Em), this->header0.Supply[0].Target_Item);
+    Utils::print_help_str("[0] SuppTarget", Enemy::GetStr(this->header0.Supply[0].Target_Em), this->header0.Supply[0].Target_Item);
     Utils::print_help("[0] SuppTargetNum", this->header0.Supply[0].TargetNum);
 }
 
@@ -251,7 +251,7 @@ void cEXT::print_Supply1(void) const
     printf("\nSupply #1\n");
     Utils::print_help("[1] SuppLabel", this->header0.Supply[1].Label);
     Utils::print_help("[1] SuppType", this->header0.Supply[1].Type);
-    Utils::print_help_str("[1] SuppTarget", getEnemyStr(this->header0.Supply[1].Target_Em), this->header0.Supply[1].Target_Item);
+    Utils::print_help_str("[1] SuppTarget", Enemy::GetStr(this->header0.Supply[1].Target_Em), this->header0.Supply[1].Target_Item);
     Utils::print_help("[1] SuppTargetNum", this->header0.Supply[1].TargetNum);
 }
 
@@ -259,7 +259,7 @@ void cEXT::print_Supply1(void) const
 void cEXT::print_Boss(const u32 id) const
 {
     printf("\nBoss #%d\n", id);
-    Utils::print_help_numered(id, "EmType", this->header0.Boss[id].EmType);
+    Utils::print_help_str_numered(id, "EmType", Enemy::GetStr(this->header0.Boss[id].EmType), this->header0.Boss[id].EmType.id);
     Utils::print_help_numered(id, "EmSubType", this->header0.Boss[id].EmSubType);
     Utils::print_help_numered(id, "AuraType", this->header0.Boss[id].AuraType);
     Utils::print_help_numered(id, "RestoreNum", this->header0.Boss[id].RestoreNum);
@@ -334,7 +334,7 @@ void cEXT::print_Em(const u32 id) const
 {
     printf("\nEm #%d\n", id);
     Utils::print_help_numered(id, "EmSetType", this->header0.Em[id].EmSetType);
-    Utils::print_help_str_numered(id, "EmSetTargetID", getEnemyStr(this->header0.Em[id].EmSetTargetID), this->header0.Em[id].EmSetTargetID.ID);
+    Utils::print_help_str_numered(id, "EmSetTargetID", Enemy::GetStr(this->header0.Em[id].EmSetTargetID), this->header0.Em[id].EmSetTargetID.id);
     Utils::print_help_numered(id, "EmSetTargetNum", this->header0.Em[id].EmSetTargetNum);
 }
 

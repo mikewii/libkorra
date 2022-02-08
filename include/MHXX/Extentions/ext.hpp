@@ -83,7 +83,7 @@ struct sEXTHeader_p1_s {
     u8              strayRand2[3];              // chance 0 - 100
     u8              sp_ExtraTicketNum;          // 0 - 10
 
-    u8              icon[5];                    // 0 - 186
+    Icon::e         icon[5];                    // 0 - 186
 } PACKED;
 
 struct sEXTHeader_p2_s {
@@ -132,8 +132,8 @@ public:
     void Set_AcEquipSetNo(const u8 value);
     void Set_BGMType(const BGMType::e type);
 
-    void Set_EntryType0(const EntryType::e type) { this->Set_EntryType(0, type); }
-    void Set_EntryType1(const EntryType::e type) { this->Set_EntryType(1, type); }
+    void Set_EntryType0(const EntryType::e type) { this->Set_EntryType(type, 0); }
+    void Set_EntryType1(const EntryType::e type) { this->Set_EntryType(type, 1); }
     //void Set_EntryTypeCombo(const bool isUseBoth); // nope
     void Set_ClearType(const ClearType::e type) { this->header0.clearType = type; }
 
@@ -147,6 +147,13 @@ public:
     void Set_SubRemVillagePoint(const u32 ammount);
     void Set_ClearRemHunterPoint(const u32 ammount);
     void Set_SubRemHunterPoint(const u32 ammount);
+
+    void Set_Icon0(const Icon::e icon) { cEXT::Set_Icon(icon, 0); }
+    void Set_Icon1(const Icon::e icon) { cEXT::Set_Icon(icon, 1); }
+    void Set_Icon2(const Icon::e icon) { cEXT::Set_Icon(icon, 2); }
+    void Set_Icon3(const Icon::e icon) { cEXT::Set_Icon(icon, 3); }
+    void Set_Icon4(const Icon::e icon) { cEXT::Set_Icon(icon, 4); }
+
 
 // prints:
     void print(void) const;
@@ -223,7 +230,8 @@ private:
 
     bool read(Pair& _pp);
 
-    void Set_EntryType(const u8 id, const EntryType::e type);
+    void Set_EntryType(const EntryType::e type, const u8 id);
+    void Set_Icon(const Icon::e icon, const u32 id);
 
     void print_Boss(const u32 id) const;
     void print_Appear(const u32 id) const;

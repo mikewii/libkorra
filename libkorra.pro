@@ -64,7 +64,6 @@ HEADERS += \
     include/MHXX/MHXX.hpp \
     include/MHXX/Quest/Common.hpp \
     include/MHXX/Strings/Common.hpp \
-    include/MHXX/Strings/Enemy.hpp \
     include/MHXX/Strings/Items.hpp \
     include/MHXX/Strings/ext.hpp \
     include/Tools/ARC.hpp \

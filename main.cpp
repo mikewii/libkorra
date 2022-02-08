@@ -8,6 +8,7 @@
 
 #include <dirent.h>
 #include <string.h>
+#include "MHXX/Quest/Common.hpp"
 //#define USE_GUI
 
 #ifdef USE_GUI
@@ -49,7 +50,7 @@ int main(int argc, char *argv[])
     {
         std::vector<std::string> selected_files =
         {
-            "q1011012.arc",
+            //"q0000105.arc",
 //            "q0110101.arc",
 //            "q0040505.arc",
 //            "q0000633.arc",
@@ -104,6 +105,8 @@ int main(int argc, char *argv[])
         //Utils::File::PairVectorToFiles(list, fname, "/run/media/mw/data2/test/");
     }
 
+    printf("Ass %d\n", MHXX::Icon::e::Unknown);
+
 #ifdef USE_GUI
     return GUI_RUN(argc, argv);
 #else
@@ -122,9 +125,9 @@ void Debug(std::vector<Pair>& vector, const char* filename)
         case MHXX::GMD::RESOURCE_HASH:{
             TEST::test<MHXX::GMD::cGMD>(pair);
 
-            MHXX::GMD::cGMD gmd(pair);
             if (once)
             {
+                MHXX::GMD::cGMD gmd(pair);
 //                gmd.print_AllItems();
                 quest_name = gmd.get_ItemStr(0);
                 once = false;
@@ -174,28 +177,37 @@ void Debug(std::vector<Pair>& vector, const char* filename)
         case MHXX::EXT::RESOURCE_HASH:{
             MHXX::EXT::cEXT ext(pair);
 
-            auto header0 = ext.GetHeader0();
-            auto header1 = ext.GetHeader1();
+            const auto& header0 = ext.GetHeader0();
+            const auto& header1 = ext.GetHeader1();
 
-            col.Disable();
+            //col.Disable();
             if (col.IsActive())
             {
-                col.Set_Value(1);
-                col.Set_Operator(Utils::Collector::Op::Unique);
+                col.Set_Value(8);
+                col.Set_Operator(Utils::Collector::Op::Collect);
+                //if (header0.Em[0].EmSetTargetID.idSub == 8)
                 col.Add
                 ({
                     header0.questID,
                     quest_name,
                     header0.questLv,
 
-                    header0.Supply[0].Target_Item
+                    header0.icon[4] // 0x314417B8
                 });
                 //out.push_back(pair);
             }
             else
             {
-                ext.print_Supply0();
-                ext.print_Supply1();
+                //if (header0.Em[0].EmSetTargetID.idSub == 8)
+                {
+                    printf("q%07d %-3s %s\n", header0.questID, MHXX::QuestLv::GetStr(header0.questLv), quest_name.c_str());
+                    printf("0: %d %d\n", header0.Em[0].EmSetTargetID.id, header0.Em[0].EmSetTargetID.idSub);
+                    printf("1: %d %d\n", header0.Em[1].EmSetTargetID.id, header0.Em[1].EmSetTargetID.idSub);
+//                    ext.print_Em0();
+//                    ext.print_Em0();
+                }
+//                ext.print_Supply0();
+//                ext.print_Supply1();
             }
             //pair.cc.writeToFile((fpath + ".ext").c_str());
             break;

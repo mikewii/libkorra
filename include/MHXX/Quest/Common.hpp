@@ -247,7 +247,12 @@ struct Target {
 
 struct Target_s {
     u8      isClearParam;   // 1 hunt, 5 deliver
-    u16     ClearID;        // monsted id, item id
+
+    union{
+        Enemy::ID   Target_ID;        // monsted id, item id
+        u16         Target_Item;
+    };
+
     u16     ClearNum;
 } PACKED;
 
@@ -307,30 +312,33 @@ struct Supply_s {
     u8      Label;      // 0 - 4 / 2 = ticket after completing SuppTarget
     u8      Type;       // 0 - 4 / 2 = monster, 3 = item
     union{
-        EmID    Target_Em;
-        u16     Target_Item;
+        Enemy::ID   Target_Em;
+        u16         Target_Item;
     };
     u16     TargetNum;
 } PACKED;
 
 struct Boss_s {
-    u16 EmType;
-    u8  EmSubType;      // 0 1 2 3 4 5 6 7 100 101 103
-    u8  AuraType;       // 0 1
-    u8  RestoreNum;
-    u8  VitalTblNo;     // bits? 0 - 135
-    u8  AttackTblNo;    // bits? 0 - 135
-    u8  OtherTblNo;     // bits? 0 - 118
-    u8  Difficulty;     // 0 1 2
-    u16 Scale;
-    u8  ScaleTbl;       // bits?
-    u8  StaminaTbl;     // bits? 0 1 3
+    Enemy::ID   EmType;
+    u8          EmSubType;      // 0 1 2 3 4 5 6 7 100 101 103
+    u8          AuraType;       // 0 1
+    u8          RestoreNum;
+    u8          VitalTblNo;     // bits? 0 - 135
+    u8          AttackTblNo;    // bits? 0 - 135
+    u8          OtherTblNo;     // bits? 0 - 118
+    u8          Difficulty;     // 0 1 2
+    u16         Scale;
+    u8          ScaleTbl;       // bits?
+    u8          StaminaTbl;     // bits? 0 1 3
 } PACKED;
 
 struct Em_s {
-    u8      EmSetType;      // 0 - 4
-    EmID    EmSetTargetID;
-    u16     EmSetTargetNum;
+    u8          EmSetType;      // 0 - 4 / 2 = item, delivery quests
+    union{
+        Enemy::ID   EmSetTargetID;
+        u16         raw;
+    };
+    u16         EmSetTargetNum;
 } PACKED;
 
 struct Appear_s {
@@ -343,6 +351,206 @@ struct GMDLink_s {
     u32         ProgNo;             // or just padding? always null
     u32         Resource;
     char        GMDFileName[11 + 1];    // 11+1 byte per gmd file
+};
+
+struct Icon { // complete
+    static const u32 STR_ARRAY_SIZE = 187;
+    using size = u8;
+
+
+    enum e:size {
+        None = 0,
+        Rathian,
+        Gold_Rathian,
+        Dreadqueen,
+        Rathalos,
+        Silver_Rathalos,
+        Dreadking,
+        Khezu,
+        Yiak_Kut_Ku,
+        Gypceros,
+        Plesioth,
+        Kirin,
+        Velocidrome,
+        Gendrome,
+        Iodrome,
+        Cephadrome,
+        Yian_Garuga,
+        Deadeye,
+        Daimyo_Hermitaur,
+        Stonefist,
+        Shogun_Ceanataur,
+        Blangonga,
+        Rajang,
+        Furious_Rajang,
+        Kushala_Daora,
+        Chameleos,
+        Teostra,
+        Bulldrome,
+        Tigrex,
+        Grimclaw,
+        Akantor,
+        Lavasioth,
+        Nargacuga,
+        Silverwind,
+        Ukanlos,
+        Deviljho,
+        Savage_Deviljho,
+        Uragaan,
+        Crystalbeard,
+        Lagiacrus,
+        Royal_Ludroth,
+        Agnaktor,
+        Alatreon,
+        Duramboros,
+        Nibelsnarf,
+        Zinogre,
+        Thunderlord,
+        Amatsu,
+        Arzuros,
+        Redhelm,
+        Lagombi,
+        Snowbaron,
+        Volvidon,
+        Brachydios,
+        Kecha_Wacha,
+        Tetsucabra,
+        Drilltusk,
+        Zamtrios,
+        Najarala,
+        Seltas_Queen,
+        Gore_Magala,
+        Shagaru_Magala,
+        Seltas,
+        Seregios,
+        Malfestio,
+        Glavenus,
+        Hellblade,
+        Astalos,
+        Mizutsune,
+        Gammoth,
+        Nakarkos,
+        Great_Maccao,
+        Apnototh,
+        Apceros,
+        Kelbi,
+        Mosswine,
+        Hornetaur,
+        Vespoid ,
+        Felyne,
+        Melynx,
+        Velociprey,
+        Genprey,
+        Ioprey,
+        Cephalos,
+        Bullfango,
+        Popo,
+        Giaprey,
+        Anteka,
+        Remobra,
+        Hermitaur,
+        Ceanataur,
+        Blango,
+        Rhenoplos,
+        Bnahabra,
+        Altaroth,
+        Jaggi,
+        Jaggia,
+        Ludroth,
+        Uroktor,
+        Slagtoth,
+        Gargwa,
+        Zamite,
+        Konchu,
+        Maccao,
+        Larinoth,
+        Moofah,
+        Danger,
+        Cross_Symbol,
+        Palico,
+        Egg,
+        Rocks,
+        Fish,
+        Bones,
+        Insect,
+        Mushroom,
+        Accounting,
+        Harvest_Tour,
+        Box,
+        Nakarkos_Head,
+        Nakarkos_Tail,
+        Basarios,
+        Gravios,
+        Diablos,
+        Lao_Shan_Lung,
+        Congalala,
+        Giadrome,
+        Barioth,
+        Barroth,
+        Raging_Brachydios,
+        Nerscylla,
+        Chaotic_Gore_Magala,
+        Conga,
+        Great_Thunderbug,
+        Bloodbath,
+        Boltreaver,
+        Elderfrost,
+        Soulseer,
+        Rustrazor,
+        Nightcloak,
+        Unknown,    // wtf is this
+        Ahtal_Ka,
+        Valstrax,
+        None_Hyper,
+        Rathian_Hyper,
+        Gold_Rathian_Hyper,
+        Rathalos_Hyper,
+        Silver_Rathalos_Hyper,
+        Khezu_Hyper,
+        Basarios_Hyper,
+        Gravios_Hyper,
+        Diablos_Hyper,
+        Yian_Kut_Ku_Hyper,
+        Gypceros_Hyper,
+        Plesioth_Hyper,
+        Yian_Garuga_Hyper,
+        Daimyo_Hermitaur_Hyper,
+        Shogun_Ceanataur_Hyper,
+        Congalala_Hyper,
+        Blangonga_Hyper,
+        Rajang_Hyper,
+        Tigrex_Hyper,
+        Lavasioth_Hyper,
+        Nargacuga_Hyper,
+        Barioth_Hyper,
+        Deviljho_Hyper,
+        Barroth_Hyper,
+        Uragaan_Hyper,
+        Lagiacrus_Hyper,
+        Royal_Ludroth_Hyper,
+        Agnaktor_Hyper,
+        Duramboros_Hyper,
+        Nibelsnarf_Hyper,
+        Zinogre_Hyper,
+        Brachydios_Hyper,
+        Kecha_Wacha_Hyper,
+        Tetsucabra_Hyper,
+        Zamtrios_Hyper,
+        Najarala_Hyper,
+        Seltas_Queen_Hyper,
+        Nerscylla_Hyper,
+        Gore_Magala_Hyper,
+        Seregios_Hyper,
+        Malfestio_Hyper,
+        Glavenus_Hyper,
+        Astalos_Hyper,
+        Mizutsune_Hyper,
+        Gammoth_Hyper
+    };
+
+    static const std::array<const char*, Icon::STR_ARRAY_SIZE> str;
+
+    static const char* GetStr(const size id);
 };
 
 }

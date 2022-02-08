@@ -8,7 +8,7 @@ namespace ESL {
 static const u32 RESOURCE_HASH = 0x32CA92F8;
 
 struct sEmSmallData_s {
-    EmID                EnemyID;
+    Enemy::ID           EnemyID;
     u8                  Unk0[3];
     u8                  Area;
     u16                 Unk1;

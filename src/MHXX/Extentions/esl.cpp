@@ -66,7 +66,7 @@ void cEmSetList::print(void)
 
         for (auto& esdpos : esd.second)
         {
-            printf("Enemy:      %s\n", getEnemyStr(esdpos.EnemyID));
+            printf("Enemy:      %s\n", Enemy::GetStr(esdpos.EnemyID));
             printf("Area:       %hhd\n", esdpos.Area);
             printf("Position:   R:%f|X:%f|Y:%f|Z:%f\n",
                    esdpos.Position.R, esdpos.Position.X, esdpos.Position.Y, esdpos.Position.Z);
