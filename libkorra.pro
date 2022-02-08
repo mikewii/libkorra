@@ -10,7 +10,7 @@ LIBS    += -lz -lprocps
 CONFIG  += c++11
 
 
-INCLUDEPATH += $$PWD/Includes
+INCLUDEPATH += $$PWD/include
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -24,57 +24,58 @@ SOURCES += \
         GUI/gmd_gui.cpp \
         GUI/mainwindow.cpp \
         GUI/worker.cpp \
-        Sources/Global.cpp \
-        Sources/MH4U/MH4U.cpp \
-        Sources/MHXX/Enemy/Enemy.cpp \
-        Sources/MHXX/Extentions/esl.cpp \
-        Sources/MHXX/Extentions/ext.cpp \
-        Sources/MHXX/Extentions/gmd.cpp \
-        Sources/MHXX/Extentions/qdl.cpp \
-        Sources/MHXX/Extentions/qdp.cpp \
-        Sources/MHXX/Extentions/rem.cpp \
-        Sources/MHXX/Extentions/sem.cpp \
-        Sources/MHXX/Extentions/sup.cpp \
-        Sources/Tools/ARC.cpp \
-        Sources/Tools/Blowfish.cpp \
-        Sources/Tools/CContainer.cpp \
-        Sources/Tools/Pair.cpp \
-        Sources/Tools/Task.cpp \
-        Sources/Tools/Test.cpp \
-        Sources/Tools/Utils.cpp \
-        main.cpp
+        main.cpp \
+        src/Global.cpp \
+        src/MH4U/MH4U.cpp \
+        src/MHXX/Enemy/Enemy.cpp \
+        src/MHXX/Extentions/esl.cpp \
+        src/MHXX/Extentions/ext.cpp \
+        src/MHXX/Extentions/gmd.cpp \
+        src/MHXX/Extentions/qdl.cpp \
+        src/MHXX/Extentions/qdp.cpp \
+        src/MHXX/Extentions/rem.cpp \
+        src/MHXX/Extentions/sem.cpp \
+        src/MHXX/Extentions/sup.cpp \
+        src/MHXX/Quest/Common.cpp \
+        src/Tools/ARC.cpp \
+        src/Tools/Blowfish.cpp \
+        src/Tools/CContainer.cpp \
+        src/Tools/Pair.cpp \
+        src/Tools/Task.cpp \
+        src/Tools/Test.cpp \
+        src/Tools/Utils.cpp
 
 HEADERS += \
     GUI/gmd_gui.h \
     GUI/mainwindow.h \
     GUI/worker.h \
-    Includes/Global.hpp \
-    Includes/MH4U/MH4U.hpp \
-    Includes/MH4U/Resource.hpp \
-    Includes/MHXX/Enemy/Enemy.hpp \
-    Includes/MHXX/Extentions/esl.hpp \
-    Includes/MHXX/Extentions/ext.hpp \
-    Includes/MHXX/Extentions/gmd.hpp \
-    Includes/MHXX/Extentions/qdl.hpp \
-    Includes/MHXX/Extentions/qdp.hpp \
-    Includes/MHXX/Extentions/rem.hpp \
-    Includes/MHXX/Extentions/sem.hpp \
-    Includes/MHXX/Extentions/sup.hpp \
-    Includes/MHXX/MHXX.hpp \
-    Includes/MHXX/Quest/Common.hpp \
-    Includes/MHXX/Strings/Common.hpp \
-    Includes/MHXX/Strings/Enemy.hpp \
-    Includes/MHXX/Strings/Items.hpp \
-    Includes/MHXX/Strings/ext.hpp \
-    Includes/Tools/ARC.hpp \
-    Includes/Tools/Blowfish.hpp \
-    Includes/Tools/BlowfishTables.hpp \
-    Includes/Tools/CContainer.hpp \
-    Includes/Tools/Pair.hpp \
-    Includes/Tools/Task.hpp \
-    Includes/Tools/Test.hpp \
-    Includes/Tools/Utils.hpp \
-    Includes/types.h
+    include/Global.hpp \
+    include/MH4U/MH4U.hpp \
+    include/MH4U/Resource.hpp \
+    include/MHXX/Enemy/Enemy.hpp \
+    include/MHXX/Extentions/esl.hpp \
+    include/MHXX/Extentions/ext.hpp \
+    include/MHXX/Extentions/gmd.hpp \
+    include/MHXX/Extentions/qdl.hpp \
+    include/MHXX/Extentions/qdp.hpp \
+    include/MHXX/Extentions/rem.hpp \
+    include/MHXX/Extentions/sem.hpp \
+    include/MHXX/Extentions/sup.hpp \
+    include/MHXX/MHXX.hpp \
+    include/MHXX/Quest/Common.hpp \
+    include/MHXX/Strings/Common.hpp \
+    include/MHXX/Strings/Enemy.hpp \
+    include/MHXX/Strings/Items.hpp \
+    include/MHXX/Strings/ext.hpp \
+    include/Tools/ARC.hpp \
+    include/Tools/Blowfish.hpp \
+    include/Tools/BlowfishTables.hpp \
+    include/Tools/CContainer.hpp \
+    include/Tools/Pair.hpp \
+    include/Tools/Task.hpp \
+    include/Tools/Test.hpp \
+    include/Tools/Utils.hpp \
+    include/types.h
 
 FORMS += \
     GUI/gmd_gui.ui \

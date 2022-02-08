@@ -13,28 +13,28 @@ struct sEXTHeader_p1_s {
     static const u32 MAGIC      = 0x434B0000;
     static const u32 VERSION    = 1;
 
-    u32             Magic = MAGIC;          // 0x00
-    u32             Version = VERSION;
-    u32             Index; // ?
-    u32             QuestID;
+    u32             magic = MAGIC;          // 0x00
+    u32             version = VERSION;
+    u32             index; // ?
+    u32             questID;
 
-    QuestType0_e    QuestType0;              // 0x10
-    QuestType1_e    QuestType1;
-    QuestLv_e       QuestLv;
-    EnemyLv_e       BossLv;
-    Maps_e          MapNo;
-    StartType_e     StartType;
+    QuestType0::e   questType0;              // 0x10
+    QuestType1::e   questType1;
+    QuestLv::e      questLv;
+    EnemyLv::e      bossLv;
+    Maps::e         mapNo;
+    StartType_e     startType;
 
-    u8              QuestTime;
-    u8              QuestLives;
+    u8              questTime;
+    u8              questLives;
 
-    u8              AcEquipSetNo;           // null in every quest | arena related?
+    u8              acEquipSetNo;           // null in every quest | arena related?
     BGMType_e       BGMType;
 
-    EntryType_e     EntryType[2];
-    u8              EntryTypeCombo;         //  null in every quest
-    u8              ClearType;
-    u8              GekitaiHp; // fierce team / small mons?
+    EntryType_e     entryType[2];
+    u8              entryTypeCombo;         //  null in every quest
+    u8              clearType;
+    u8              gekitaiHp; // fierce team / small mons?
 
     Target_s        TargetMain[2]; // second u8 is u16 ?
     Target_s        TargetSub;
@@ -71,7 +71,7 @@ struct sEXTHeader_p1_s {
 
     // done, aligned
     Em_s            Em[2];
-    u8              isBossRushType; // not
+    u8              isBossRushType; // 0 - 8
 
     // done, aligned
     Appear_s        Appear[5];
@@ -90,8 +90,21 @@ struct sEXTHeader_p2_s {
     u8          padding0;
     u8          padding1[4];
 
-    u32         VillagePointG;
-    u8          Flag;
+    s32         VillagePointG;
+
+    union{
+        u8 raw;
+
+        // possible values: 0, 1, 2, 3, 4, 8, 12, 16
+        struct{
+            u8 b0 : 1;
+            u8 b1 : 1;
+            u8 b2 : 1;
+            u8 b3 : 1;
+            u8 b4 : 1;
+        };
+    } Flag;
+
 } PACKED;
 
 
@@ -107,11 +120,11 @@ public:
     bool save(Pair& _pp);
 
     bool Set_QuestID(const u32 id);
-    void Set_QuestType0(const QuestType0_e type);
-    void Set_QuestType1(const QuestType1_e type);
-    void Set_QuestLevel(const QuestLv_e level, const bool SpecialPermit = false);
-    void Set_BossLevel(const EnemyLv_e level);
-    void Set_MapNo(const Maps_e id);
+    void Set_QuestType0(const QuestType0::e type);
+    void Set_QuestType1(const QuestType1::e type);
+    void Set_QuestLevel(const QuestLv::e level, const bool SpecialPermit = false);
+    void Set_BossLevel(const EnemyLv::e level);
+    void Set_MapNo(const Maps::e id);
     void Set_StartType(const StartType_e type);
     void Set_QuestTime(const u8 minutes);
     void Set_QuestLives(const u8 ammount);
@@ -137,25 +150,25 @@ public:
 // prints:
     void print(void) const;
 
-    void print_Magic(void) const { Utils::print_help("Magic", this->header0.Magic); }
-    void print_Version(void) const { Utils::print_help("Version", this->header0.Version); }
-    void print_Index(void) const { Utils::print_help("Index", this->header0.Index); }
-    void print_QuestID(void) const { Utils::print_help("Quest ID", this->header0.QuestID); }
+    void print_Magic(void) const { Utils::print_help("Magic", this->header0.magic); }
+    void print_Version(void) const { Utils::print_help("Version", this->header0.version); }
+    void print_Index(void) const { Utils::print_help("Index", this->header0.index); }
+    void print_QuestID(void) const { Utils::print_help("Quest ID", this->header0.questID); }
     void print_QuestType0(void) const;
     void print_QuestType1(void) const;
     void print_QuestLevel(void) const;
     void print_BossLevel(void) const;
     void print_Map(void) const;
     void print_StartType(void) const;
-    void print_QuestTime(void) const { Utils::print_help("Quest time", this->header0.QuestTime); }
-    void print_QuestLives(void) const { Utils::print_help("Quest lives", this->header0.QuestLives); }
-    void print_AcEquipSetNo(void) const { Utils::print_help("AcEquipSetNo", this->header0.AcEquipSetNo); }
+    void print_QuestTime(void) const { Utils::print_help("Quest time", this->header0.questTime); }
+    void print_QuestLives(void) const { Utils::print_help("Quest lives", this->header0.questLives); }
+    void print_AcEquipSetNo(void) const { Utils::print_help("AcEquipSetNo", this->header0.acEquipSetNo); }
     void print_BGMType(void) const { Utils::print_help("BGM type", this->header0.BGMType); }
-    void print_EntryType0(void) const { Utils::print_help("Entry type 0", this->header0.EntryType[0]); }
-    void print_EntryType1(void) const { Utils::print_help("Entry type 1", this->header0.EntryType[1]); }
-    void print_EntryTypeCombo(void) const { Utils::print_help("Entry type combo", this->header0.EntryTypeCombo); }
-    void print_ClearType(void) const { Utils::print_help("Clear type", this->header0.ClearType); }
-    void print_GekitaiHp(void) const { Utils::print_help("GekitaiHp", this->header0.GekitaiHp); }
+    void print_EntryType0(void) const { Utils::print_help("Entry type 0", this->header0.entryType[0]); }
+    void print_EntryType1(void) const { Utils::print_help("Entry type 1", this->header0.entryType[1]); }
+    void print_EntryTypeCombo(void) const { Utils::print_help("Entry type combo", this->header0.entryTypeCombo); }
+    void print_ClearType(void) const { Utils::print_help("Clear type", this->header0.clearType); }
+    void print_GekitaiHp(void) const { Utils::print_help("GekitaiHp", this->header0.gekitaiHp); }
     void print_TargetMain0(void) const;
     void print_TargetMain1(void) const;
     void print_TargetSub(void) const;
@@ -193,7 +206,7 @@ public:
     void print_Icons(void) const;
     void print_GMDLinks(void) const;
     void print_VillagePointG(void) const { Utils::print_help("VillagePointG", this->header1.VillagePointG); }
-    void print_Flag(void) const { Utils::print_help("Flag", this->header1.Flag); }
+    void print_Flag(void) const { Utils::print_help("Flag", this->header1.Flag.raw); }
 
     const sEXTHeader_p1_s& GetHeader0(void) const { return this->header0; }
     const sEXTHeader_p2_s& GetHeader1(void) const { return this->header1; }
@@ -211,7 +224,6 @@ private:
 
     void Set_EntryType(const u8 id, const EntryType_e type);
 
-    u32 GetMapStrID(const Maps_e id) const;
     void print_Boss(const u32 id) const;
     void print_Appear(const u32 id) const;
     void print_Em(const u32 id) const;

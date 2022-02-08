@@ -36,18 +36,20 @@ int main(int argc, char *argv[])
 {
     Utils::File::SetCWD();
 
-    const char*         test_folder = "test/MHXX_CQs/from_MHXX_ENG";
+    //const char*         test_folder = "test/MHXX_CQs/from_MHXX_ENG";
+    const char*         test_folder = "test/MHXX_CQs/from_MHGU";
     DIR*                d = nullptr;
     struct dirent*      dir;
 
     col.Set_Path(Utils::GetUserHome() + "/test/");
+    //col.Disable();
     d = opendir((Utils::GetUserHome() + '/' + test_folder).c_str());
 
     if (d)
     {
         std::vector<std::string> selected_files =
         {
-//            "q0010405.arc",
+            //"q0090100.arc",
 //            "q0110101.arc",
 //            "q0040505.arc",
 //            "q0000633.arc",
@@ -111,6 +113,7 @@ int main(int argc, char *argv[])
 
 void Debug(std::vector<Pair>& vector, const char* filename)
 {
+    bool once = true;
     std::string quest_name;
     //printf("\n%s ", filename);
     for (auto& pair : vector)
@@ -120,7 +123,13 @@ void Debug(std::vector<Pair>& vector, const char* filename)
             TEST::test<MHXX::GMD::cGMD>(pair);
 
             MHXX::GMD::cGMD gmd(pair);
-            quest_name = gmd.get_ItemStr(0);
+            if (once)
+            {
+//                gmd.print_AllItems();
+                quest_name = gmd.get_ItemStr(0);
+                once = false;
+            }
+
             //printf("%s \n", gmd.get_ItemStr(0).c_str());
             //gmd.print_AllItems();
             break;
@@ -168,24 +177,24 @@ void Debug(std::vector<Pair>& vector, const char* filename)
             auto header0 = ext.GetHeader0();
             auto header1 = ext.GetHeader1();
 
+            //col.Disable();
             if (col.IsActive())
             {
-                col.Set_Value(4);
-                col.Set_Operator(Utils::Collector::Op::Unique);
+                col.Set_Value(0);
+                col.Set_Operator(Utils::Collector::Op::Equal);
                 col.Add
                 ({
-                    header0.QuestID,
+                    header0.questID,
                     quest_name,
-                    header0.QuestLv,
+                    header0.questLv,
 
-                    header1.Flag
+                    header0.questType1
                 });
                 //out.push_back(pair);
             }
             else
             {
-                ext.print_QuestType1();
-
+                ext.print();
             }
             //pair.cc.writeToFile((fpath + ".ext").c_str());
             break;

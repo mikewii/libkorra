@@ -5,6 +5,8 @@
 #include <ostream>
 #include <fstream>
 
+#include "MHXX/Quest/Common.hpp"
+
 #ifdef __linux__
     //#include <stdio.h>
     #include <unistd.h>
@@ -407,7 +409,7 @@ void Collector::Show(const bool sorted)
         {
             if (Collector::Flush())
                 printf("Collector:: data saved as %s at path %s\n", Collector::_name.c_str(), Collector::_path.c_str());
-            else printf("Collector:: Error happened trying to write file at path %s\n!", Collector::_path.c_str());
+            else printf("Collector:: Error happened trying to write file at path %s\n", Collector::_path.c_str());
             return;
         }
     }
@@ -417,20 +419,20 @@ void Collector::Show(const bool sorted)
         (
             Collector::_vec.begin(),
             Collector::_vec.end(),
-            [](const Collector::Info& a, const Collector::Info& b){ return a.QuestID < b.QuestID; }
+            [](const Collector::Info& a, const Collector::Info& b){ return a.Value < b.Value; }
         );
 
     printf("\n");
     for (const auto& info : Collector::_vec)
-        printf("q%07d %-30s lv:%-3d | dec: %d - hex: %X\n",
-               info.QuestID, info.Name.c_str(), info.QuestLevel, info.Value, info.Value);
+        printf("q%07d %-30s %-3s | dec: %d - hex: %X\n",
+               info.QuestID, info.Name.c_str(), MHXX::QuestLv::GetStr(info.QuestLevel), info.Value, info.Value);
 }
 
 bool Collector::Flush(void)
 {
     if (!Collector::IsActive()) return false;
 
-    char            buffer[128];
+    char            buffer[0x100];
     std::fstream    fout(Collector::_path + Collector::_name, std::ios::out);
 
 
@@ -457,14 +459,15 @@ bool Collector::Flush(void)
         for (const auto& info : Collector::_vec)
             if (info.Value == token) // format and write to file
             {
-                const auto size = sprintf(buffer, "q%07d %-30s lv:%-3d | dec: %d - hex: %X\n",
+                const auto& size = sprintf(buffer, "q%07d %-30s lv:%-3d | dec: %d - hex: %X\n",
                        info.QuestID, info.Name.c_str(), info.QuestLevel, info.Value, info.Value);
 
                 fout.write(buffer, size);
             }
         // add 3 new lines
-        for (auto i = 0; i < 3; i++)
-            fout.write("\n", 1);
+        if (i != (Collector::_vec_unique_ids.size() - 1))
+            for (auto i = 0; i < 3; i++)
+                fout << std::endl;
     }
 
     fout.close();

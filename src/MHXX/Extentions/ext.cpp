@@ -60,25 +60,25 @@ bool cEXT::save(Pair& _pp)
 bool cEXT::Set_QuestID(const u32 id)
 {
     // id check?
-    this->header0.QuestID = id;
+    this->header0.questID = id;
     return true;
 }
 
-void cEXT::Set_QuestType0(const QuestType0_e type) { this->header0.QuestType0 = type; }
-void cEXT::Set_QuestType1(const QuestType1_e type) { this->header0.QuestType1 = type; }
-void cEXT::Set_QuestLevel(const QuestLv_e level, const bool SpecialPermit)
+void cEXT::Set_QuestType0(const QuestType0::e type) { this->header0.questType0 = type; }
+void cEXT::Set_QuestType1(const QuestType1::e type) { this->header0.questType1 = type; }
+void cEXT::Set_QuestLevel(const QuestLv::e level, const bool SpecialPermit)
 {
-    if (SpecialPermit) this->header0.QuestLv = QuestLv_e(level + MHXX::Special);
-    else this->header0.QuestLv = level;
+    if (SpecialPermit) this->header0.questLv = QuestLv::e(level + MHXX::Special);
+    else this->header0.questLv = level;
 }
-void cEXT::Set_BossLevel(const EnemyLv_e level) { this->header0.BossLv = level; }
-void cEXT::Set_MapNo(const Maps_e id) { this->header0.MapNo = id; }
-void cEXT::Set_StartType(const StartType_e type) { this->header0.StartType = type; }
-void cEXT::Set_QuestTime(const u8 minutes) { this->header0.QuestTime = minutes; }
-void cEXT::Set_QuestLives(const u8 ammount) { this->header0.QuestLives = ammount; }
-void cEXT::Set_AcEquipSetNo(const u8 value) { this->header0.AcEquipSetNo = value; }
+void cEXT::Set_BossLevel(const EnemyLv::e level) { this->header0.bossLv = level; }
+void cEXT::Set_MapNo(const Maps::e id) { this->header0.mapNo = id; }
+void cEXT::Set_StartType(const StartType_e type) { this->header0.startType = type; }
+void cEXT::Set_QuestTime(const u8 minutes) { this->header0.questTime = minutes; }
+void cEXT::Set_QuestLives(const u8 ammount) { this->header0.questLives = ammount; }
+void cEXT::Set_AcEquipSetNo(const u8 value) { this->header0.acEquipSetNo = value; }
 void cEXT::Set_BGMType(const BGMType_e type) { this->header0.BGMType = type; }
-void cEXT::Set_EntryType(const u8 id, const EntryType_e type) { this->header0.EntryType[id] = type; }
+void cEXT::Set_EntryType(const u8 id, const EntryType_e type) { this->header0.entryType[id] = type; }
 //void cEXT::Set_EntryTypeCombo(const bool isUseBoth) { this->header0.EntryTypeCombo = isUseBoth; }
 void cEXT::Set_EntryFee(const u32 ammount) { this->header0.EntryFee = ammount; }
 void cEXT::Set_VillagePoints(const u32 ammount) { this->header0.VillagePoints = ammount; }
@@ -174,54 +174,35 @@ void cEXT::print(void) const
 
 void cEXT::print_QuestType0(void) const
 {
-    Utils::print_help_arr<decltype (QuestType0_str)>("Quest type0", this->header0.QuestType0, QuestType0_str);
+    Utils::print_help_arr<decltype (QuestType0_str)>("Quest type0", this->header0.questType0, QuestType0_str);
 }
 
 void cEXT::print_QuestType1(void) const
 {
-    Utils::print_help_arr<decltype (QuestType1_str)>("Quest type1", this->header0.QuestType1 - 1, QuestType1_str);
+    Utils::print_help_arr<decltype (QuestType1::str)>("Quest type1", this->header0.questType1 - 1, QuestType1::str);
 }
 
 void cEXT::print_QuestLevel(void) const
 {
-    u32 level = this->header0.QuestLv;
+    u32 level = this->header0.questLv;
 
-    if (this->header0.QuestLv > MHXX::Special) level -= MHXX::Special;
-    Utils::print_help_arr<decltype (QuestLv_str)>("Quest level", level, QuestLv_str);
+    if (this->header0.questLv > MHXX::Special) level -= MHXX::Special;
+    Utils::print_help_arr<decltype (QuestLv::str)>("Quest level", level, QuestLv::str);
 }
 
 void cEXT::print_BossLevel(void) const
 {
-    Utils::print_help_arr<decltype (EnemyLv_str)>("Boss level", this->header0.BossLv, EnemyLv_str);
-}
-
-u32 cEXT::GetMapStrID(const Maps_e id) const
-{
-    switch(id){
-    case Maps_e::J_Frontier_D:{return id;}
-    case Maps_e::J_Frontier_N:{return (id - Special) + 1;}
-    case Maps_e::V_Hills_D:{return id + 1;}
-    case Maps_e::V_Hills_N:{return (id - Special) + 2;}
-    case Maps_e::A_Ridge_D:{return id + 2;}
-    case Maps_e::A_Ridge_N:{return (id - Special) + 3;}
-    case Maps_e::M_Peaks_D:{return id + 3;}
-    case Maps_e::M_Peaks_N:{return (id - Special) + 4;}
-    default:
-    {
-        if (id > Maps_e::Forlorn_Citadel || id < 0) return Maps_e::ErrorMapID;
-        else return id + 4;
-    }
-    }
+    Utils::print_help_arr<decltype (EnemyLv::str)>("Boss level", this->header0.bossLv, EnemyLv::str);
 }
 
 void cEXT::print_Map(void) const
 {
-    printf("%-25s%s | %08X|%d\n", "Map", Maps_str[cEXT::GetMapStrID(this->header0.MapNo)], this->header0.MapNo, this->header0.MapNo);
+    printf("%-25s%s | %08X|%d\n", "Map", Maps::GetStr(this->header0.mapNo), this->header0.mapNo, this->header0.mapNo);
 }
 
 void cEXT::print_StartType(void) const
 {
-    Utils::print_help_arr<decltype (StartType_str)>("Start type", this->header0.StartType, StartType_str);
+    Utils::print_help_arr<decltype (StartType_str)>("Start type", this->header0.startType, StartType_str);
 }
 
 void cEXT::print_TargetMain0(void) const
