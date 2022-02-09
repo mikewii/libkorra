@@ -113,7 +113,7 @@ class cEXT : public PairInfoKeeper
 public:
 
     cEXT(bool isMHGU = false);
-    cEXT(Pair& _pp);
+    cEXT(const Pair& _pp);
     ~cEXT();
 
     void make(Pair& _pp);
@@ -155,7 +155,6 @@ public:
     void Set_Icon4(const Icon::e icon) { cEXT::Set_Icon(icon, 4); }
 
 
-// prints:
     void print(void) const;
 
     void print_Magic(void) const { Utils::print_help("Magic", this->header0.magic); }
@@ -228,7 +227,7 @@ private:
 
     u32 getResourceHash(void) const { return MHXX::EXT::RESOURCE_HASH; }
 
-    bool read(Pair& _pp);
+    bool read(const Pair& _pp);
 
     void Set_EntryType(const EntryType::e type, const u8 id);
     void Set_Icon(const Icon::e icon, const u32 id);

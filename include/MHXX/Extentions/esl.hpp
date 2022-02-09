@@ -44,16 +44,16 @@ class cEmSetList : public PairInfoKeeper
 public:
 
     cEmSetList();
-    cEmSetList(Pair& _pp);
+    cEmSetList(const Pair& _pp);
     ~cEmSetList();
 
-    void print(void);
+    void print(void) const;
 
 private:
     sESLHeader_s                                                    __header;
     std::vector<std::pair<sESData_s, std::vector<sEmSmallData_s>>>  __ESD;
 
-    void read(Pair& _pp);
+    void read(const Pair& _pp);
 
 };
 

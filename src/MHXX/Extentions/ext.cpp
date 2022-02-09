@@ -10,11 +10,11 @@ cEXT::cEXT(bool isMHGU)
     else this->dataSize = EXT::MHXX_EXT_SIZE;
 }
 
-cEXT::cEXT(Pair& _pp)
+cEXT::cEXT(const Pair& _pp)
 {
     if (_pp.info.ResourceHash == RESOURCE_HASH)
     {
-        this->SetPairInfo(_pp);
+        this->Set_PairInfo(_pp);
 
         this->read(_pp);
     }
@@ -351,7 +351,7 @@ void cEXT::print_GMDLink(const u32 id) const
     printf("%-25s%s\n", "Message", this->links[id].GMDFileName);
 }
 
-bool cEXT::read(Pair &_pp)
+bool cEXT::read(const Pair &_pp)
 {
     cEXT::dataSize = _pp.cc.size();
 

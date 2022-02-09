@@ -321,7 +321,7 @@ struct Supply_s {
 struct Boss_s {
     Enemy::ID   EmType;
     u8          EmSubType;      // 0 1 2 3 4 5 6 7 100 101 103
-    u8          AuraType;       // 0 1
+    u8          AuraType;       // 0 1, determine if small monsters leave area with boss?
     u8          RestoreNum;
     u8          VitalTblNo;     // bits? 0 - 135
     u8          AttackTblNo;    // bits? 0 - 135
@@ -498,7 +498,7 @@ struct Icon { // complete
         Soulseer,
         Rustrazor,
         Nightcloak,
-        Unknown,    // wtf is this
+        Ahtal_Ka_Mecha,
         Ahtal_Ka,
         Valstrax,
         None_Hyper,

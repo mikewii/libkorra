@@ -8,13 +8,13 @@ cSupply::cSupply()
 {
 }
 
-cSupply::cSupply(Pair& _pp)
+cSupply::cSupply(const Pair& _pp)
 {
     if (_pp.cc.size() == sizeof(sSupply_s) && _pp.info.ResourceHash == RESOURCE_HASH)
     {
         Utils::copybytes(&this->__data, _pp.cc.data(), sizeof(sSupply_s));
 
-        this->SetPairInfo(_pp);
+        this->Set_PairInfo(_pp);
     }
     else NotifyError("Pair is not sSupply_s");
 }
@@ -26,7 +26,7 @@ cSupply::~cSupply()
 void cSupply::make(Pair& _pp) { this->save(_pp); }
 void cSupply::save(Pair& _pp) { Export<cSupply>::save(*this, _pp); }
 
-void cSupply::print(bool _useNames)
+void cSupply::print(bool _useNames) const
 {
     u32 i = 0;
 
@@ -51,7 +51,7 @@ void cSupply::print(bool _useNames)
 }
 
 ////////// Getters //////////
-sSupplyItem_s cSupply::getItem(u32 _id)
+sSupplyItem_s cSupply::Get_Item(const u32 _id) const
 {
     if (_id < sSupply_s::ITEM_MAX)
         return this->__data.Item[_id];
@@ -60,7 +60,7 @@ sSupplyItem_s cSupply::getItem(u32 _id)
 }
 
 ////////// Setters //////////
-bool cSupply::setItem(u32 _id, sSupplyItem_s& _item)
+bool cSupply::Set_Item(const u32 _id, const sSupplyItem_s& _item)
 {
     if (_id < sSupply_s::ITEM_MAX)
     {

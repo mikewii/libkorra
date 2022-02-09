@@ -28,7 +28,7 @@ public:
      * @brief Saves info from provided Pair
      * @param _pp   Pair to work on
      */
-    void SetPairInfo(Pair& _pp);
+    void Set_PairInfo(const Pair& _pp);
 
     /**
      * @brief Writes saved info to provided Pair

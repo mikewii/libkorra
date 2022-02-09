@@ -6,7 +6,7 @@ public:
 
     CContainer(){};
     CContainer(const char* _fname);
-    CContainer(std::string& _fname);
+    CContainer(const std::string& _fname);
     CContainer(const CContainer& cc);
     ~CContainer();
 

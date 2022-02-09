@@ -2,7 +2,7 @@
 #include "Tools/Utils.hpp"
 
 CContainer::CContainer(const char* _fname) { this->readFromFile(_fname); }
-CContainer::CContainer(std::string& _fname) { this->readFromFile(_fname.c_str()); }
+CContainer::CContainer(const std::string& _fname) { this->readFromFile(_fname.c_str()); }
 CContainer::CContainer(const CContainer& cc)
 {
     // copy data

@@ -40,26 +40,25 @@ class cRewardEm : public PairInfoKeeper
 public:
 
     cRewardEm();
-    cRewardEm(Pair& _pp);
+    cRewardEm(const Pair& _pp);
     ~cRewardEm();
 
     void make(Pair& _pp);
     void save(Pair& _pp);
 
-    void print(void);
-    void printFlagNums(void);
-    void printRewardFlags(void);
-    void printRewardItems(bool _useNames = false);
+    void print(void) const;
+    void print_FlagNums(void) const;
+    void print_RewardFlags(void) const;
+    void print_RewardItems(bool _useNames = false) const;
 
-    //Getters
-    sRewardFlag_s   getFlag(u32 _id) const;
-    u8              getFlagNum(u32 _id) const;
-    sRewardItem_s   getRewardItem(u32 _id) const;
 
-    //Setters
-    bool            setFlag(sRewardFlag_s _flag, u32 _id);
-    bool            setFlagNum(s8 _flagNum, u32 _id);
-    bool            setRewardItem(sRewardItem_s _item, u32 _id);
+    sRewardFlag_s   Get_Flag(const u32 _id) const;
+    u8              Get_FlagNum(const u32 _id) const;
+    sRewardItem_s   Get_RewardItem(const u32 _id) const;
+
+    bool            Set_Flag(const sRewardFlag_s _flag, const u32 _id);
+    bool            Set_FlagNum(const s8 _flagNum, const u32 _id);
+    bool            Set_RewardItem(const sRewardItem_s _item, const u32 _id);
 
 private:
     sRewardEm_s     __data;

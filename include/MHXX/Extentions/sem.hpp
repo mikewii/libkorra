@@ -21,7 +21,7 @@ class cSetEmMain : public PairInfoKeeper
 public:
 
     cSetEmMain();
-    cSetEmMain(Pair& _pp);
+    cSetEmMain(const Pair& _pp);
     ~cSetEmMain(){};
 
     void print(void);
@@ -29,15 +29,14 @@ public:
     void make(Pair& _pp);
     void save(Pair& _pp);
 
-    // Getters
-    u32                 getWaveNo(void) const;
-    u32                 getAreaNo(void) const;
-    Geometry4<float>    getPosition(void) const;
 
-    // Setters
-    void                setWaveNo(u32 _num);
-    void                setAreaNo(u32 _num);
-    void                setPosition(float _rot, float _x, float _y, float _z);
+    u32                 Get_WaveNo(void) const;
+    u32                 Get_AreaNo(void) const;
+    Geometry4<float>    Get_Position(void) const;
+
+    void                Set_WaveNo(const u32 _num);
+    void                Set_AreaNo(const u32 _num);
+    void                Set_Position(const Geometry4<float> pos);
 
 private:
     sSetEmMain_s    __data;

@@ -105,8 +105,6 @@ int main(int argc, char *argv[])
         //Utils::File::PairVectorToFiles(list, fname, "/run/media/mw/data2/test/");
     }
 
-    printf("Ass %d\n", MHXX::Icon::e::Unknown);
-
 #ifdef USE_GUI
     return GUI_RUN(argc, argv);
 #else
@@ -129,7 +127,7 @@ void Debug(std::vector<Pair>& vector, const char* filename)
             {
                 MHXX::GMD::cGMD gmd(pair);
 //                gmd.print_AllItems();
-                quest_name = gmd.get_ItemStr(0);
+                quest_name = gmd.Get_ItemStr(0);
                 once = false;
             }
 
@@ -184,7 +182,7 @@ void Debug(std::vector<Pair>& vector, const char* filename)
             if (col.IsActive())
             {
                 col.Set_Value(8);
-                col.Set_Operator(Utils::Collector::Op::Collect);
+                col.Set_Operator(Utils::Collector::Op::Unique);
                 //if (header0.Em[0].EmSetTargetID.idSub == 8)
                 col.Add
                 ({
@@ -192,7 +190,7 @@ void Debug(std::vector<Pair>& vector, const char* filename)
                     quest_name,
                     header0.questLv,
 
-                    header0.icon[4] // 0x314417B8
+                    header0.acEquipSetNo
                 });
                 //out.push_back(pair);
             }

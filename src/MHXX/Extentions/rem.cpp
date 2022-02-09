@@ -8,13 +8,13 @@ cRewardEm::cRewardEm()
 {
 }
 
-cRewardEm::cRewardEm(Pair &_pp)
+cRewardEm::cRewardEm(const Pair &_pp)
 {
     if (_pp.cc.size() == sizeof(sRewardEm_s) && _pp.info.ResourceHash == RESOURCE_HASH)
     {
         Utils::copybytes(&this->__data, _pp.cc.data(), sizeof(sRewardEm_s));
 
-        this->SetPairInfo(_pp);
+        this->Set_PairInfo(_pp);
     }
     else NotifyError("Pair is not a sRewardEm_s");
 }
@@ -35,21 +35,21 @@ void cRewardEm::save(Pair& _pp)
 }
 
 
-void cRewardEm::print(void)
+void cRewardEm::print(void) const
 {
     printf("\n##### RewardEm file #####\n");
 
     printf("Magic:                  0x%08X\n", this->__data.Magic);
     printf("Version:                0x%08X\n", this->__data.Version);
 
-    this->printRewardFlags();
+    this->print_RewardFlags();
 
-    this->printFlagNums();
+    this->print_FlagNums();
 
-    this->printRewardItems(true);
+    this->print_RewardItems(true);
 }
 
-void cRewardEm::printFlagNums(void)
+void cRewardEm::print_FlagNums(void) const
 {
     u32 i = 1;
     for (auto& flagNum : this->__data.FlagNum)
@@ -59,11 +59,11 @@ void cRewardEm::printFlagNums(void)
     }
 }
 
-void cRewardEm::printRewardFlags( void )
+void cRewardEm::print_RewardFlags(void) const
 {
     u32 i = 1;
 
-    for( auto& rewardFlag : this->__data.Flag)
+    for (auto& rewardFlag : this->__data.Flag)
     {
         printf("Flag#%02d :Flag:    %hhd\n", i, rewardFlag.Flag);
         printf("Flag#%02d :ItemNum: %hhd\n", i, rewardFlag.ItemNum);
@@ -71,7 +71,7 @@ void cRewardEm::printRewardFlags( void )
     }
 }
 
-void cRewardEm::printRewardItems(bool _useNames)
+void cRewardEm::print_RewardItems(bool _useNames) const
 {
     u32 i = 1;
     for (auto& rewardItem : this->__data.Item)
@@ -91,7 +91,7 @@ void cRewardEm::printRewardItems(bool _useNames)
 }
 
 ////////// Getters //////////
-sRewardFlag_s cRewardEm::getFlag(u32 _id) const
+sRewardFlag_s cRewardEm::Get_Flag(const u32 _id) const
 {
     if (_id < sRewardEm_s::REM_FLAGS)
         return this->__data.Flag[_id];
@@ -99,7 +99,7 @@ sRewardFlag_s cRewardEm::getFlag(u32 _id) const
     else return sRewardFlag_s{ REM_ERROR, REM_ERROR };
 }
 
-u8 cRewardEm::getFlagNum(u32 _id) const
+u8 cRewardEm::Get_FlagNum(const u32 _id) const
 {
     if (_id < sRewardEm_s::REM_FLAG_NUMS)
         return this->__data.FlagNum[_id];
@@ -107,7 +107,7 @@ u8 cRewardEm::getFlagNum(u32 _id) const
     else return REM_ERROR;
 }
 
-sRewardItem_s cRewardEm::getRewardItem(u32 _id) const
+sRewardItem_s cRewardEm::Get_RewardItem(const u32 _id) const
 {
     if (_id < sRewardEm_s::REM_ITEMS)
         return this->__data.Item[_id];
@@ -116,7 +116,7 @@ sRewardItem_s cRewardEm::getRewardItem(u32 _id) const
 }
 
 ////////// Setters //////////
-bool cRewardEm::setFlag(sRewardFlag_s _flag, u32 _id)
+bool cRewardEm::Set_Flag(const sRewardFlag_s _flag, const u32 _id)
 {
     if (_id < sRewardEm_s::REM_FLAGS)
     {
@@ -126,7 +126,7 @@ bool cRewardEm::setFlag(sRewardFlag_s _flag, u32 _id)
     else return false;
 }
 
-bool cRewardEm::setFlagNum(s8 _flagNum, u32 _id)
+bool cRewardEm::Set_FlagNum(const s8 _flagNum, const u32 _id)
 {
     if (_id < sRewardEm_s::REM_FLAG_NUMS)
     {
@@ -136,7 +136,7 @@ bool cRewardEm::setFlagNum(s8 _flagNum, u32 _id)
     else return true;
 }
 
-bool cRewardEm::setRewardItem(sRewardItem_s _item, u32 _id)
+bool cRewardEm::Set_RewardItem(const sRewardItem_s _item, const u32 _id)
 {
     if (_id < sRewardEm_s::REM_ITEMS)
     {

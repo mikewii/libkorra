@@ -30,19 +30,19 @@ class cSupply : public PairInfoKeeper
 public:
 
     cSupply();
-    cSupply(Pair& _pp);
+    cSupply(const Pair& _pp);
     ~cSupply();
 
     void make(Pair& _pp);
     void save(Pair& _pp);
 
-    void print(bool _useNames = false);
+    void print(bool _useNames = false) const;
 
     // Getters
-    sSupplyItem_s   getItem(u32 _id);
+    sSupplyItem_s   Get_Item(const u32 _id) const;
 
     // Setters
-    bool            setItem(u32 _id, sSupplyItem_s& _item);
+    bool            Set_Item(const u32 _id, const sSupplyItem_s& _item);
 
 private:
     sSupply_s   __data;

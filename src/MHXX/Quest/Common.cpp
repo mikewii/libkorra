@@ -411,7 +411,7 @@ const std::array<const char*, Icon::STR_ARRAY_SIZE> Icon::str = {
     "Soulseer",
     "Rustrazor",
     "Nightcloak",
-    "Unknown",
+    "Ahtal-Ka Mecha",
     "Ahtal-Ka",
     "Valstrax",
     "None (Hyper)",

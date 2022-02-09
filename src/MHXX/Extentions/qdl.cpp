@@ -14,7 +14,7 @@ cQuestDataLink::cQuestDataLink(Pair& _pp)
     {
         Utils::copybytes(&this->__data, _pp.cc.data(), sizeof(sQuestDataLink_s));
 
-        this->SetPairInfo(_pp);
+        this->Set_PairInfo(_pp);
     }
     else NotifyError("Pair is not a sQuestDataLink_s");
 }
@@ -26,7 +26,7 @@ cQuestDataLink::~cQuestDataLink()
 void cQuestDataLink::make(Pair& _pp) { this->save(_pp); }
 void cQuestDataLink::save(Pair& _pp) { Export<cQuestDataLink>::save(*this, _pp); }
 
-void cQuestDataLink::print(void)
+void cQuestDataLink::print(void) const
 {
     printf("\n##### QuestDataLink file #####\n");
 
@@ -34,7 +34,7 @@ void cQuestDataLink::print(void)
     printf("Version:    0x%08X\n", this->__data.Version);
 
     for (auto& item : this->__data.Item)
-        printItem(item);
+        print_Item(item);
 
 //    for ( auto& boss : this->__data.BossSetRes )
 //        printItem( boss );
@@ -53,24 +53,24 @@ void cQuestDataLink::print(void)
 //    printItem( this->__data.QuestPlus );
 }
 
-void cQuestDataLink::printItem(sQDLItem_s& _item)
+void cQuestDataLink::print_Item(const sQDLItem_s& _item) const
 {
     printf("Resource:   0x%08X\n", _item.Resource);
     printf("Name:       %s\n\n", _item.Name);
 }
 
 ////////// Getters //////////
-sQDLItem_s  cQuestDataLink::getItem(sQDLItemOrder _id) const
+sQDLItem_s  cQuestDataLink::Get_Item(const sQDLItemOrder _id) const
 {
     return this->__data.Item[_id];
 }
 
-std::string sQDLItem_s::getName(void) const { return std::string(this->Name); }
+std::string sQDLItem_s::Get_Name(void) const { return std::string(this->Name); }
 
 
 ////////// Setters //////////
-void cQuestDataLink::setItem(sQDLItem_s& _item, sQDLItemOrder _id) { this->__data.Item[_id] = _item; }
-bool sQDLItem_s::setName(std::string& _str)
+void cQuestDataLink::Set_Item(const sQDLItem_s& _item, const sQDLItemOrder _id) { this->__data.Item[_id] = _item; }
+bool sQDLItem_s::Set_Name(const std::string& _str)
 {
     if (_str.size() <= sQDLItem_s::QDL_NAME_MAX)
     {
@@ -80,7 +80,7 @@ bool sQDLItem_s::setName(std::string& _str)
     else return false;
 }
 
-bool sQDLItem_s::setName(const char* _str)
+bool sQDLItem_s::Set_Name(const char* _str)
 {
     u32 size = strlen(_str);
     if (size <= sQDLItem_s::QDL_NAME_MAX)

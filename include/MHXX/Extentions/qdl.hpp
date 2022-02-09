@@ -10,14 +10,14 @@ static const u32 RESOURCE_HASH  = 0x00E0BB1C;
 
 
 enum sQDLItemOrder {
+    Boss0 = 0,
     Boss1,
     Boss2,
     Boss3,
     Boss4,
-    Boss5,
     Intruder, // righ order?
+    SmallEm0,
     SmallEm1,
-    SmallEm2,
     RewardMainA,
     RewardMainB,
     RewardExtraA,
@@ -33,12 +33,10 @@ struct sQDLItem_s {
     u32     Resource;
     char    Name[QDL_NAME_MAX];
 
-    // Getters
-    std::string getName(void) const;
 
-    // Setters
-    bool        setName(std::string& _str);
-    bool        setName(const char* _str);
+    std::string Get_Name(void) const;
+    bool        Set_Name(const std::string& _str);
+    bool        Set_Name(const char* _str);
 };
 
 struct sQuestDataLink_s {
@@ -64,14 +62,13 @@ public:
     void make(Pair& _pp);
     void save(Pair& _pp);
 
-    void print(void);
-    void printItem(sQDLItem_s& _item);
+    void print(void) const;
+    void print_Item(const sQDLItem_s& _item) const;
 
-    // Getters
-    sQDLItem_s  getItem(sQDLItemOrder _id) const;
 
-    // Setters
-    void        setItem(sQDLItem_s& _item, sQDLItemOrder _id);
+    sQDLItem_s  Get_Item(const sQDLItemOrder _id) const;
+
+    void        Set_Item(const sQDLItem_s& _item, const sQDLItemOrder _id);
 
 private:
     sQuestDataLink_s    __data;

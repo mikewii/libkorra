@@ -1,7 +1,7 @@
 #include "Tools/Pair.hpp"
 #include "Tools/Utils.hpp"
 
-void PairInfoKeeper::SetPairInfo(Pair& _pp)
+void PairInfoKeeper::Set_PairInfo(const Pair& _pp)
 {
     Utils::copybytes(&this->__info.Filename, _pp.info.Filename, FNAME_SIZE);
     this->__info.ResourceHash   = _pp.info.ResourceHash;
