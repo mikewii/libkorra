@@ -8,7 +8,7 @@ cQuestDataLink::cQuestDataLink()
 {
 }
 
-cQuestDataLink::cQuestDataLink(Pair& _pp)
+cQuestDataLink::cQuestDataLink(const Pair& _pp)
 {
     if (_pp.cc.size() == sizeof(sQuestDataLink_s) && _pp.info.ResourceHash == getResourceHash())
     {

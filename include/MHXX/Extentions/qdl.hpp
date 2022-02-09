@@ -56,7 +56,7 @@ class cQuestDataLink : public PairInfoKeeper
 {
 public:
     cQuestDataLink();
-    cQuestDataLink(Pair& _pp);
+    cQuestDataLink(const Pair& _pp);
     ~cQuestDataLink();
 
     void make(Pair& _pp);
