@@ -7,8 +7,6 @@
 
 //#define TEST
 
-namespace TEST {
-
 void runTests(void);
 
 class Timer
@@ -61,5 +59,3 @@ void test(Pair& _in)
     else printf("Test successfull for %s!\n", className);
 #endif
 }
-
-} // TEST

@@ -148,9 +148,8 @@ void lambdaTest()
 
 
 
-namespace TEST {
 
-void Timer::start( void )
+void Timer::start(void)
 {
     this->timer.first = this->getTime();
 }
@@ -369,5 +368,3 @@ void runTests( void )
     //timeTest();
     //initializerListTest();
 }
-
-} // TEST

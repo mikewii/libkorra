@@ -1,14 +1,18 @@
 #include "Tools/CContainer.hpp"
 #include "Tools/ARC.hpp"
 #include "MH4U/MH4U.hpp"
-#include "MHXX/MHXX.hpp"
+
 #include "Tools/Utils.hpp"
+#include "Tools/File.hpp"
 
 #include "Tools/Test.hpp"
 
 #include <dirent.h>
 #include <string.h>
 #include "MHXX/Quest/Common.hpp"
+
+#include "MH4U/MH4U_Test.hpp"
+#include "MHXX/MHXX_Test.hpp"
 //#define USE_GUI
 
 #ifdef USE_GUI
@@ -33,9 +37,9 @@ static Utils::Collector col(2);
 void Debug(std::vector<Pair>& vector, const char* filename);
 
 
-int main(int argc, char *argv[])
+int main(int argc UNUSED, char *argv[] UNUSED)
 {
-    Utils::File::SetCWD();
+    File::SetCWD();
 
     //const char*         test_folder = "test/MHXX_CQs/from_MHXX_ENG";
     //const char*         test_folder = "test/MHXX_CQs/from_MHGU";
@@ -79,17 +83,17 @@ int main(int argc, char *argv[])
 
                 if (!found) continue;
             }
-            if (strlen(dir->d_name) == 12) // filename 8 + dot 1 + extention 3
+            //if (strlen(dir->d_name) == 12) // filename 8 + dot 1 + extention 3
             {
                 std::vector<Pair>   vector;
                 std::string         fpath = Utils::GetUserHome() + '/' + test_folder + '/' + dir->d_name;
-                std::string         fname = Utils::File::extractName(fpath);
+                std::string         fname = File::extractName(fpath);
 
 
 //                CContainer arc(fpath);
 //                ARC(arc, &vector).ExtractAll();
 
-//                Debug(vector, dir->d_name);
+                //MHXX::TEST::Extentions(vector, dir->d_name, col);
 
                 CContainer data(fpath);
                 MH4U::cLMD lmd(data);
@@ -105,7 +109,7 @@ int main(int argc, char *argv[])
 
                 lmd.write(ass);
 
-                ass.writeToFile(fpath + "ass");
+                //ass.writeToFile(fpath + "ass");
             }
         }
         closedir(d);
@@ -115,11 +119,11 @@ int main(int argc, char *argv[])
         if (!out.empty())
             for (auto& pair : out)
             {
-                auto name = Utils::File::extractName(pair.info.Filename);
+                auto name = File::extractName(pair.info.Filename);
                 pair.cc.writeToFile({Utils::GetUserHome() + "/test/" + name});
             }
 
-        //Utils::File::PairVectorToFiles(list, fname, "/run/media/mw/data2/test/");
+        //File::PairVectorToFiles(list, fname, "/run/media/mw/data2/test/");
     }
 
 #ifdef USE_GUI
@@ -129,104 +133,4 @@ int main(int argc, char *argv[])
 #endif
 }
 
-void Debug(std::vector<Pair>& vector, const char* filename)
-{
-    bool once = true;
-    std::string quest_name;
-    //printf("\n%s ", filename);
-    for (auto& pair : vector)
-    {
-        switch(pair.info.ResourceHash){
-        case MHXX::GMD::RESOURCE_HASH:{
-            TEST::test<MHXX::GMD::cGMD>(pair);
 
-            if (once)
-            {
-                MHXX::GMD::cGMD gmd(pair);
-//                gmd.print_AllItems();
-                quest_name = gmd.Get_ItemStr(0);
-                once = false;
-            }
-
-            //printf("%s \n", gmd.get_ItemStr(0).c_str());
-            //gmd.print_AllItems();
-            break;
-        }
-        case MHXX::QDP::RESOURCE_HASH:{
-            TEST::test<MHXX::QDP::cQuestPlus>(pair);
-            break;
-        }
-        case MHXX::SEM::RESOURCE_HASH:{
-            TEST::test<MHXX::SEM::cSetEmMain>(pair);
-
-            MHXX::SEM::cSetEmMain sem(pair);
-            //sem.print();
-            break;
-        }
-        case MHXX::REM::RESOURCE_HASH:{
-            TEST::test<MHXX::REM::cRewardEm>(pair);
-
-            MHXX::REM::cRewardEm rem(pair);
-            //rem.print();
-            break;
-        }
-        case MHXX::SUP::RESOURCE_HASH:{
-            TEST::test<MHXX::SUP::cSupply>(pair);
-
-            MHXX::SUP::cSupply sup(pair);
-            //sup.print(true);
-            break;
-        }
-        case MHXX::QDL::RESOURCE_HASH:{
-            TEST::test<MHXX::QDL::cQuestDataLink>(pair);
-
-            MHXX::QDL::cQuestDataLink qdl(pair);
-            //qdl.print();
-            break;
-        }
-        case MHXX::ESL::RESOURCE_HASH:{ // broken for MHGU
-            //MHXX::ESL::cEmSetList esl(pair);
-            //esl.print();
-            break;
-        }
-        case MHXX::EXT::RESOURCE_HASH:{
-            MHXX::EXT::cEXT ext(pair);
-
-            const auto& header0 = ext.GetHeader0();
-            const auto& header1 = ext.GetHeader1();
-
-            //col.Disable();
-            if (col.IsActive())
-            {
-                col.Set_Value(8);
-                col.Set_Operator(Utils::Collector::Op::Unique);
-                //if (header0.Em[0].EmSetTargetID.idSub == 8)
-                col.Add
-                ({
-                    header0.questID,
-                    quest_name,
-                    header0.questLv,
-
-                    header0.acEquipSetNo
-                });
-                //out.push_back(pair);
-            }
-            else
-            {
-                //if (header0.Em[0].EmSetTargetID.idSub == 8)
-                {
-                    printf("q%07d %-3s %s\n", header0.questID, MHXX::QuestLv::GetStr(header0.questLv), quest_name.c_str());
-                    printf("0: %d %d\n", header0.Em[0].EmSetTargetID.id, header0.Em[0].EmSetTargetID.idSub);
-                    printf("1: %d %d\n", header0.Em[1].EmSetTargetID.id, header0.Em[1].EmSetTargetID.idSub);
-//                    ext.print_Em0();
-//                    ext.print_Em0();
-                }
-//                ext.print_Supply0();
-//                ext.print_Supply1();
-            }
-            //pair.cc.writeToFile((fpath + ".ext").c_str());
-            break;
-        }
-        } // switch
-    }
-}

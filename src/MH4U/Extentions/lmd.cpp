@@ -134,7 +134,7 @@ void Copy(const T& item, u32& offset, u8* dest)
     offset += sizeof(item);
 }
 
-void cLMD::write(CContainer& data)
+void cLMD::write(CContainer& container)
 {
     const auto  vData0_size             = cLMD::vData0.size() * sizeof(Data0);
     const auto  vData1_size             = cLMD::vData1.size() * sizeof(Data1);
@@ -182,20 +182,20 @@ void cLMD::write(CContainer& data)
     /*header*/    header.pFilename = sizeof(sLMD) + vData0_size + vData1_size + vU16string_info_size + vStrings_size;
 
 
-    /*copy*/      data.resize(final_size);
+    /*copy*/      container.resize(final_size);
     /*copy*/
-    /*copy*/      Utils::copybytes(data.data(), &header, sizeof(sLMD));
+    /*copy*/      Utils::copybytes(container.data(), &header, sizeof(sLMD));
     /*copy*/
     /*copy*/      u32 offset = sizeof(sLMD);
     /*copy*/
     /*copy*/      for (const auto& item : cLMD::vData0)
-    /*copy*/          Copy<Data0>(item, offset, data.data());
+    /*copy*/          Copy<Data0>(item, offset, container.data());
     /*copy*/
     /*copy*/      for (const auto& item : cLMD::vData1)
-    /*copy*/          Copy<Data1>(item, offset, data.data());
+    /*copy*/          Copy<Data1>(item, offset, container.data());
     /*copy*/
     /*copy*/      for (const auto& item : cLMD::vU16string_info)
-    /*copy*/          Copy<U16string_info>(item, offset, data.data());
+    /*copy*/          Copy<U16string_info>(item, offset, container.data());
     /*copy*/
     /*copy*/      for (const auto& str : cLMD::vStrings)
     /*copy*/      {
@@ -203,12 +203,12 @@ void cLMD::write(CContainer& data)
     /*copy*/          const auto align = size % 4;
     /*copy*/          const auto bytes = size + align;
     /*copy*/
-    /*copy*/          Utils::Copy_UTF16_String(data.data() + offset, str);
+    /*copy*/          Utils::Copy_UTF16_String(container.data() + offset, str);
     /*copy*/
     /*copy*/          offset += bytes;
     /*copy*/      }
     /*copy*/
-    /*copy*/      Utils::copybytes(data.data() + offset, cLMD::filename.data(), cLMD::filename.size());
+    /*copy*/      Utils::copybytes(container.data() + offset, cLMD::filename.data(), cLMD::filename.size());
 }
 
 } // MH4U
