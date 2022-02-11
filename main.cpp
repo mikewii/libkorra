@@ -29,8 +29,6 @@ inline static int GUI_RUN(int argc, char *argv[])
 
 int main(int argc UNUSED, char *argv[] UNUSED)
 {
-    File::SetCWD();
-
     MHXX::TEST::run_tests();
 
 #ifdef USE_GUI

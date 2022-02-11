@@ -109,7 +109,7 @@ u32 CalculateChecksum(u8* _data, u32 _size);
 std::pair<u8*, u8*> FindDiff(u8* _data0, u8* _data1, u32 _size);
 
 
-std::string GetUserHome(void);
+std::filesystem::path Get_User_Home(const bool documents = false);
 
 
 class Collector {
@@ -143,20 +143,20 @@ public:
 
     void Set_Operator(const Collector::Op operation) { Collector::_operation = operation; }
     void Set_Value(const u32 value) { Collector::_value = value; }
-    void Set_Path(const std::string& path) { Collector::_path = path; }
+    void Set_Path(const std::filesystem::path& path) { Collector::_path = path; }
 
     void Add(const Collector::Info& in);
 
     void Show(const bool sorted = true);
 
 private:
-    bool                _active = true;
-    Op                  _operation = Op::Equal;
-    s32                 _value = 0;
-    std::string         _path;
-    std::string         _name = "collected_data.txt";
-    std::vector<Info>   _vec;
-    std::vector<s32>    _vec_unique_ids;
+    bool                    _active = true;
+    Op                      _operation = Op::Equal;
+    s32                     _value = 0;
+    std::filesystem::path   _path;
+    std::string             _name = "collected_data.txt";
+    std::vector<Info>       _vec;
+    std::vector<s32>        _vec_unique_ids;
 
     bool Flush(void);
 };

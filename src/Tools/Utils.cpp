@@ -6,13 +6,17 @@
 
 #include "MHXX/Quest/Common.hpp"
 
-
-
+#ifdef _WIN32
+    #include <Shlobj.h>
+#elif __linux__
+    #include <stdlib.h>
+#elif __APPLE__
+    #include <NSSystemDirectories.h>
+#endif
 
 void NotifyError(std::string _str){
     fprintf(stderr, "\n%s\n", _str.c_str());
 }
-
 
 namespace Utils {
 
@@ -83,13 +87,27 @@ std::pair<u8*, u8*> FindDiff(u8* _data0, u8* _data1, u32 _size)
 
 
 
-std::string GetUserHome(void)
+std::filesystem::path Get_User_Home(const bool documents)
 {
-#ifdef __linux__
-    return std::getenv("HOME");
+#ifdef _WIN32
+    WCHAR   path[MAX_PATH];
+    auto    id = documents ? CSIDL_MYDOCUMENTS : CSIDL_PROFILE;
+
+    HRESULT result = SHGetSpecialFolderPath(HWND_DESKTOP, path, id, NULL);
+
+    // TODO: handle result
+
+    return std::filesystem::path(path);
+
+#elif __linux__
+    if (documents)
+        return std::filesystem::path(std::getenv("HOME")).append("Documents");
+    else return std::filesystem::path(std::getenv("HOME"));
 #else
-    // TODO
-    return "";
+    if (documents)
+
+        return std::filesystem::path(std::getenv("HOME")).append("Documents");
+    else return std::filesystem::path(std::getenv("HOME"));
 #endif
 }
 
@@ -171,7 +189,7 @@ bool Collector::Flush(void)
     if (!Collector::IsActive()) return false;
 
     char            buffer[0x100];
-    std::fstream    fout(Collector::_path + Collector::_name, std::ios::out);
+    std::fstream    fout(Collector::_path.assign(Collector::_name), std::ios::out);
 
 
     std::sort

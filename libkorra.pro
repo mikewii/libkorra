@@ -6,7 +6,7 @@ QT      += core gui
 # CONFIG  -= app_bundle
 # CONFIG  -= qt
 
-LIBS    += -lz -lprocps
+LIBS    += -lz
 CONFIG  += c++17
 
 
@@ -21,34 +21,34 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 
 SOURCES += \
-        GUI/gmd_gui.cpp \
-        GUI/mainwindow.cpp \
-        GUI/worker.cpp \
-        main.cpp \
-        src/Global.cpp \
-        src/MH4U/Extentions/lmd.cpp \
-        src/MH4U/MH4U.cpp \
-        src/MH4U/MH4U_Test.cpp \
-        src/MHXX/Enemy/Enemy.cpp \
-        src/MHXX/Extentions/esl.cpp \
-        src/MHXX/Extentions/ext.cpp \
-        src/MHXX/Extentions/gmd.cpp \
-        src/MHXX/Extentions/qdl.cpp \
-        src/MHXX/Extentions/qdp.cpp \
-        src/MHXX/Extentions/rem.cpp \
-        src/MHXX/Extentions/sem.cpp \
-        src/MHXX/Extentions/sup.cpp \
-        src/MHXX/MHXX_Test.cpp \
-        src/MHXX/Quest/Common.cpp \
-        src/Tools/ARC.cpp \
-        src/Tools/Blowfish.cpp \
-        src/Tools/CContainer.cpp \
-        src/Tools/File.cpp \
-        src/Tools/Folder.cpp \
-        src/Tools/Pair.cpp \
-        src/Tools/Task.cpp \
-        src/Tools/Test.cpp \
-        src/Tools/Utils.cpp
+    GUI/gmd_gui.cpp \
+    GUI/mainwindow.cpp \
+    GUI/worker.cpp \
+    main.cpp \
+    src/Global.cpp \
+    src/MH4U/Extentions/lmd.cpp \
+    src/MH4U/MH4U.cpp \
+    src/MH4U/MH4U_Test.cpp \
+    src/MHXX/Enemy/Enemy.cpp \
+    src/MHXX/Extentions/esl.cpp \
+    src/MHXX/Extentions/ext.cpp \
+    src/MHXX/Extentions/gmd.cpp \
+    src/MHXX/Extentions/qdl.cpp \
+    src/MHXX/Extentions/qdp.cpp \
+    src/MHXX/Extentions/rem.cpp \
+    src/MHXX/Extentions/sem.cpp \
+    src/MHXX/Extentions/sup.cpp \
+    src/MHXX/MHXX_Test.cpp \
+    src/MHXX/Quest/Common.cpp \
+    src/Tools/ARC.cpp \
+    src/Tools/Blowfish.cpp \
+    src/Tools/CContainer.cpp \
+    src/Tools/File.cpp \
+    src/Tools/Folder.cpp \
+    src/Tools/Pair.cpp \
+    src/Tools/Task.cpp \
+    src/Tools/Test.cpp \
+    src/Tools/Utils.cpp
 
 HEADERS += \
     GUI/gmd_gui.h \

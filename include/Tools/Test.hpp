@@ -25,7 +25,7 @@ private:
 };
 
 template<class T>
-void test(const Pair& _in)
+void test(const Pair& _in UNUSED)
 {
 #ifdef TEST
     Pair                    out;

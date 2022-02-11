@@ -11,7 +11,7 @@ static Utils::Collector collector(0);
 
 void run_tests()
 {
-    collector.Set_Path(Utils::GetUserHome() + "/test/");
+    collector.Set_Path(Utils::Get_User_Home().append("test"));
     std::string                 test_folder = "test/MHXX_CQs/from_MHGU";
     std::vector<std::string>    selected_files =
     {
@@ -28,18 +28,18 @@ void run_tests()
 //            "q0010661.arc",
     };
 
-    Folder folder(Utils::GetUserHome() + '/' + test_folder);
+    Folder folder(Utils::Get_User_Home().append(test_folder));
 
     const auto files = folder.Get_ListOfFiles();
 
-    for (const auto& filename : files)
+    for (const auto& entry : files)
     {
         if (!selected_files.empty())
         {
             bool found = false;
 
             for (auto& str : selected_files)
-                if (str.compare(filename) == 0)
+                if (str.compare(entry.filename().string()) == 0)
                 {
                     found = true;
                     break;
@@ -48,15 +48,15 @@ void run_tests()
             if (!found) continue;
         }
 
-        if (filename.size() != 12) // quest filename size
+        if (entry.filename().string().size() != 12) // quest filename size
             continue;
 
         std::vector<Pair>   vector;
-        CContainer          arc(folder.Get_FullPath(filename));
+        CContainer          arc(entry.string());
 
         ARC(arc, &vector).ExtractAll();
 
-        MHXX::TEST::Extentions(vector, filename);
+        MHXX::TEST::Extentions(vector, entry);
     }
 
     collector.Show();
