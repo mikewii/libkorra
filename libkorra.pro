@@ -21,9 +21,6 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 
 SOURCES += \
-    GUI/gmd_gui.cpp \
-    GUI/mainwindow.cpp \
-    GUI/worker.cpp \
     main.cpp \
     src/Global.cpp \
     src/MH4U/Extentions/lmd.cpp \
@@ -51,9 +48,6 @@ SOURCES += \
     src/Tools/Utils.cpp
 
 HEADERS += \
-    GUI/gmd_gui.h \
-    GUI/mainwindow.h \
-    GUI/worker.h \
     include/Global.hpp \
     include/MH4U/Extentions/lmd.hpp \
     include/MH4U/MH4U.hpp \
@@ -85,10 +79,6 @@ HEADERS += \
     include/Tools/Test.hpp \
     include/Tools/Utils.hpp \
     include/types.h
-
-FORMS += \
-    GUI/gmd_gui.ui \
-    GUI/mainwindow.ui
 
 # Default rules for deployment.
 # copypaste from default QT Widgets app

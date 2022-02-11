@@ -19,8 +19,9 @@ ARC::ARC(CContainer& _arcdata, std::vector<Pair>* _outlist)
 
     ARC::__previousVersion = __header->version;
 
-    if (!b.isARC) {
-        NotifyError("Not an ARC file!");
+    if (!b.isARC)
+    {
+        ARC::_isARC = false;
         return;
     }
 
@@ -34,12 +35,14 @@ ARC::~ARC()
 {
 }
 
-bool ARC::isARC(void) { return std::equal(ARC_MAGIC, ARC_MAGIC + 4, __header->magic); }
+bool ARC::isARC(void) const { return ARC::_isARC; }
+
+bool ARC::__isARC(void) { return std::equal(ARC_MAGIC, ARC_MAGIC + 4, __header->magic); }
 
 bool ARC::isCRA(void) { return std::equal(CRA_MAGIC, CRA_MAGIC + 4, __header->magic); }
 void ARC::isARCFile(void)
 {
-    b.isARC |= b.LE = isARC();
+    b.isARC |= b.LE = __isARC();
     b.isARC |= b.BE = isCRA();
 }
 

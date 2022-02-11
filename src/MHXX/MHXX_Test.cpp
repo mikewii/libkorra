@@ -7,7 +7,7 @@
 
 namespace MHXX {
 namespace TEST {
-static Utils::Collector collector(0);
+static Utils::Collector collector("collected_mhxx_data.txt");
 
 void run_tests()
 {
@@ -34,19 +34,8 @@ void run_tests()
 
     for (const auto& entry : files)
     {
-        if (!selected_files.empty())
-        {
-            bool found = false;
-
-            for (auto& str : selected_files)
-                if (str.compare(entry.filename().string()) == 0)
-                {
-                    found = true;
-                    break;
-                }
-
-            if (!found) continue;
-        }
+        if (!Utils::Filter::Is_InVector(entry, selected_files))
+            continue;
 
         if (entry.filename().string().size() != 12) // quest filename size
             continue;
@@ -62,7 +51,7 @@ void run_tests()
     collector.Show();
 }
 
-void Extentions(const std::vector<Pair>& vector, const std::string& filename)
+void Extentions(const std::vector<Pair>& vector, const std::filesystem::path& path)
 {
     bool once = true;
     std::string quest_name;

@@ -4,6 +4,8 @@
 #include <cwchar>
 
 namespace MH4U {
+namespace LMD {
+static const u32 RESOURCE_HASH = 0x62440501;
 
 static const char LMD_MAGIC[5] = "lmd\0";
 
@@ -73,6 +75,11 @@ public:
     void print_Filename(void) const;
     void print_counts(void) const;
 
+    // for test
+    const std::vector<Data0>& __Get_Data0_vector(void) const { return cLMD::vData0; }
+    const std::vector<Data1>& __Get_Data1_vector(void) const { return cLMD::vData1; }
+    const std::vector<U16string_info>& __Get_U16String_info_vector(void) const { return cLMD::vU16string_info; }
+
 private:
     std::vector<Data0>          vData0;
     std::vector<Data1>          vData1;
@@ -83,6 +90,8 @@ private:
 
     void read(const CContainer& _pp);
 
+    u32 getResourceHash(void) const { return MH4U::LMD::RESOURCE_HASH; }
 };
 
+}
 } // MH4U

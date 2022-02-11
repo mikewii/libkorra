@@ -189,7 +189,7 @@ bool Collector::Flush(void)
     if (!Collector::IsActive()) return false;
 
     char            buffer[0x100];
-    std::fstream    fout(Collector::_path.assign(Collector::_name), std::ios::out);
+    std::fstream    fout(Collector::_path.append(Collector::_name), std::ios::out);
 
 
     std::sort
@@ -227,6 +227,25 @@ bool Collector::Flush(void)
     }
 
     fout.close();
+    return true;
+}
+
+bool Filter::Is_InVector(const std::filesystem::__cxx11::path &path, const std::vector<std::string> &vector)
+{
+    if (!vector.empty())
+    {
+        bool found = false;
+
+        for (auto& str : vector)
+            if (str.compare(path.filename().string()) == 0)
+            {
+                found = true;
+                break;
+            }
+
+        if (!found) return false;;
+    }
+
     return true;
 }
 

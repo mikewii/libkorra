@@ -111,6 +111,12 @@ std::pair<u8*, u8*> FindDiff(u8* _data0, u8* _data1, u32 _size);
 
 std::filesystem::path Get_User_Home(const bool documents = false);
 
+class Filter {
+public:
+    static bool Is_InVector(const std::filesystem::path& path, const std::vector<std::string>& vector);
+};
+
+
 
 class Collector {
 public:
@@ -136,7 +142,7 @@ public:
     };
 
     Collector(){}
-    Collector(const u32 value) : _value(value) {}
+    Collector(const std::string& name) : _name(name) {}
 
     void Disable(void) { Collector::_active = false; }
     bool IsActive(void) const { return Collector::_active; }

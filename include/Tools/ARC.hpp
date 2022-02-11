@@ -39,6 +39,8 @@ public:
     ARC(CContainer& _arcdata, std::vector<Pair>* _outlist);
     ~ARC();
 
+    bool    isARC(void) const;
+
     void    Decompress(u32 n);
     int     Decompress(Pair& sourcePair, Pair& destPair);
     int     Compress(Pair& sourcePair, Pair& destPair);
@@ -58,6 +60,7 @@ public:
     void CopyZData(CContainer& _cc, std::vector<Pair>& _list, u32 _zDataStart);
 
 private:
+    bool _isARC = true;
 
     union { // dont need it?
         u32 bitfield{0};
@@ -72,7 +75,7 @@ private:
     void    PushFile(CContainer& _data, u32 n);
 
 
-    bool    isARC(void);
+    bool    __isARC(void);
     bool    isCRA(void);
     void    isARCFile(void);
 

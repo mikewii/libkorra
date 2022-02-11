@@ -6,6 +6,7 @@
 #include <algorithm>
 
 namespace MH4U {
+namespace LMD {
 
 cLMD::cLMD(const CContainer& data)
 {
@@ -78,12 +79,12 @@ void cLMD::print_Strings(void) const
 
 void cLMD::print_Filename(void) const
 {
-    printf(u8"%s\n", cLMD::filename.c_str());
+    printf("%s\n", cLMD::filename.c_str());
 }
 
 void cLMD::print_counts(void) const
 {
-    printf("data0: %zu\ndata1: %zu\ndata2: %zu\nstrings: %zu\n",
+    printf("data0: %zu\ndata1: %zu\ndata2: %zu\nstrings: %zu\n\n",
            cLMD::vData0.size(), cLMD::vData1.size(), cLMD::vU16string_info.size(), cLMD::vStrings.size());
 }
 
@@ -200,4 +201,5 @@ void cLMD::write(CContainer& container)
     /*copy*/      Utils::copybytes(container.data() + offset, cLMD::filename.data(), cLMD::filename.size());
 }
 
+}
 } // MH4U

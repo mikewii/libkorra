@@ -29,7 +29,9 @@ inline static int GUI_RUN(int argc, char *argv[])
 
 int main(int argc UNUSED, char *argv[] UNUSED)
 {
-    MHXX::TEST::run_tests();
+
+    //MHXX::TEST::run_tests();
+    MH4U::TEST::runTests();
 
 #ifdef USE_GUI
     return GUI_RUN(argc, argv);
