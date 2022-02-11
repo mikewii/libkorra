@@ -62,9 +62,9 @@ public:
 
     void write(CContainer& data);
 
-    void Replace_String(const std::u16string& str, const u32 id);
+    void replace_String(const std::u16string& str, const u32 id);
 
-    bool remove_Item(const u32 id);
+    void remove_Item(const u32 id);
 
     void print_Data0(void) const;
     void print_Data1(void) const;

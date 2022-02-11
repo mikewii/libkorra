@@ -30,23 +30,13 @@ cLMD::~cLMD()
 }
 
 
-bool cLMD::remove_Item(const u32 id)
+void cLMD::remove_Item(const u32 id)
 {
-    if (id != 0)
-        cLMD::vData0.erase(cLMD::vData0.begin() + (id - 1)); // not sure
-    else cLMD::vData0.erase(cLMD::vData0.begin() + id);      //
-
-    cLMD::vData1.erase(cLMD::vData1.begin() + (id * 2));        // not sure
-    cLMD::vData1.erase(cLMD::vData1.begin() + (id * 2)  + 1);   //
-
     cLMD::vU16string_info.erase(cLMD::vU16string_info.begin() + id);
-
     cLMD::vStrings.erase(cLMD::vStrings.begin() + id);
-
-    return true;
 }
 
-void cLMD::Replace_String(const std::u16string& str, const u32 id)
+void cLMD::replace_String(const std::u16string& str, const u32 id)
 {
     cLMD::vStrings.at(id) = str;
 
@@ -142,9 +132,8 @@ void cLMD::write(CContainer& container)
     auto        vStrings_size           = 0;
     const auto  pStrings                = sizeof(sLMD) + vData0_size + vData1_size + vU16string_info_size;
     const auto  filename_size           = cLMD::filename.size() + sizeof(u8);
+    u32         offset = 0;
 
-
-    /*u16string_info*/    auto shift = 0;
     /*u16string_info*/    for (u32 i = 0; i < cLMD::vStrings.size(); i++)
     /*u16string_info*/    {
     /*u16string_info*/        const auto& str = cLMD::vStrings.at(i);
@@ -156,11 +145,11 @@ void cLMD::write(CContainer& container)
     /*u16string_info*/
     /*u16string_info*/        vStrings_size += bytes;
     /*u16string_info*/
-    /*u16string_info*/        info.pWStr = pStrings + shift;
+    /*u16string_info*/        info.pWStr = pStrings + offset;
     /*u16string_info*/        info.str_size = str.size();
     /*u16string_info*/        info.str_size_copy = str.size();
     /*u16string_info*/
-    /*u16string_info*/        shift += bytes;
+    /*u16string_info*/        offset += bytes;
     /*u16string_info*/    }
 
     const auto final_size = sizeof(sLMD) + vData0_size + vData1_size + vU16string_info_size + vStrings_size + filename_size;
@@ -186,7 +175,7 @@ void cLMD::write(CContainer& container)
     /*copy*/
     /*copy*/      Utils::copybytes(container.data(), &header, sizeof(sLMD));
     /*copy*/
-    /*copy*/      u32 offset = sizeof(sLMD);
+    /*copy*/      offset = sizeof(sLMD);
     /*copy*/
     /*copy*/      for (const auto& item : cLMD::vData0)
     /*copy*/          Copy<Data0>(item, offset, container.data());

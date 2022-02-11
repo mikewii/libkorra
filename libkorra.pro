@@ -7,7 +7,7 @@ QT      += core gui
 # CONFIG  -= qt
 
 LIBS    += -lz -lprocps
-CONFIG  += c++11
+CONFIG  += c++17
 
 
 INCLUDEPATH += $$PWD/include

@@ -5,8 +5,8 @@
 
 namespace MHXX {
 namespace TEST {
-
-void Extentions(std::vector<Pair>& vector, const char* filename, Utils::Collector& col);
+void run_tests(void);
+void Extentions(const std::vector<Pair>& vector, const std::string& filename);
 
 }
 }

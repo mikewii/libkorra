@@ -1,16 +1,73 @@
 #include "MHXX/MHXX_Test.hpp"
 #include "MHXX/MHXX.hpp"
 #include "Tools/Test.hpp"
+#include "Tools/Folder.hpp"
+#include "Tools/ARC.hpp"
+
 
 namespace MHXX {
 namespace TEST {
+static Utils::Collector collector(0);
 
-void Extentions(std::vector<Pair>& vector, const char* filename, Utils::Collector& col)
+void run_tests()
+{
+    collector.Set_Path(Utils::GetUserHome() + "/test/");
+    std::string                 test_folder = "test/MHXX_CQs/from_MHGU";
+    std::vector<std::string>    selected_files =
+    {
+        //"q0000105.arc",
+//            "q0110101.arc",
+//            "q0040505.arc",
+//            "q0000633.arc",
+//            "q0000712.arc",
+//            "q0011424.arc",
+//            "q0000914.arc",
+//            "q0011213.arc",
+//            "q0000234.arc",
+//            "q0000223.arc",
+//            "q0010661.arc",
+    };
+
+    Folder folder(Utils::GetUserHome() + '/' + test_folder);
+
+    const auto files = folder.Get_ListOfFiles();
+
+    for (const auto& filename : files)
+    {
+        if (!selected_files.empty())
+        {
+            bool found = false;
+
+            for (auto& str : selected_files)
+                if (str.compare(filename) == 0)
+                {
+                    found = true;
+                    break;
+                }
+
+            if (!found) continue;
+        }
+
+        if (filename.size() != 12) // quest filename size
+            continue;
+
+        std::vector<Pair>   vector;
+        CContainer          arc(folder.Get_FullPath(filename));
+
+        ARC(arc, &vector).ExtractAll();
+
+        MHXX::TEST::Extentions(vector, filename);
+    }
+
+    collector.Show();
+}
+
+void Extentions(const std::vector<Pair>& vector, const std::string& filename)
 {
     bool once = true;
     std::string quest_name;
-    //printf("\n%s ", filename);
-    for (auto& pair : vector)
+    //printf("\n%s ", filename.c_str());
+    for (const auto& pair : vector)
     {
         switch(pair.info.ResourceHash){
         case MHXX::GMD::RESOURCE_HASH:{
@@ -71,13 +128,13 @@ void Extentions(std::vector<Pair>& vector, const char* filename, Utils::Collecto
             const auto& header0 = ext.GetHeader0();
             const auto& header1 = ext.GetHeader1();
 
-            //col.Disable();
-            if (col.IsActive())
+            //collector.Disable();
+            if (collector.IsActive())
             {
-                col.Set_Value(8);
-                col.Set_Operator(Utils::Collector::Op::Unique);
+                collector.Set_Value(8);
+                collector.Set_Operator(Utils::Collector::Op::Unique);
                 //if (header0.Em[0].EmSetTargetID.idSub == 8)
-                col.Add
+                collector.Add
                 ({
                     header0.questID,
                     quest_name,
