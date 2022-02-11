@@ -221,12 +221,12 @@ void virtualTest( void )
 long getRSS( void )
 {
     pid_t       pid = getpid();
-    proc_t      proc{0};
+    proc_t      proc;
     PROCTAB*    proctab = nullptr;
 
     proctab = openproc(PROC_FILLMEM| PROC_PID, &pid);
 
-    if ( proctab )
+    if (proctab)
     {
         readproc(proctab, &proc);
         closeproc(proctab);

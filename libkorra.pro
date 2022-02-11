@@ -26,6 +26,7 @@ SOURCES += \
         GUI/worker.cpp \
         main.cpp \
         src/Global.cpp \
+        src/MH4U/Extentions/lmd.cpp \
         src/MH4U/MH4U.cpp \
         src/MHXX/Enemy/Enemy.cpp \
         src/MHXX/Extentions/esl.cpp \
@@ -50,6 +51,7 @@ HEADERS += \
     GUI/mainwindow.h \
     GUI/worker.h \
     include/Global.hpp \
+    include/MH4U/Extentions/lmd.hpp \
     include/MH4U/MH4U.hpp \
     include/MH4U/Resource.hpp \
     include/MHXX/Enemy/Enemy.hpp \

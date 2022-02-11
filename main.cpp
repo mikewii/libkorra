@@ -38,7 +38,8 @@ int main(int argc, char *argv[])
     Utils::File::SetCWD();
 
     //const char*         test_folder = "test/MHXX_CQs/from_MHXX_ENG";
-    const char*         test_folder = "test/MHXX_CQs/from_MHGU";
+    //const char*         test_folder = "test/MHXX_CQs/from_MHGU";
+    const char*         test_folder = "test/MH4U";
     DIR*                d = nullptr;
     struct dirent*      dir;
 
@@ -85,10 +86,26 @@ int main(int argc, char *argv[])
                 std::string         fname = Utils::File::extractName(fpath);
 
 
-                CContainer arc(fpath);
-                ARC(arc, &vector).ExtractAll();
+//                CContainer arc(fpath);
+//                ARC(arc, &vector).ExtractAll();
 
-                Debug(vector, dir->d_name);
+//                Debug(vector, dir->d_name);
+
+                CContainer data(fpath);
+                MH4U::cLMD lmd(data);
+
+                lmd.print_Data0();
+                lmd.print_Data1();
+                lmd.print_U16string_info();
+                lmd.print_Strings();
+                lmd.print_Filename();
+                lmd.print_counts();
+
+                CContainer ass;
+
+                lmd.write(ass);
+
+                ass.writeToFile(fpath + "ass");
             }
         }
         closedir(d);

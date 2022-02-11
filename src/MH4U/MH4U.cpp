@@ -126,7 +126,7 @@ void PreEncode_Save(CContainer& data)
 void InsertValue(CContainer& data, u32 value)
 {
     u8 i = 0;
-    value = Utils::swap_endian<u32>(value);
+    value = Utils::swap_endianness<u32>(value);
     while (i < 4){
         if (i != 0) {value >>= 8;}
         data.addBefore(1);

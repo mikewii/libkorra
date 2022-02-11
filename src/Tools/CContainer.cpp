@@ -1,8 +1,8 @@
 #include "Tools/CContainer.hpp"
 #include "Tools/Utils.hpp"
 
-CContainer::CContainer(const char* _fname) { this->readFromFile(_fname); }
-CContainer::CContainer(const std::string& _fname) { this->readFromFile(_fname.c_str()); }
+CContainer::CContainer(const char* _fname) { this->readFile(_fname); }
+CContainer::CContainer(const std::string& _fname) { this->readFile(_fname.c_str()); }
 CContainer::CContainer(const CContainer& cc)
 {
     // copy data
@@ -116,6 +116,7 @@ void CContainer::resize(u32 _size, bool _zeroed)
     else this->addAfter(_size);
 }
 
-bool CContainer::readFromFile(const char* _fname) { return Utils::File::FileToCC(_fname, this); }
+bool CContainer::readFile(const std::string& fname) { return this->readFile(fname.c_str()); }
+bool CContainer::readFile(const char* fname) { return Utils::File::FileToCC(fname, this); }
 bool CContainer::writeToFile(const std::string& _fname, bool _makedir) { return Utils::File::CCtoFile(_fname.c_str(), this, _makedir); }
 bool CContainer::writeToFile(const char* _fname, bool _makedir) { return Utils::File::CCtoFile(_fname, this, _makedir); }

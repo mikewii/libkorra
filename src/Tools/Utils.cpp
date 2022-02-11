@@ -26,29 +26,59 @@ namespace Utils {
 char File::CWD[NAME_MAX]{0};
 
 
-    // Alignment safe copy
-extern void*    copybytes( void* _dest, const void* _src, size_t _size )
+// error prints
+#ifdef WIN
+void PrintLastError(void)
 {
-    int isSafe = reinterpret_cast<u64>(_dest) % sizeof(_dest) ;
+    //Get the error message ID, if any.
+    auto errorMessageID = ::GetLastError();
 
-    if ( isSafe == 0 )
+    LPSTR messageBuffer = nullptr;
+
+    //Ask Win32 to give us the string version of that message ID.
+    //The parameters we pass in, tell Win32 to create the buffer that holds the message for us (because we don't yet know how long the message string will be).
+    size_t size = FormatMessageA(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+                                 NULL, errorMessageID, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPSTR)&messageBuffer, 0, NULL);
+
+    printf("Error:: %s\n", messageBuffer);
+
+    //Free the Win32's string's buffer.
+    LocalFree(messageBuffer);
+}
+#endif
+
+    // Alignment safe copy
+extern void* copybytes(void* _dest, const void* _src, size_t _size)
+{
+    int isSafe = reinterpret_cast<u64>(_dest) % sizeof(_dest);
+
+    if (isSafe == 0)
         return memcpy(_dest, _src, _size);
 
     return memmove(_dest, _src, _size);
 }
 
-static bool isCWD = false;
-void            File::SetCWD( void )
+extern void* Copy_UTF16_String(void* dest, const std::u16string& str)
 {
-#ifdef __linux__
-    if (!isCWD) { //get cwd once
-        isCWD = true;
-        getcwd(CWD, sizeof(CWD));
-    }
-#endif
+    return copybytes(dest, reinterpret_cast<const void*>(str.data()), str.size() * sizeof(u16));
 }
 
-int             File::makedir( const char* dir )
+static bool isCWD = false;
+void File::SetCWD(void)
+{
+    if (!isCWD) //get cwd once
+    {
+        isCWD = true;
+#ifdef __linux__
+        getcwd(CWD, sizeof(CWD));
+#elif WIN
+        auto res = GetCurrentDirectory(sizeof(CWD), CWD);
+        if (!res) PrintLastError();
+#endif
+    }
+}
+
+int File::makedir(const char* dir)
 {
     int res = 0;
 
@@ -183,7 +213,7 @@ bool File::FileToCC(const char* _fpath, CContainer* _cc)
 
 #ifdef __linux__
 
-    if ( access(_fpath, F_OK | R_OK ) == 0 )
+    if (access(_fpath, F_OK | R_OK) == 0)
     {
         f = fopen(_fpath, "rb");
 

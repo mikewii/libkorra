@@ -27,22 +27,6 @@ public:
     }
 };
 
-
-struct ARC_File_s {
-
-    u8      Filename[FNAME_SIZE];
-    u32     ResourceHash;
-    u32 	CompressedSize;
-    u32     DecompressedSize; // xor 20000000 + 40000000 if version is 17
-    u32     pZData; // 78 9C - zlib header
-};
-
-struct ARC_s {
-    char Magic[4];
-    u16  Version;
-    u16  FilesNum;
-};
-
 template <typename T>
 struct Geometry4 {
     T   R;

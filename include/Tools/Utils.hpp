@@ -56,7 +56,7 @@ struct bool_to_str<false>
 };
 
 template <typename T>
-T swap_endian(T u)
+T swap_endianness(T u)
 {
     static_assert (CHAR_BIT == 8, "CHAR_BIT != 8");
 
@@ -82,6 +82,7 @@ T swap_endian(T u)
  * @return
  */
 extern void* copybytes(void* _dest, const void* _src, size_t _size);
+extern void* Copy_UTF16_String(void* dest, const std::u16string& str);
 
 /**
  * @brief Calculate sum of bytes

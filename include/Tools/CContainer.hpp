@@ -16,7 +16,8 @@ public:
     u32     size(void) const { return this->__size; }
     void    resize(u32 _size, bool zeroed = false);
 
-    bool    readFromFile(const char* _fname);
+    bool    readFile(const std::string& fname);
+    bool    readFile(const char* fname);
     bool    writeToFile(const std::string& _fname, bool _makedir = false);
     bool    writeToFile(const char* _fname, bool _makedir = false);
 
