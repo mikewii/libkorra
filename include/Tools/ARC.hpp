@@ -24,6 +24,14 @@ public:
         char            magic[4];
         ARC::Version    version;
         u16             fileNum;
+
+
+
+        void BE_Swap(void)
+        {
+            this->version = Utils::swap_endianness<ARC::Version>(this->version);
+            this->fileNum = Utils::swap_endianness<u16>(this->version);
+        }
     };
 
     struct File_Header {
@@ -32,67 +40,57 @@ public:
         u32 	compressedSize;
         u32     decompressedSize; // xor 20000000 + 40000000 if version is 17
         u32     pZData; // 78 9C - zlib header
+
+        void BE_Swap(void)
+        {
+            this->resourceHash        = Utils::swap_endianness<u32>(this->resourceHash);
+            this->compressedSize      = Utils::swap_endianness<u32>(this->compressedSize);
+            this->decompressedSize    = Utils::swap_endianness<u32>(this->decompressedSize);
+            this->pZData              = Utils::swap_endianness<u32>(this->pZData);
+        }
     };
 
 
     ARC(){};
-    ARC(CContainer& _arcdata, std::vector<Pair>* _outlist);
+    ARC(const CContainer& container, std::vector<Pair>& vOut);
     ~ARC();
 
-    bool    isARC(void) const;
+    bool    Is_ARC(void) const;
 
-    void    Decompress(u32 n);
+    void    Decompress(const u32 id);
     int     Decompress(Pair& sourcePair, Pair& destPair);
-    int     Compress(Pair& sourcePair, Pair& destPair);
+    int     Compress(const Pair& sourcePair, Pair& destPair);
 
     void    ExtractAll(void);
 
 
-    void    PrintHeader(void);
-    void    PrintPairsInfo(void);
-    void    PrintFileInfo(ARC::File_Header* f, u32 n);
+    void    print_Header(void);
+    void    print_PairsInfo(void);
+    void    print_FileInfo(ARC::File_Header* f, u32 n);
 
-    u32     GetFilesCount(void) const { return __header->fileNum; }
+    u32     GetFilesCount(void) const { return ARC::header.fileNum; }
 
     // Making ARC
-    void MakeARC(CContainer& _output, std::vector<Pair>* _list, ARC::Version _version = ARC::Version::None);
+    void MakeARC(CContainer& container, std::vector<Pair>& vPair, ARC::Version version = ARC::Version::None);
     void MakeARC_File_s_Header(CContainer& _cc, std::vector<Pair>& _list, u32 _padding, u32 _zDataStart);
     void CopyZData(CContainer& _cc, std::vector<Pair>& _list, u32 _zDataStart);
 
 private:
-    bool _isARC = true;
+    bool isLE = false;
+    bool isBE = false;
+    bool isARC = false;
+    bool trust = true; // dont use on unknown versions
 
-    union { // dont need it?
-        u32 bitfield{0};
-        struct{
-            bool LE : 1;
-            bool BE : 1;
-            bool isARC : 1;
-        };
-    } b;
+    ARC::Header                     header;
+    std::vector<ARC::File_Header>   vFile_Header;
 
-    void    Read(CContainer& _data);
-    void    PushFile(CContainer& _data, u32 n);
+    std::vector<Pair>*              __vPair = nullptr;
+    const CContainer*               __container = nullptr;
 
+    static ARC::Version             prev_Version;
+    static u32 Is_NeedPadding(const ARC::Version version);
+    static u32 extract_XORLock(const u32 decSize);
+    static u32 Align(u32 value);
 
-    bool    __isARC(void);
-    bool    isCRA(void);
-    void    isARCFile(void);
-
-    u32     isNeedPadding(ARC::Version _version);
-    u32     isNeedPadding(u32 _version);
-    u32     GetVersionValue(ARC::Version _version);
-
-    u32     extractXORLock(u32 _decSize);
-
-    void    FixBE_Header(void);
-    void    FixBE_ARC_File_s(ARC::File_Header* f);
-
-    u32     Align(u32 _value);
-
-    std::vector<Pair>*              __list;
-    std::vector<ARC::File_Header*>  __listARC_File_s;
-    ARC::Header*                    __header = nullptr;
-    static ARC::Version             __previousVersion;
-
+    void    Read(const CContainer& container);
 };

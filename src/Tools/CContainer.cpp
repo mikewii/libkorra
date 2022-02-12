@@ -117,8 +117,8 @@ bool CContainer::subAfter(u32 _size)
 void CContainer::resize(u32 _size, bool _zeroed)
 {
     if (this->__root == nullptr) this->allocate(_size, _zeroed);
-    else if (this->__root != nullptr && _zeroed) this->allocate(_size, _zeroed);
-    else this->addAfter(_size);
+    else if (this->__root != nullptr && !_zeroed) this->addAfter(_size);
+    else this->allocate(_size, _zeroed);
 }
 
 void CContainer::read_File(const std::filesystem::path& path) { File::File_To_CC(path, *this); }

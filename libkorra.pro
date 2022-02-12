@@ -21,6 +21,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 
 SOURCES += \
+    GUI/mainwindow.cpp \
     main.cpp \
     src/Global.cpp \
     src/MH4U/Extentions/lmd.cpp \
@@ -48,6 +49,7 @@ SOURCES += \
     src/Tools/Utils.cpp
 
 HEADERS += \
+    GUI/mainwindow.h \
     include/Global.hpp \
     include/MH4U/Extentions/lmd.hpp \
     include/MH4U/MH4U.hpp \
@@ -85,3 +87,6 @@ HEADERS += \
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+FORMS += \
+    GUI/mainwindow.ui

@@ -37,12 +37,11 @@ void cLMD::remove_Item(const u32 id)
     cLMD::vStrings.erase(cLMD::vStrings.begin() + id);
 }
 
-void cLMD::replace_String(const std::u16string& str, const u32 id)
+void cLMD::replace_String(const std::string& str, const u32 id)
 {
-    cLMD::vStrings.at(id) = str;
+    std::wstring_convert<std::codecvt_utf8_utf16<utf16>, utf16> converter;
 
-//    cLMD::u16string_info.at(id).str_size = str.size();
-//    cLMD::u16string_info.at(id).str_size_copy = str.size();
+    cLMD::vStrings.at(id) = converter.from_bytes(str);
 }
 
 
@@ -129,7 +128,15 @@ void Copy(const T& item, u32& offset, u8* dest)
     offset += sizeof(item);
 }
 
-void cLMD::write(CContainer& container)
+
+void cLMD::write(Pair& pair)
+{
+    auto size = cLMD::write(pair.cc);
+
+    pair.info.DecSize = size;
+}
+
+u32 cLMD::write(CContainer& container)
 {
     const auto  vData0_size             = cLMD::vData0.size() * sizeof(Data0);
     const auto  vData1_size             = cLMD::vData1.size() * sizeof(Data1);
@@ -176,7 +183,7 @@ void cLMD::write(CContainer& container)
     /*header*/    header.pFilename = sizeof(sLMD) + vData0_size + vData1_size + vU16string_info_size + vStrings_size;
 
 
-    /*copy*/      container.resize(final_size);
+    /*copy*/      container.resize(final_size, true);
     /*copy*/
     /*copy*/      Utils::copybytes(container.data(), &header, sizeof(sLMD));
     /*copy*/
@@ -203,6 +210,8 @@ void cLMD::write(CContainer& container)
     /*copy*/      }
     /*copy*/
     /*copy*/      Utils::copybytes(container.data() + offset, cLMD::filename.data(), cLMD::filename.size());
+
+    return final_size;
 }
 
 }

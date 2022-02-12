@@ -1,77 +1,46 @@
 #include "Tools/ARC.hpp"
 #include "Tools/Utils.hpp"
 
-ARC::Version ARC::__previousVersion = ARC::Version::None;
+ARC::Version ARC::prev_Version = ARC::Version::None;
 
-ARC::ARC(CContainer& _arcdata, std::vector<Pair>* _outlist)
+ARC::ARC(const CContainer& container, std::vector<Pair>& vOut)
+    : __vPair(&vOut)
+    , __container(&container)
+
 {
-    if (_arcdata.size() == 0) {
+    if (container.size() == 0) {
         NotifyError("ARC: CContainer is empty!");
         return;
     }
 
-    __header    = reinterpret_cast<ARC::Header*>(&_arcdata.as<u8>(0));
-    __list      = _outlist;
+    ARC::header = container.as_const_ref<ARC::Header>(0);
+    ARC::isARC |= ARC::isLE = std::equal(ARC_MAGIC, ARC_MAGIC + 4, ARC::header.magic);
+    ARC::isARC |= ARC::isBE = std::equal(CRA_MAGIC, CRA_MAGIC + 4, ARC::header.magic);
 
-    isARCFile();
-
-    if (b.BE) FixBE_Header();
-
-    ARC::__previousVersion = __header->version;
-
-    if (!b.isARC)
+    if (ARC::isARC)
     {
-        ARC::_isARC = false;
-        return;
+        if (ARC::isBE) ARC::header.BE_Swap();
+
+        ARC::prev_Version   = ARC::header.version;
+
+        ARC::Read(container);
     }
-
-    __list->resize(__header->fileNum);
-    __listARC_File_s.resize(__header->fileNum, nullptr);
-
-    Read(_arcdata);
 }
 
 ARC::~ARC()
 {
 }
 
-bool ARC::isARC(void) const { return ARC::_isARC; }
+bool ARC::Is_ARC(void) const { return ARC::isARC; }
 
-bool ARC::__isARC(void) { return std::equal(ARC_MAGIC, ARC_MAGIC + 4, __header->magic); }
-
-bool ARC::isCRA(void) { return std::equal(CRA_MAGIC, CRA_MAGIC + 4, __header->magic); }
-void ARC::isARCFile(void)
+void ARC::print_Header(void)
 {
-    b.isARC |= b.LE = __isARC();
-    b.isARC |= b.BE = isCRA();
+    printf("Magic:          %s\n", ARC::header.magic);
+    printf("Version:        %d\n", ARC::header.version);
+    printf("Num of Files:   %d\n", ARC::header.fileNum);
 }
 
-u32 ARC::isNeedPadding(ARC::Version _version)
-{
-    switch(_version){
-    case ARC::Version::LP1: return 0;
-    case ARC::Version::LP2: return 0;
-    case ARC::Version::MH3U_3DS: return 4;
-    case ARC::Version::MH4U_MHXX: return 4;
-    case ARC::Version::MH4U_1: return 4;
-    default:return 0;
-    }
-
-    return 0;
-}
-
-u32 ARC::extractXORLock(u32 _decSize) {
-    return _decSize & 0xF0000000; // lock be first 4 bits
-}
-
-void    ARC::PrintHeader(void)
-{
-    printf("Magic:          %s\n", __header->magic);
-    printf("Version:        %d\n", __header->version);
-    printf("Num of Files:   %d\n", __header->fileNum);
-}
-
-void    ARC::PrintFileInfo(ARC::File_Header* f, u32 n)
+void ARC::print_FileInfo(ARC::File_Header* f, u32 n)
 {
     printf("\n");
     printf("File #%d\n", n);
@@ -82,68 +51,66 @@ void    ARC::PrintFileInfo(ARC::File_Header* f, u32 n)
     printf("Pointer to zdata:   0x%X\n", f->pZData);
 }
 
-void ARC::PrintPairsInfo(void)
+void ARC::print_PairsInfo(void)
 {
-    for (const auto& p : *__list)
+    for (const auto& p : *__vPair)
         p.info.print();
 }
 
-void ARC::PushFile(CContainer& _data, u32 n)
+void ARC::Read(const CContainer& container)
 {
-    Pair&               pair = this->__list->at(n);
-    u32                 padding = 0;
-    ARC::File_Header*   file = nullptr;
-    u32                 xorLock;
+    auto padding = 0;
 
-    padding = _data.as<u32>(2) == 0 ? 4 : 0;
+    if (ARC::trust)
+        padding = ARC::Is_NeedPadding(ARC::header.version);
+    else padding = container.as_const_ref<u32>(2) == 0 ? 4 : 0;
 
-    file = reinterpret_cast<ARC::File_Header*>
-            ( &_data.as<u8>(0) + sizeof(ARC::Header) + padding + (sizeof(ARC::File_Header) * n) );
+    const auto& file_Header = container.at_const_ref<ARC::File_Header[]>(sizeof(ARC::Header) + padding);
 
-    if (b.BE) FixBE_ARC_File_s(file);
+    ARC::__vPair->resize(ARC::header.fileNum);
 
-
-    xorLock = extractXORLock(file->decompressedSize);
-    file->decompressedSize &= ~xorLock;
-
-    // copy and set things
-    Utils::copybytes(pair.info.Filename, file->fileName, FNAME_SIZE);
-    pair.info.ResourceHash  = file->resourceHash;
-    pair.info.XORLock       = xorLock;
+    for (auto i = 0; i < ARC::header.fileNum; i++)
+    {
+        auto xorLock = ARC::extract_XORLock(file_Header[i].decompressedSize);
+        auto file_header_normalized = file_Header[i];
 
 
-    this->__listARC_File_s.at(n) = file;
-}
+        if (ARC::isBE) file_header_normalized.BE_Swap();
 
-void ARC::Read(CContainer& _data)
-{
-    for (int i = 0; i < __header->fileNum; i++)
-        PushFile(_data, i);
+        file_header_normalized.decompressedSize &= ~xorLock;
+
+        ARC::vFile_Header.push_back(file_header_normalized);
+
+        // pair:
+        auto& pair = ARC::__vPair->at(i);
+        Utils::copybytes(pair.info.Filename, &file_header_normalized.fileName, FNAME_SIZE);
+        pair.info.ResourceHash  = file_header_normalized.resourceHash;
+        pair.info.XORLock       = xorLock;
+    }
 }
 
 void ARC::ExtractAll(void)
 {
-    if (this->__header)
-        for (int i = 0; i < __header->fileNum; i++)
-            Decompress(i);
+    for (int i = 0; i < ARC::header.fileNum; i++)
+        Decompress(i);
 }
 
-void ARC::Decompress(u32 n)
+void ARC::Decompress(const u32 id)
 {
-    Pair&       p = __list->at(n);
-    ARC::File_Header* f = __listARC_File_s.at(n);
-    Bytef*      source = nullptr;
-    uLongf      decSize = 0;
+    const ARC::File_Header& file_header = ARC::vFile_Header.at(id);
+    const Bytef*            source = nullptr;
+    Pair&                   pair = __vPair->at(id);
+    uLongf                  decSize = 0;
 
-    decSize = f->decompressedSize;
-    p.cc.resize(decSize);
+    decSize = file_header.decompressedSize;
+    pair.cc.resize(decSize);
 
-    source = reinterpret_cast<Bytef*>(reinterpret_cast<u64>(&__header[0]) + f->pZData);
+    source = reinterpret_cast<Bytef*>(reinterpret_cast<u64>(ARC::__container->data()) + file_header.pZData);
 
-    if (uncompress(p.cc.data(), &decSize, source, f->compressedSize) == Z_OK)
+    if (uncompress(pair.cc.data(), &decSize, source, file_header.compressedSize) == Z_OK)
     {
-        p.info.DecSize = decSize;
-        p.info.isDecompressed = true;
+        pair.info.DecSize           = decSize;
+        pair.info.isDecompressed    = true;
     }
 }
 
@@ -176,11 +143,11 @@ int ARC::Decompress(Pair& sourcePair, Pair& destPair)
 
 }
 
-int ARC::Compress(Pair& sourcePair, Pair& destPair)
+int ARC::Compress(const Pair& sourcePair, Pair& destPair)
 {
     CContainer      temp;
     Bytef*          pTemp = nullptr;
-    Bytef*          pSrc = nullptr;
+    const Bytef*    pSrc = nullptr;
     uLongf          compSize = 0;
     int             err;
 
@@ -207,21 +174,7 @@ int ARC::Compress(Pair& sourcePair, Pair& destPair)
     return err;
 }
 
-void ARC::FixBE_Header(void)
-{
-    Utils::swap_endianness<u16>(__header->version);
-    Utils::swap_endianness<u16>(__header->fileNum);
-}
-
-void ARC::FixBE_ARC_File_s(ARC::File_Header* f)
-{
-    Utils::swap_endianness<u32>(f->resourceHash);
-    Utils::swap_endianness<u32>(f->compressedSize);
-    Utils::swap_endianness<u32>(f->decompressedSize);
-    Utils::swap_endianness<u32>(f->pZData);
-}
-
-void ARC::MakeARC(CContainer& _output, std::vector<Pair>* _list, ARC::Version _version)
+void ARC::MakeARC(CContainer& container, std::vector<Pair>& vPair, ARC::Version version)
 {
     ARC::Header         header;
     std::vector<Pair>   listAfter;
@@ -230,16 +183,16 @@ void ARC::MakeARC(CContainer& _output, std::vector<Pair>* _list, ARC::Version _v
     u32                 padding;
 
     /* Making header */
-    /**/    header.fileNum = _list->size();
-    /**/    if (_version != ARC::Version::None)
+    /**/    header.fileNum = vPair.size();
+    /**/    if (version != ARC::Version::None)
     /**/    {
-    /**/        header.version = _version;
-    /**/        padding = isNeedPadding(_version);
+    /**/        header.version = version;
+    /**/        padding = Is_NeedPadding(version);
     /**/    }
     /**/    else
     /**/    {
-    /**/        header.version = ARC::__previousVersion;
-    /**/        padding = isNeedPadding(ARC::__previousVersion);
+    /**/        header.version = ARC::prev_Version;
+    /**/        padding = Is_NeedPadding(ARC::prev_Version);
     /**/    }
     /**/
     /**/    Utils::copybytes(header.magic, ARC_MAGIC, sizeof(header.magic)); // TODO: BE LE depending on version or arg
@@ -247,9 +200,9 @@ void ARC::MakeARC(CContainer& _output, std::vector<Pair>* _list, ARC::Version _v
 
 
     /* Compress all data */
-    /**/    listAfter.resize(_list->size());
-    /**/    for (u32 i = 0; i < _list->size(); i++)
-    /**/        Compress(_list->at(i), listAfter.at(i));
+    /**/    listAfter.resize(vPair.size());
+    /**/    for (u32 i = 0; i < vPair.size(); i++)
+    /**/        Compress(vPair.at(i), listAfter.at(i));
 
 
     /* Calculate final size */
@@ -261,27 +214,16 @@ void ARC::MakeARC(CContainer& _output, std::vector<Pair>* _list, ARC::Version _v
 
 
     /* Copy data to ARC file */
-    /**/    _output.resize(finalSize, true);
+    /**/    container.resize(finalSize, true);
     /**/
     /**/    /* HEADER */
-    /**/    Utils::copybytes(_output.data(), &header, sizeof(header));
+    /**/    Utils::copybytes(container.data(), &header, sizeof(header));
     /**/
     /**/    /* ARC FILES LIST */
-    /**/    MakeARC_File_s_Header(_output, listAfter, padding, zDataStart);
+    /**/    MakeARC_File_s_Header(container, listAfter, padding, zDataStart);
     /**/
     /**/    /* ZDATA */
-    /**/    CopyZData(_output, listAfter, zDataStart);
-}
-
-
-u32 ARC::Align(u32 _value)
-{
-    constexpr const u32 align = sizeof(u64) * 2; // file alignment
-
-    while (_value % align != 0)
-        _value += 4;
-
-    return _value;
+    /**/    CopyZData(container, listAfter, zDataStart);
 }
 
 void ARC::CopyZData(CContainer& _cc, std::vector<Pair>& _list, u32 _zDataStart)
@@ -331,3 +273,31 @@ void ARC::MakeARC_File_s_Header(
     }
 }
 
+u32 ARC::Is_NeedPadding(const ARC::Version version)
+{
+    switch(version){
+    case ARC::Version::LP1: return 0;
+    case ARC::Version::LP2: return 0;
+    case ARC::Version::MH3U_3DS: return 4;
+    case ARC::Version::MH4U_MHXX: return 4;
+    case ARC::Version::MH4U_1: return 4;
+    default:return 0;
+    }
+
+    return 0;
+}
+
+u32 ARC::extract_XORLock(const u32 decSize)
+{
+    return decSize & 0xF0000000; // lock will be first 4 bits
+}
+
+u32 ARC::Align(u32 value)
+{
+    constexpr const u32 align = sizeof(u64) * 2; // file alignment
+
+    while (value % align != 0)
+        value += 4;
+
+    return value;
+}

@@ -34,12 +34,20 @@ public:
     u8*     data(void) const { return this->__data; }
 
     template<typename T>
-    T&      as(const u32 _n)
-    { return reinterpret_cast<T&>(this->__data[_n * sizeof(T)]); }
+    T&      as(const u32 index)
+    { return reinterpret_cast<T&>(this->__data[index * sizeof(T)]); }
 
     template<typename T>
-    const T& as_const(const u32 _n) const
-    { return reinterpret_cast<const T&>(this->__data[_n * sizeof(T)]); }
+    const T& as_const_ref(const u32 index) const
+    { return reinterpret_cast<const T&>(this->__data[index * sizeof(T)]); }
+
+    template<typename T>
+    const T* at_const(const u32 index) const
+    { return reinterpret_cast<T*>(this->__data[index]); }
+
+    template<typename T>
+    const T& at_const_ref(const u32 index) const
+    { return reinterpret_cast<const T&>(this->__data[index]); }
 
 
 private:

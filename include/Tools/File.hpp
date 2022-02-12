@@ -7,7 +7,6 @@
 class File
 {
 public:
-
     /**
      * @brief Read file to CContainer
      * @param _fpath    Path with filename
@@ -21,4 +20,6 @@ public:
      * @param _cc       CContainer to work with
      */
     static void CC_To_File(const std::filesystem::path& path, const CContainer& cc);
+
+    static CContainer oneFile;
 };

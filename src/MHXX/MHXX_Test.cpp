@@ -15,7 +15,7 @@ void run_tests()
     std::string                 test_folder = "test/MHXX_CQs/from_MHGU";
     std::vector<std::string>    selected_files =
     {
-        //"q0000105.arc",
+        "q0000105.arc",
 //            "q0110101.arc",
 //            "q0040505.arc",
 //            "q0000633.arc",
@@ -43,7 +43,7 @@ void run_tests()
         std::vector<Pair>   vector;
         CContainer          arc(entry.string());
 
-        ARC(arc, &vector).ExtractAll();
+        ARC(arc, vector).ExtractAll();
 
         MHXX::TEST::Extentions(vector, entry);
     }

@@ -1,6 +1,7 @@
 #include "Tools/File.hpp"
 #include <fstream>
 
+CContainer File::oneFile;
 
 void File::File_To_CC(const std::filesystem::path& path, CContainer& cc)
 {
@@ -23,7 +24,7 @@ void File::CC_To_File(const std::filesystem::path& path, const CContainer& cc)
 
     if (file.is_open())
     {
-        file.write(&cc.as_const<char>(0), cc.size());
+        file.write(&cc.as_const_ref<char>(0), cc.size());
         file.flush();
     }
 }

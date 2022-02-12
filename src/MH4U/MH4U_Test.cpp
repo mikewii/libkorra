@@ -15,7 +15,6 @@ void runTests(void)
     std::string                 test_folder = "test/MH4U";
     std::vector<std::string>    selected_files =
     {
-        "Diva_eng.lmd",
     };
 
     Folder folder(Utils::Get_User_Home().append(test_folder));
@@ -30,9 +29,9 @@ void runTests(void)
         std::vector<Pair>   vector;
         CContainer          container(entry.string());
 
-        ARC arc(container, &vector);
+        ARC arc(container, vector);
 
-        if (arc.isARC())
+        if (arc.Is_ARC())
         {
             arc.ExtractAll();
             MH4U::TEST::Extentions(vector, entry);
@@ -44,6 +43,13 @@ void runTests(void)
             lmd.print_Data0();
             lmd.print_counts();
         }
+
+        CContainer container_out;
+        ARC arc_out;
+
+        arc_out.MakeARC(container_out, vector);
+
+        container_out.write_To_File(Utils::Get_User_Home().append("test/MH4U/arc.arc"));
     }
 
     collector.Show();
@@ -56,21 +62,32 @@ void Extentions(const std::vector<Pair> &vector, const std::filesystem::path& pa
         switch(pair.info.ResourceHash){
         default:break;
         case MH4U::LMD::RESOURCE_HASH:{
+            auto pp = std::filesystem::path(pair.info.Filename);
+
             MH4U::LMD::cLMD lmd(pair);
 
-            for (const auto& info : lmd.__Get_U16String_info_vector())
-            {
-                if (info.str_size != info.str_size_copy)
-                {
-                    printf("%s\n", path.filename().string().c_str());
-                    pair.info.print_Filename();
-                }
-            }
-            break;
+            lmd.print_Strings();
         }
         }
     }
+}
 
+void Replace(std::vector<Pair> &vector, const std::filesystem::__cxx11::path &path)
+{
+    for (auto& pair : vector)
+    {
+        switch(pair.info.ResourceHash){
+        default:break;
+        case MH4U::LMD::RESOURCE_HASH:{
+            MH4U::LMD::cLMD lmd(pair);
+
+            for (u32 i = 0; i < lmd.Get_Strings_Count(); i++)
+                lmd.replace_String("ass", i);
+
+            lmd.write(pair);
+        }
+        }
+    }
 }
 
 }

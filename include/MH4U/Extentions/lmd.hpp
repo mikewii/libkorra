@@ -59,11 +59,16 @@ public:
     cLMD(const Pair& data);
     ~cLMD();
 
-    void write(CContainer& data);
+    void write(Pair& pair);
+    u32  write(CContainer& data);
 
-    void replace_String(const std::u16string& str, const u32 id);
+    void replace_String(const std::string& str, const u32 id);
 
     void remove_Item(const u32 id);
+
+    u32 Get_Strings_Count(void) const { return cLMD::vStrings.size(); }
+    u32 Get_Data0_Count(void) const { return cLMD::vData0.size(); }
+    u32 Get_Data1_Count(void) const { return cLMD::vData1.size(); }
 
     void print_Data0(void) const;
     void print_Data1(void) const;
