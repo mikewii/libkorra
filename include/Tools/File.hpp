@@ -12,14 +12,17 @@ public:
      * @param _fpath    Path with filename
      * @param _cc       CContainer to hold data
      */
-    static void File_To_CC(const std::filesystem::path& path, CContainer& cc);
+    static bool File_To_CC(const std::filesystem::path& path, CContainer& cc, const u32 magic = 0);
 
     /**
      * @brief Write data from CContainer to file
      * @param _fpath    Path with filename
      * @param _cc       CContainer to work with
      */
-    static void CC_To_File(const std::filesystem::path& path, const CContainer& cc);
+    static void CC_To_File(const std::filesystem::path& path, const CContainer& cc, const bool flush = false);
 
     static CContainer oneFile;
+
+private:
+    static bool Probe(std::fstream& file, const u32 magic);
 };

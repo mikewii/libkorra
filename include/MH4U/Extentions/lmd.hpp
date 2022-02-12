@@ -5,9 +5,10 @@
 
 namespace MH4U {
 namespace LMD {
-static const u32 RESOURCE_HASH = 0x62440501;
-
-static const char LMD_MAGIC[5] = "lmd\0";
+static const u32    RESOURCE_HASH = 0x62440501;
+static const u32    LMD_MAGIC_HEX = 0x00646D6C;
+static const char   LMD_MAGIC[5] = "lmd\0";
+static const char   EXT[5] = "lmd";
 
 struct Data0 {
     u32 unk[2];
@@ -81,6 +82,7 @@ public:
     const std::vector<Data0>& __Get_Data0_vector(void) const { return cLMD::vData0; }
     const std::vector<Data1>& __Get_Data1_vector(void) const { return cLMD::vData1; }
     const std::vector<U16string_info>& __Get_U16String_info_vector(void) const { return cLMD::vU16string_info; }
+    const std::vector<std::u16string>  __Get_U16String_vector(void) const { return cLMD::vStrings; }
 
 private:
     std::vector<Data0>          vData0;

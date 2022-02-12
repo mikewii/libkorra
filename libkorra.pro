@@ -21,6 +21,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 
 SOURCES += \
+    GUI/gui_lmd.cpp \
     GUI/mainwindow.cpp \
     main.cpp \
     src/Global.cpp \
@@ -49,6 +50,7 @@ SOURCES += \
     src/Tools/Utils.cpp
 
 HEADERS += \
+    GUI/gui_lmd.h \
     GUI/mainwindow.h \
     include/Global.hpp \
     include/MH4U/Extentions/lmd.hpp \
@@ -89,4 +91,5 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 FORMS += \
+    GUI/gui_lmd.ui \
     GUI/mainwindow.ui

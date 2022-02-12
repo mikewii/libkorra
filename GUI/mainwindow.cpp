@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "GUI/gui_lmd.h"
 
 #include <QFileDialog>
 #include <QStandardItemModel>
@@ -29,6 +30,16 @@ MainWindow::~MainWindow()
             item = nullptr;
         }
     }
+
+    for (auto* item : qAsConst(this->gui))
+    {
+        if (item)
+        {
+            delete item;
+            item = nullptr;
+        }
+    }
+
     delete ui;
 }
 
@@ -47,6 +58,7 @@ void MainWindow::on_btn_arcOpen_clicked(void)
 
     arc.ExtractAll();
 
+    itemList.clear();
     itemList.reserve(vector.size());
     model.clear();
     for (const auto& pair : vector)
@@ -64,5 +76,16 @@ void MainWindow::on_btn_arcOpen_clicked(void)
     }
 
     this->ui->listArcFilelist->setModel(&model);
+}
+
+
+void MainWindow::on_btn_lmdEditor_clicked(void)
+{
+    gui_lmd* editor = new gui_lmd(this);
+
+    this->gui.push_back(editor);
+
+    editor->setWindowFlag(Qt::WindowType::Window);
+    editor->show();
 }
 

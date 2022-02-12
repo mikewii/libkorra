@@ -15,9 +15,11 @@ public:
     ~MainWindow();
 
 private slots:
-    void on_btn_arcOpen_clicked();
+    void on_btn_arcOpen_clicked(void);
+    void on_btn_lmdEditor_clicked(void);
 
 private:
-    Ui::MainWindow *ui;
+    Ui::MainWindow  *ui;
+    QList<QWidget*> gui;
 };
 
