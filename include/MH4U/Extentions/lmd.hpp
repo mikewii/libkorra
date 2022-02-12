@@ -21,7 +21,7 @@ struct Data1 {
 };
 
 struct U16string_info {
-    u32     pWStr;
+    u32     pU16Str;
     u32     str_size;
     u32     str_size_copy;
 };
@@ -41,11 +41,8 @@ struct sLMD {
     u32     pData1;
     u32     pU16string_info;
 
-    // utf16le strings
-
     u32     pFilename;
 
-    // utf16le strings at data3_ammount * (3 * 4) + pData2
 
     u64 FixPointers(void) const { return reinterpret_cast<u64>(this); }
     void WriteVersion(const u16 major, const u8 minor, const u8 patch)

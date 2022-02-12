@@ -9,15 +9,13 @@ struct PairInfo {
     u32     DecSize = 0;
     bool    isDecompressed = false;
 
-    void print(void);
-} PACKED;
+    void print(void) const;
+    void print_Filename(void) const;
+};
 
 struct Pair {
-
     PairInfo    info;
     CContainer  cc{};
-
-    void print(void) { this->info.print(); };
 };
 
 class PairInfoKeeper // for transfering info from one pair to another

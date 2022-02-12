@@ -64,7 +64,7 @@ void cLMD::print_U16string_info(void) const
 {
     printf("\n##### Data2 #####\n");
     for (const auto& data2 : cLMD::vU16string_info)
-        printf("0: %08X | 1: %08X | 2: %08X\n", data2.pWStr, data2.str_size, data2.str_size_copy);
+        printf("0: %08X | 1: %08X | 2: %08X\n", data2.pU16Str, data2.str_size, data2.str_size_copy);
 }
 
 void cLMD::print_Strings(void) const
@@ -92,11 +92,15 @@ void cLMD::read(const CContainer& data)
 {
     const sLMD* header = reinterpret_cast<const sLMD*>(data.data());
 
-    const Data0*          pData0 = reinterpret_cast<Data0*>(header->pData0 + header->FixPointers());
-    const Data1*          pData1 = reinterpret_cast<Data1*>(header->pData1 + header->FixPointers());
-    const U16string_info* pData2 = reinterpret_cast<U16string_info*>(header->pU16string_info + header->FixPointers());
-    const char*     pFilename = reinterpret_cast<const char*>(header->pFilename + header->FixPointers());
+    const Data0*            pData0 = reinterpret_cast<Data0*>(header->pData0 + header->FixPointers());
+    const Data1*            pData1 = reinterpret_cast<Data1*>(header->pData1 + header->FixPointers());
+    const U16string_info*   pData2 = reinterpret_cast<U16string_info*>(header->pU16string_info + header->FixPointers());
+    const char*             pFilename = reinterpret_cast<const char*>(header->pFilename + header->FixPointers());
 
+
+    cLMD::vData0.reserve(header->data0_ammount);
+    cLMD::vData1.reserve(header->data1_ammount);
+    cLMD::vU16string_info.reserve(header->u16string_info_ammount);
 
     for (u32 i = 0; i < header->data0_ammount; i++)
         cLMD::vData0.push_back(pData0[i]);
@@ -109,7 +113,7 @@ void cLMD::read(const CContainer& data)
 
     for (const auto& item : cLMD::vU16string_info)
     {
-        const utf16* pStr = reinterpret_cast<const utf16*>(item.pWStr + header->FixPointers());
+        const utf16* pStr = reinterpret_cast<const utf16*>(item.pU16Str + header->FixPointers());
 
         cLMD::vStrings.push_back(pStr);
     }
@@ -146,7 +150,7 @@ void cLMD::write(CContainer& container)
     /*u16string_info*/
     /*u16string_info*/        vStrings_size += bytes;
     /*u16string_info*/
-    /*u16string_info*/        info.pWStr = pStrings + offset;
+    /*u16string_info*/        info.pU16Str = pStrings + offset;
     /*u16string_info*/        info.str_size = str.size();
     /*u16string_info*/        info.str_size_copy = str.size();
     /*u16string_info*/

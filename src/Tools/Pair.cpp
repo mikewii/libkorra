@@ -25,7 +25,7 @@ bool PairInfoKeeper::GetPairInfo(Pair &_pp)
     return true;
 }
 
-void PairInfo::print(void)
+void PairInfo::print(void) const
 {
     printf("\n##### Pair info #####\n");
     printf("Filename:       %s\n", this->Filename);
@@ -33,4 +33,9 @@ void PairInfo::print(void)
     printf("XORLock:        0x%08X\n", this->XORLock);
     printf("DecSize:        %d\n", this->DecSize);
     printf("isDecompressed: %s\n", this->isDecompressed ? "true" : "false");
+}
+
+void PairInfo::print_Filename(void) const
+{
+    printf("Filename:       %s\n", this->Filename);
 }

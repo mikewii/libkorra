@@ -7,7 +7,7 @@ class Folder {
 public:
     Folder(const std::filesystem::path& path);
 
-    const std::vector<std::filesystem::path> Get_ListOfFiles(void) const;
+    const std::vector<std::filesystem::path> Get_ListOfFiles(const bool recursive = false) const;
 
 private:
     std::filesystem::path __path;

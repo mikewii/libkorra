@@ -15,11 +15,12 @@ void runTests(void)
     std::string                 test_folder = "test/MH4U";
     std::vector<std::string>    selected_files =
     {
+        "Diva_eng.lmd",
     };
 
     Folder folder(Utils::Get_User_Home().append(test_folder));
 
-    const auto files = folder.Get_ListOfFiles();
+    const auto files = folder.Get_ListOfFiles(false);
 
     for (const auto& entry : files)
     {
@@ -40,15 +41,7 @@ void runTests(void)
         {
             MH4U::LMD::cLMD lmd(container);
 
-            const auto& u16strings_info = lmd.__Get_U16String_info_vector();
-
-            for (const auto& info : u16strings_info)
-            {
-                if (info.str_size != info.str_size_copy)
-                {
-                    lmd.print_U16string_info();
-                }
-            }
+            lmd.print_Data0();
             lmd.print_counts();
         }
     }
@@ -65,12 +58,12 @@ void Extentions(const std::vector<Pair> &vector, const std::filesystem::path& pa
         case MH4U::LMD::RESOURCE_HASH:{
             MH4U::LMD::cLMD lmd(pair);
 
-            const auto& u16strings_info = lmd.__Get_U16String_info_vector();
-            for (const auto& info : u16strings_info)
+            for (const auto& info : lmd.__Get_U16String_info_vector())
             {
                 if (info.str_size != info.str_size_copy)
                 {
-                    lmd.print_U16string_info();
+                    printf("%s\n", path.filename().string().c_str());
+                    pair.info.print_Filename();
                 }
             }
             break;

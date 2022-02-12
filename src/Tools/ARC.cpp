@@ -82,10 +82,10 @@ void    ARC::PrintFileInfo(ARC::File_Header* f, u32 n)
     printf("Pointer to zdata:   0x%X\n", f->pZData);
 }
 
-void    ARC::PrintPairsInfo(void)
+void ARC::PrintPairsInfo(void)
 {
-    for (auto& p : *__list)
-        p.print();
+    for (const auto& p : *__list)
+        p.info.print();
 }
 
 void ARC::PushFile(CContainer& _data, u32 n)
