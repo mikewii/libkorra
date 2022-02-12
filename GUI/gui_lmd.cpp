@@ -74,6 +74,7 @@ void gui_lmd::unlock(void)
 {
     this->ui->btn_Save->setEnabled(true);
     this->ui->btn_SaveAs->setEnabled(true);
+    this->ui->list_Strings->setCurrentRow(0);
 }
 
 void gui_lmd::clear(void)
