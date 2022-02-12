@@ -37,13 +37,13 @@ void cLMD::remove_Item(const u32 id)
     cLMD::vStrings.erase(cLMD::vStrings.begin() + id);
 }
 
+void cLMD::replace_String(const std::u16string& str, const u32 id) { cLMD::vStrings.at(id) = str; }
 void cLMD::replace_String(const std::string& str, const u32 id)
 {
     std::wstring_convert<std::codecvt_utf8_utf16<utf16>, utf16> converter;
 
     cLMD::vStrings.at(id) = converter.from_bytes(str);
 }
-
 
 void cLMD::print_Data0(void) const
 {

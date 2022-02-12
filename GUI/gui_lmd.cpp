@@ -88,6 +88,9 @@ void gui_lmd::clear(void)
     if (!this->original_strings.isEmpty())
         this->original_strings.clear();
 
+    if (!this->replaced_strings.isEmpty())
+        this->replaced_strings.clear();
+
     this->ui->list_Strings->clear();
 }
 
@@ -97,7 +100,7 @@ void gui_lmd::save(const std::filesystem::__cxx11::path &path)
 
     for (auto i = 0; i < this->replaced_strings.size(); i++)
     {
-        const auto& str = this->replaced_strings.at(i).toStdString();
+        const auto& str = this->replaced_strings.at(i).toStdU16String();
 
         if (!str.empty())
             this->lmd->replace_String(str, i);

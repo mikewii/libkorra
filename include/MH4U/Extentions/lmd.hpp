@@ -63,6 +63,7 @@ public:
     void write(Pair& pair);
     u32  write(CContainer& data);
 
+    void replace_String(const std::u16string& str, const u32 id);
     void replace_String(const std::string& str, const u32 id);
 
     void remove_Item(const u32 id);
