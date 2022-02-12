@@ -32,9 +32,9 @@ void gui_lmd::open(const QString &path)
     if (res)
     {
         this->filepath = path.toStdString();
-        const auto filename = this->filepath.filename();
+        const auto& filename = this->filepath.filename();
 
-        this->setWindowTitle(filename.c_str());
+        this->setWindowTitle(QString::fromStdString(filename.string()));
 
         this->lmd = new MH4U::LMD::cLMD(container);
 
@@ -93,10 +93,7 @@ void gui_lmd::clear(void)
 
 void gui_lmd::save(const std::filesystem::__cxx11::path &path)
 {
-    auto& savepath = this->filepath;
-
-    if (!filepath.empty())
-        savepath = path;
+    const auto& savepath = path.empty() ? this->filepath : path;
 
     for (auto i = 0; i < this->replaced_strings.size(); i++)
     {
