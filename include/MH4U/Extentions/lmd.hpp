@@ -79,11 +79,10 @@ public:
     void print_Filename(void) const;
     void print_counts(void) const;
 
-    // for test
-    const std::vector<Data0>& __Get_Data0_vector(void) const { return cLMD::vData0; }
-    const std::vector<Data1>& __Get_Data1_vector(void) const { return cLMD::vData1; }
-    const std::vector<U16string_info>& __Get_U16String_info_vector(void) const { return cLMD::vU16string_info; }
-    const std::vector<std::u16string>  __Get_U16String_vector(void) const { return cLMD::vStrings; }
+    const std::vector<Data0>& Get_Data0_vector(void) const { return cLMD::vData0; }
+    const std::vector<Data1>& Get_Data1_vector(void) const { return cLMD::vData1; }
+    const std::vector<U16string_info>& Get_U16String_info_vector(void) const { return cLMD::vU16string_info; }
+    const std::vector<std::u16string>& Get_U16String_vector(void) const { return cLMD::vStrings; }
 
 private:
     std::vector<Data0>          vData0;

@@ -27,18 +27,18 @@ void gui_lmd::open(const QString &path)
 {
     CContainer container;
 
-    auto res = File::File_To_CC(path.toStdString(), container, MH4U::LMD::LMD_MAGIC_HEX);
+    const auto& res = File::File_To_CC(path.toStdString(), container, MH4U::LMD::LMD_MAGIC_HEX);
 
     if (res)
     {
         this->filepath = path.toStdString();
         const auto& filename = this->filepath.filename();
 
-        this->setWindowTitle(QString::fromStdString(filename.string()));
+        this->setWindowTitle(QString::fromStdString(filename.string())); // fromStdString for windows compatibility
 
         this->lmd = new MH4U::LMD::cLMD(container);
 
-        const auto& vStrings = this->lmd->__Get_U16String_vector();
+        const auto& vStrings = this->lmd->Get_U16String_vector();
 
         this->original_strings.reserve(vStrings.size());
         this->replaced_strings.resize(vStrings.size());
@@ -67,7 +67,7 @@ void gui_lmd::populate(void)
 {
     this->ui->list_Strings->addItems(this->original_strings);
     this->ui->list_Strings->item(0)->setSelected(true);
-    this->ui->text_Original->setText(this->converter.to_bytes(this->lmd->__Get_U16String_vector().at(0)).c_str());
+    this->ui->text_Original->setText(this->converter.to_bytes(this->lmd->Get_U16String_vector().at(0)).c_str());
 }
 
 void gui_lmd::unlock(void)
@@ -133,7 +133,7 @@ void gui_lmd::on_list_Strings_itemSelectionChanged(void)
 
     if (id != -1 && this->lmd) // TODO: lock instead of checking for lmd
     {
-        this->ui->text_Original->setText(this->converter.to_bytes(this->lmd->__Get_U16String_vector().at(id)).c_str());
+        this->ui->text_Original->setText(this->converter.to_bytes(this->lmd->Get_U16String_vector().at(id)).c_str());
         this->ui->text_Replace->setText(this->replaced_strings.at(id));
     }
 }
@@ -154,7 +154,7 @@ void gui_lmd::on_text_Replace_textChanged(void)
     {
         if (id != -1)
         {
-            this->ui->list_Strings->item(id)->setText(this->converter.to_bytes(this->lmd->__Get_U16String_vector().at(id)).c_str());
+            this->ui->list_Strings->item(id)->setText(this->converter.to_bytes(this->lmd->Get_U16String_vector().at(id)).c_str());
             this->ui->list_Strings->item(id)->setBackground(QBrush());
         }
     }
