@@ -7,3 +7,4 @@
 #include "MHXX/Extentions/qdl.hpp"
 #include "MHXX/Extentions/esl.hpp"
 #include "MHXX/Extentions/ext.hpp"
+#include "MHXX/Savefile.hpp"

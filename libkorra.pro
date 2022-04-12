@@ -23,6 +23,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 SOURCES += \
     GUI/gui_lmd.cpp \
     GUI/mainwindow.cpp \
+    include/MHXX/Savefile.cpp \
     main.cpp \
     src/Global.cpp \
     src/MH4U/Extentions/lmd.cpp \
@@ -53,6 +54,16 @@ HEADERS += \
     GUI/gui_lmd.h \
     GUI/mainwindow.h \
     include/Global.hpp \
+    include/MH4U/Equipment/Arms.hpp \
+    include/MH4U/Equipment/Arms_str.hpp \
+    include/MH4U/Equipment/Chest.hpp \
+    include/MH4U/Equipment/Chest_str.hpp \
+    include/MH4U/Equipment/Head.hpp \
+    include/MH4U/Equipment/Head_str.hpp \
+    include/MH4U/Equipment/Legs.hpp \
+    include/MH4U/Equipment/Legs_str.hpp \
+    include/MH4U/Equipment/Waist.hpp \
+    include/MH4U/Equipment/Waist_str.hpp \
     include/MH4U/Extentions/lmd.hpp \
     include/MH4U/MH4U.hpp \
     include/MH4U/MH4U_Test.hpp \
@@ -69,6 +80,7 @@ HEADERS += \
     include/MHXX/MHXX.hpp \
     include/MHXX/MHXX_Test.hpp \
     include/MHXX/Quest/Common.hpp \
+    include/MHXX/Savefile.hpp \
     include/MHXX/Strings/Common.hpp \
     include/MHXX/Strings/Items.hpp \
     include/MHXX/Strings/ext.hpp \

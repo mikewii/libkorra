@@ -2,6 +2,7 @@
 #include "MHXX/MHXX.hpp"
 #include "Tools/Test.hpp"
 #include "Tools/Folder.hpp"
+#include "Tools/File.hpp"
 #include "Tools/ARC.hpp"
 
 
@@ -37,7 +38,7 @@ void run_tests()
         if (!Utils::Filter::Is_InVector(entry, selected_files))
             continue;
 
-        if (entry.filename().string().size() != 12) // quest filename size
+        if(entry.filename().string().size() != 12) // quest filename size
             continue;
 
         std::vector<Pair>   vector;
@@ -151,6 +152,21 @@ void Extentions(const std::vector<Pair>& vector, const std::filesystem::path& pa
         }
         } // switch
     }
+}
+
+void savefile(void)
+{
+    CContainer container;
+    CContainer slot;
+
+    File::File_To_CC(Utils::Get_User_Home().append("test").append("system"), container);
+
+
+    MHXX::Savefile savefile(container);
+
+    savefile.savefile.slot[0].extract(slot);
+
+    slot.write_To_File(Utils::Get_User_Home().append("test").append("slot0"));
 }
 
 }

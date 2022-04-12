@@ -9,7 +9,7 @@
 
 #include "MH4U/MH4U_Test.hpp"
 #include "MHXX/MHXX_Test.hpp"
-#define USE_GUI
+//#define USE_GUI
 
 #ifdef USE_GUI
 #include "GUI/mainwindow.h"
@@ -29,7 +29,7 @@ inline static int GUI_RUN(int argc, char *argv[])
 
 int main(int argc UNUSED, char *argv[] UNUSED)
 {
-
+    MHXX::TEST::savefile();
     //MHXX::TEST::run_tests();
     //MH4U::TEST::runTests();
 
