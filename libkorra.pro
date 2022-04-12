@@ -54,9 +54,6 @@ HEADERS += \
     GUI/gui_lmd.h \
     GUI/mainwindow.h \
     include/Global.hpp \
-    include/MH4U/Equipment/Arms.hpp \
-    include/MH4U/Equipment/Chest.hpp \
-    include/MH4U/Equipment/Head.hpp \
     include/MH4U/Equipment/Hunter/Armor/Arms.hpp \
     include/MH4U/Equipment/Hunter/Armor/Chest.hpp \
     include/MH4U/Equipment/Hunter/Armor/Head.hpp \
@@ -71,17 +68,15 @@ HEADERS += \
     include/MH4U/Equipment/Hunter/Weapon/HH.hpp \
     include/MH4U/Equipment/Hunter/Weapon/Hammer.hpp \
     include/MH4U/Equipment/Hunter/Weapon/IG.hpp \
-    include/MH4U/Equipment/Hunter/Weapon/IG_Insect.hpp \
+    include/MH4U/Equipment/Hunter/Weapon/IG_Kinsect.hpp \
     include/MH4U/Equipment/Hunter/Weapon/LBG.hpp \
     include/MH4U/Equipment/Hunter/Weapon/LS.hpp \
     include/MH4U/Equipment/Hunter/Weapon/Lance.hpp \
     include/MH4U/Equipment/Hunter/Weapon/SA.hpp \
     include/MH4U/Equipment/Hunter/Weapon/SNS.hpp \
-    include/MH4U/Equipment/Legs.hpp \
     include/MH4U/Equipment/Palico/Armor/Palico_chest.hpp \
     include/MH4U/Equipment/Palico/Armor/Palico_helmet.hpp \
     include/MH4U/Equipment/Palico/Weapon/Palico_weapons.hpp \
-    include/MH4U/Equipment/Waist.hpp \
     include/MH4U/Extentions/lmd.hpp \
     include/MH4U/Items.hpp \
     include/MH4U/MH4U.hpp \

@@ -1,7 +1,6 @@
 #pragma once
 #include "types.h"
 #include "Global.hpp"
-#include <cwchar>
 
 namespace MH4U {
 namespace LMD {

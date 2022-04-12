@@ -1,7 +1,7 @@
 #pragma once
 
 namespace MH4U {
-constexpr const char* IG_Insect_s[] = {
+constexpr const char* IG_Kinsect_s[] = {
     "Culldrone",
     "Reavedrone",
     "Alucanid",
