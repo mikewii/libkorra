@@ -9,7 +9,7 @@
 
 #include "MH4U/MH4U_Test.hpp"
 #include "MHXX/MHXX_Test.hpp"
-//#define USE_GUI
+#define USE_GUI
 
 #ifdef USE_GUI
 #include "GUI/mainwindow.h"

@@ -74,6 +74,7 @@ void gui_lmd::unlock(void)
 {
     this->ui->btn_Save->setEnabled(true);
     this->ui->btn_SaveAs->setEnabled(true);
+    this->ui->btn_Export->setEnabled(true);
     this->ui->list_Strings->setCurrentRow(0);
 }
 
@@ -172,5 +173,23 @@ void gui_lmd::on_btn_SaveAs_clicked(void)
     QString fileName = QFileDialog::getSaveFileName(this, tr("Save file as"));
 
     this->save(fileName.toStdString());
+}
+
+#include <fstream>
+void gui_lmd::on_btn_Export_clicked(void)
+{
+    auto path = this->filepath;
+    path.replace_extension("txt");
+
+    std::fstream out(path, std::ios::out);
+
+    if (out.is_open()) {
+        for (const auto& text : qAsConst(this->original_strings)) {
+            out << '"' << text.toStdString() << "\",";
+            out << std::endl;
+        }
+
+        out.close();
+    }
 }
 

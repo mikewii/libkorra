@@ -1,0 +1,41 @@
+#pragma once
+
+namespace MH4U {
+constexpr const char* IG_Insect_s[] = {
+    "Culldrone",
+    "Reavedrone",
+    "Alucanid",
+    "Monarch Alucanid",
+    "Empresswing",
+    "Rigiprayne",
+    "Cancadaman",
+    "Fiddlebrix",
+    "Windchopper",
+    "Grancathar",
+    "Pseudocath",
+    "Elscarad",
+    "Mauldrone",
+    "Pummeldrone",
+    "Foebeetle",
+    "Carnage Beetle",
+    "Bonnetfille",
+    "Ladytarge",
+    "Ladypavise",
+    "Arkmaiden",
+    "Gullshad",
+    "Bullshroud",
+    "Whispervesp",
+    "Arginesse",
+    "Thunderball",
+    "Bilbobrix",
+    "Foliacath",
+    "Exalted Alucanid",
+    "Great Elscarad",
+    "Ladytower",
+    "Fleetflammer",
+    "Gleambeetle",
+    "Great Arginesse",
+    "Clockmaster",
+    "Barrett Hawk"
+};
+}

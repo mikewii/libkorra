@@ -23,6 +23,7 @@ private slots:
     void on_text_Replace_textChanged(void);
     void on_btn_Save_clicked(void);
     void on_btn_SaveAs_clicked(void);
+    void on_btn_Export_clicked(void);
 
 private:
     MH4U::LMD::cLMD *lmd = nullptr;

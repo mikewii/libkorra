@@ -211,6 +211,16 @@
        </spacer>
       </item>
       <item>
+       <widget class="QPushButton" name="btn_Export">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="text">
+         <string>Export as .txt</string>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QPushButton" name="btn_Save">
         <property name="enabled">
          <bool>false</bool>
