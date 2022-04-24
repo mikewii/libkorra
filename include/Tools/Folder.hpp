@@ -10,5 +10,5 @@ public:
     const std::vector<std::filesystem::path> Get_ListOfFiles(const bool recursive = false) const;
 
 private:
-    std::filesystem::path __path;
+    std::filesystem::directory_entry __path;
 };

@@ -45,6 +45,22 @@ void File::CC_To_File(const std::filesystem::path& path, const CContainer& cc, c
     }
 }
 
+void File::Data_To_File(const std::filesystem::path& path, const void* data, const int size, const bool flush)
+{
+    std::filesystem::path prefered(path); prefered = prefered.make_preferred();
+
+    std::fstream file(prefered, std::ios::binary | std::ios::out);
+
+    const char* data0 = reinterpret_cast<const char*>(data);
+    if (file.is_open())
+    {
+        file.write(data0, size);
+
+        if (flush)
+            file.flush();
+    }
+}
+
 bool File::Probe(std::fstream& file, const u32 magic)
 {
     u32 buffer = 0;

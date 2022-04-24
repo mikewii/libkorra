@@ -35,7 +35,10 @@ private:
     QVector<QString>        replaced_strings;
 
     void populate(void);
-    void unlock(void);
+
+    void lock(void) const;
+    void unlock(void) const;
+
     void clear(void);
     void save(const std::filesystem::path& path = "");
     void save_change_color(void);

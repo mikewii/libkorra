@@ -21,6 +21,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 
 SOURCES += \
+    GUI/gui_gmd.cpp \
     GUI/gui_lmd.cpp \
     GUI/mainwindow.cpp \
     include/MHXX/Savefile.cpp \
@@ -29,6 +30,7 @@ SOURCES += \
     src/MH4U/Extentions/lmd.cpp \
     src/MH4U/MH4U.cpp \
     src/MH4U/MH4U_Test.cpp \
+    src/MH4U/Quest.cpp \
     src/MHXX/Enemy/Enemy.cpp \
     src/MHXX/Extentions/esl.cpp \
     src/MHXX/Extentions/ext.cpp \
@@ -51,6 +53,7 @@ SOURCES += \
     src/Tools/Utils.cpp
 
 HEADERS += \
+    GUI/gui_gmd.hpp \
     GUI/gui_lmd.h \
     GUI/mainwindow.h \
     include/Global.hpp \
@@ -81,6 +84,7 @@ HEADERS += \
     include/MH4U/Items.hpp \
     include/MH4U/MH4U.hpp \
     include/MH4U/MH4U_Test.hpp \
+    include/MH4U/Quest.hpp \
     include/MH4U/Resource.hpp \
     include/MHXX/Enemy/Enemy.hpp \
     include/MHXX/Extentions/esl.hpp \
@@ -105,6 +109,7 @@ HEADERS += \
     include/Tools/File.hpp \
     include/Tools/Folder.hpp \
     include/Tools/Pair.hpp \
+    include/Tools/TEX.hpp \
     include/Tools/Task.hpp \
     include/Tools/Test.hpp \
     include/Tools/Utils.hpp \
@@ -117,5 +122,6 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 FORMS += \
+    GUI/gui_gmd.ui \
     GUI/gui_lmd.ui \
     GUI/mainwindow.ui

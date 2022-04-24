@@ -7,5 +7,6 @@ namespace TEST {
 void runTests(void);
 void Extentions(const std::vector<Pair>& vector, const std::filesystem::path& path);
 void Replace(std::vector<Pair>& vector, const std::filesystem::path& path);
+void ExtractQuests(const std::filesystem::path& path);
 }
 }

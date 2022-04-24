@@ -8,6 +8,20 @@ namespace MH4U {
 namespace TEST {
 Utils::Collector collector("mh4u_collected_data.txt");
 
+void ExtractQuests(const std::filesystem::path& path)
+{
+    CContainer in, out;
+    std::filesystem::path outpath = path;
+
+    outpath.replace_extension(".dec");
+
+
+    File::File_To_CC(path, in);
+
+    Decode(in, out);
+
+    out.write_To_File(outpath);
+}
 
 void runTests(void)
 {

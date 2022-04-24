@@ -2,6 +2,8 @@
 
 #include "Tools/Blowfish.hpp"
 #include "Tools/Utils.hpp"
+#include "Tools/Folder.hpp"
+#include "Tools/File.hpp"
 
 #include <random>
 
@@ -12,7 +14,7 @@ void    PreEncode_Save(CContainer& data);
 void    MHXOR(CContainer& data, u32 seed);
 void    InsertValue(CContainer& data, u32 value);
 
-static const u8 KeySaveFile[]    = "blowfish key iorajegqmrna4itjeangmb agmwgtobjteowhv9mope";
+static const u8 KeyEXTData[]    = "blowfish key iorajegqmrna4itjeangmb agmwgtobjteowhv9mope";
 static const u8 KeyDLC[]         = "AgK2DYheaCjyHGPB";
 static const u8 KeyDLC_TW[]      = "Capcom123 ";
 
@@ -35,7 +37,7 @@ void Decode(CContainer& in, CContainer& out,  bool isQuest)
     }
     else
     {
-        cypher.Initialize(MH4U::KeySaveFile, sizeof(MH4U::KeySaveFile) -1);
+        cypher.Initialize(MH4U::KeyEXTData, sizeof(MH4U::KeyEXTData) -1);
         cypher.Decode(in.data(), out.data(), outSize);
 
         good = PostDecode_Save(out);
@@ -64,7 +66,7 @@ void Encode(CContainer& in, CContainer& out, bool isQuest)
         outSize = cypher.GetOutputLength(in.size());
         out.resize(outSize);
 
-        cypher.Initialize(MH4U::KeySaveFile, sizeof(MH4U::KeySaveFile) -1);
+        cypher.Initialize(MH4U::KeyEXTData, sizeof(MH4U::KeyEXTData) -1);
         cypher.Encode(in.data(), out.data(), outSize);
     }
 }

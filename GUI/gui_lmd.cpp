@@ -3,6 +3,8 @@
 
 #include <QFileDialog>
 
+#include <fstream>
+
 #include "Tools/File.hpp"
 
 gui_lmd::gui_lmd(QWidget *parent) :
@@ -10,6 +12,7 @@ gui_lmd::gui_lmd(QWidget *parent) :
     ui(new Ui::gui_lmd)
 {
     ui->setupUi(this);
+    this->lock();
 }
 
 gui_lmd::~gui_lmd()
@@ -70,7 +73,14 @@ void gui_lmd::populate(void)
     this->ui->text_Original->setText(this->converter.to_bytes(this->lmd->Get_U16String_vector().at(0)).c_str());
 }
 
-void gui_lmd::unlock(void)
+void gui_lmd::lock(void) const
+{
+    this->ui->btn_Save->setEnabled(false);
+    this->ui->btn_SaveAs->setEnabled(false);
+    this->ui->btn_Export->setEnabled(false);
+}
+
+void gui_lmd::unlock(void) const
 {
     this->ui->btn_Save->setEnabled(true);
     this->ui->btn_SaveAs->setEnabled(true);
@@ -167,7 +177,6 @@ void gui_lmd::on_btn_Save_clicked(void)
     this->save();
 }
 
-
 void gui_lmd::on_btn_SaveAs_clicked(void)
 {
     QString fileName = QFileDialog::getSaveFileName(this, tr("Save file as"));
@@ -175,7 +184,6 @@ void gui_lmd::on_btn_SaveAs_clicked(void)
     this->save(fileName.toStdString());
 }
 
-#include <fstream>
 void gui_lmd::on_btn_Export_clicked(void)
 {
     auto path = this->filepath;

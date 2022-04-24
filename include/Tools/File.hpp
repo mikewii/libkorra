@@ -21,6 +21,8 @@ public:
      */
     static void CC_To_File(const std::filesystem::path& path, const CContainer& cc, const bool flush = false);
 
+    static void Data_To_File(const std::filesystem::path& path, const void* data, const int size, const bool flush = false);
+
     static CContainer oneFile;
 
 private:
