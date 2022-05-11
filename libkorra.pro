@@ -47,6 +47,7 @@ SOURCES += \
     src/Tools/CContainer.cpp \
     src/Tools/File.cpp \
     src/Tools/Folder.cpp \
+    src/Tools/MCA.cpp \
     src/Tools/Pair.cpp \
     src/Tools/Task.cpp \
     src/Tools/Test.cpp \
@@ -108,6 +109,7 @@ HEADERS += \
     include/Tools/CContainer.hpp \
     include/Tools/File.hpp \
     include/Tools/Folder.hpp \
+    include/Tools/MCA.hpp \
     include/Tools/Pair.hpp \
     include/Tools/TEX.hpp \
     include/Tools/Task.hpp \

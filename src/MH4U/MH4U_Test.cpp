@@ -104,5 +104,20 @@ void Replace(std::vector<Pair> &vector, const std::filesystem::__cxx11::path &pa
     }
 }
 
+void ExtractSave(const std::filesystem::__cxx11::path &path)
+{
+    CContainer in, out;
+    std::filesystem::path outpath = path;
+
+    outpath.replace_extension(".dec");
+
+
+    File::File_To_CC(path, in);
+
+    Decode(in, out);
+
+    out.write_To_File(outpath);
+}
+
 }
 }

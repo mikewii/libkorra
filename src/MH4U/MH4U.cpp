@@ -33,6 +33,8 @@ void Decode(CContainer& in, CContainer& out,  bool isQuest)
         cypher.Initialize(MH4U::KeyDLC, sizeof(MH4U::KeyDLC) -1);
         cypher.Decode(in.data(), out.data(), outSize);
 
+        good = PostDecode_Save(out);
+
         //TODO: check for quest file header for error
     }
     else
