@@ -6,6 +6,7 @@
 
 #ifdef N3DS
 extern int printf (const char *__restrict __format, ...){return 0;}
+extern int fprintf (FILE *__restrict __stream, const char *__restrict __format, ...){return 0;}
 #endif
 
 template <class T>

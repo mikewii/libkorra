@@ -19,6 +19,8 @@ ARC::ARC(const CContainer& container, std::vector<Pair>& vOut)
 
     if (ARC::isARC)
     {
+        this->open = true;
+
         if (ARC::isBE) ARC::header.BE_Swap();
 
         ARC::prev_Version   = ARC::header.version;
@@ -27,11 +29,38 @@ ARC::ARC(const CContainer& container, std::vector<Pair>& vOut)
     }
 }
 
+ARC::ARC(u8* src)
+{
+    CContainer temp;
+
+    if (!src)
+        return;
+
+    this->header = reinterpret_cast<ARC::Header&>(src);
+
+    ARC::isARC |= ARC::isLE = std::equal(ARC_MAGIC, ARC_MAGIC + 4, ARC::header.magic);
+    ARC::isARC |= ARC::isBE = std::equal(CRA_MAGIC, CRA_MAGIC + 4, ARC::header.magic);
+
+    if (ARC::isARC)
+    {
+        this->open = true;
+
+        ARC::prev_Version = ARC::header.version;
+
+        temp.setData(src);
+        this->Read(temp);
+    }
+}
+
 ARC::~ARC()
 {
 }
 
-bool ARC::Is_ARC(void) const { return ARC::isARC; }
+const bool ARC::IsARC(void) const { return ARC::isARC; }
+const bool ARC::IsOpen(void) const
+{
+
+}
 
 void ARC::print_Header(void)
 {

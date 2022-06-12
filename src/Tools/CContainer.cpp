@@ -42,7 +42,7 @@ void CContainer::_free(void)
     }
 }
 
-bool CContainer::allocate(u32 _size, bool _zeroed)
+const bool CContainer::allocate(u32 _size, bool _zeroed)
 {
     if (this->__root != nullptr) this->_free();
 
@@ -61,8 +61,11 @@ bool CContainer::allocate(u32 _size, bool _zeroed)
     return true;
 }
 
-bool CContainer::addBefore(u32 _size)
+const bool CContainer::addBefore(u32 _size)
 {
+    if (this->__root == nullptr)
+        return false;
+
     if (_size <= this->RESERVED_Before && this->RESERVED_Before != 0)
     {
         this->RESERVED_Before   -= _size;
@@ -76,45 +79,47 @@ bool CContainer::addBefore(u32 _size)
     return false;
 }
 
-void CContainer::addAfter(u32 _size)
+const bool CContainer::addAfter(u32 _size)
 {
-    if (_size <= this->RESERVED_After && this->RESERVED_After != 0)
-    {
+    if (this->__root == nullptr)
+        return false;
+
+    if (_size <= this->RESERVED_After && this->RESERVED_After != 0) {
         this->RESERVED_After    -= _size;
         this->__size            += _size;
-    }
-    else
-    {
+    } else {
         this->__root = static_cast<u8*>( ::realloc(this->__root, this->__size += _size) );
         this->__data = this->__root + this->RESERVED_Before;
     }
+
+    return true;
 }
 
-bool CContainer::subBefore(u32 _size)
+const bool CContainer::subBefore(u32 _size)
 {
-    if (_size < this->__size)
-    {
+    if (this->__root == nullptr)
+        return false;
+
+    if (_size < this->__size) {
         this->RESERVED_Before   += _size;
         this->__data            += _size;
         this->__size            -= _size;
 
         return true;
-    }
-
-    return false;
+    } else return false;
 }
 
-bool CContainer::subAfter(u32 _size)
+const bool CContainer::subAfter(u32 _size)
 {
-    if (_size < this->__size)
-    {
+    if (this->__root == nullptr)
+        return false;
+
+    if (_size < this->__size) {
         this->RESERVED_After    += _size;
         this->__size            -= _size;
 
         return true;
-    }
-
-    return false;
+    } else return false;
 }
 
 void CContainer::resize(u32 _size, bool _zeroed)

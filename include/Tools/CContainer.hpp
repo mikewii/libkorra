@@ -18,19 +18,18 @@ public:
     CContainer& operator=(const CContainer& _cc);
 
 
-    u32     size(void) const { return this->__size; }
-    void    resize(u32 _size, bool zeroed = false);
+    const u32   size(void) const { return this->__size; }
+    void        resize(u32 _size, bool zeroed = false);
 
     /* for in-memory ops */
-    void    setData(u8* _ptr) { this->__data = _ptr; }
+    void    setData(u8* _ptr) { this->__data = _ptr; } // keep __root nullptr to avoid calling free on actuall in-memory data
     void    setSize(u32 _size) { this->__size = _size; }
 
     // Expanding and shrinking
-    bool    addBefore(u32 _size);
-    void    addAfter(u32 _size);
-
-    bool    subBefore(u32 _size);
-    bool    subAfter(u32 _size);
+    const bool  addBefore(u32 _size);
+    const bool  addAfter(u32 _size);
+    const bool  subBefore(u32 _size);
+    const bool  subAfter(u32 _size);
 
 #ifndef N3DS
     void    read_File(const std::filesystem::path& path);
@@ -66,6 +65,6 @@ private:
     u32         RESERVED_Before  = 0x100;
     u32         RESERVED_After   = 0x100;
 
-    bool allocate(u32 _size, bool _zeroed = false);
-    void _free(void);
+    const bool  allocate(u32 _size, bool _zeroed = false);
+    void        _free(void);
 };

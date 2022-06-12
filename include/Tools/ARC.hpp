@@ -52,10 +52,12 @@ public:
 
 
     ARC(){};
-    ARC(const CContainer& container, std::vector<Pair>& vOut);
+    explicit ARC(const CContainer& container, std::vector<Pair>& vOut);
+    explicit ARC(u8* src); // need size?
     ~ARC();
 
-    bool    Is_ARC(void) const;
+    const bool  IsARC(void) const;
+    const bool  IsOpen(void) const;
 
     void    Decompress(const u32 id);
     int     Decompress(Pair& sourcePair, Pair& destPair);
@@ -76,6 +78,7 @@ public:
     void CopyZData(CContainer& _cc, std::vector<Pair>& _list, u32 _zDataStart);
 
 private:
+    bool open = false;
     bool isLE = false;
     bool isBE = false;
     bool isARC = false;

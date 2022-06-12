@@ -48,7 +48,7 @@ void runTests(void)
 
         ARC arc(container, vector);
 
-        if (arc.Is_ARC())
+        if (arc.IsARC())
         {
             arc.ExtractAll();
             MH4U::TEST::Extentions(vector, entry);
