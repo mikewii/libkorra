@@ -2,6 +2,7 @@
 #include "Tools/Utils.hpp"
 #include "Tools/File.hpp"
 
+
 #ifndef N3DS
 CContainer::CContainer(const std::filesystem::path& path)
 {
@@ -19,6 +20,12 @@ CContainer::CContainer(const CContainer& cc)
 
     this->RESERVED_After = cc.RESERVED_After;
     this->RESERVED_Before = cc.RESERVED_Before;
+}
+
+CContainer::CContainer()
+{
+    this->RESERVED_Before = 0;
+    this->RESERVED_After = 0;
 }
 CContainer::~CContainer() { this->_free(); }
 CContainer& CContainer::operator=(const CContainer& _cc)

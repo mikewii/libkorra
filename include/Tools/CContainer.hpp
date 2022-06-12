@@ -12,7 +12,7 @@ public:
     explicit CContainer(const std::filesystem::path& path);
 #endif
     explicit CContainer(const CContainer& cc);
-    CContainer(){};
+    CContainer();
     ~CContainer();
 
     CContainer& operator=(const CContainer& _cc);
