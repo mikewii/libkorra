@@ -30,9 +30,13 @@ inline static int GUI_RUN(int argc, char *argv[])
 int main(int argc UNUSED, char *argv[] UNUSED)
 {
     //MHXX::TEST::savefile();
-    //MHXX::TEST::run_tests();
+    MHXX::TEST::run_tests();
     //MH4U::TEST::runTests();
-    MH4U::TEST::ExtractSave(Utils::Get_User_Home().append("test/MH4U/save/2021-06-22_18-37-56/user2"));
+    //MH4U::TEST::ExtractSave(Utils::Get_User_Home().append("test/MH4U/save/2021-06-22_18-37-56/user2"));
+//    MH4U::TEST::mca(Utils::Get_User_Home().append("test/MH4U/mca/bgm_em011.mca"));
+//    MH4U::TEST::mca(Utils::Get_User_Home().append("test/MH4U/mca/test1.mca"));
+//    MH4U::TEST::mca(Utils::Get_User_Home().append("test/MH4U/mca/test2unpatched.mca"));
+    //MH4U::TEST::mca(Utils::Get_User_Home().append("test/MH4U/mca/bgm_em_Named.mca"));
     //MH4U::TEST::ExtractQuests(Utils::Get_User_Home().append("test/MH4U/quest/2022 04 24_04 39 08/quest5"));
     //MH4U::sQuest::ExtractQuests_Directory(Utils::Get_User_Home().append("test/MH4U/quest/2022 04 24_04 39 08/"));
 

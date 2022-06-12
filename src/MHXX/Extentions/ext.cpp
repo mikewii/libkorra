@@ -21,17 +21,45 @@ cEXT::cEXT(const Pair& _pp)
     else NotifyError("Pair is not a sEXTHeader_s");
 }
 
+cEXT::cEXT(u8 *src, const bool isMHXX)
+{
+    if (isMHXX) {
+        this->dataSize = EXT::MHXX_EXT_SIZE;
+        this->linksAmmount = 1;
+    } else {
+        this->dataSize = EXT::MHGU_EXT_SIZE;
+        this->linksAmmount = 5;
+
+        this->links[1]  = reinterpret_cast<GMDLink_s&>(src[sizeof(sEXTHeader_p1_s) + sizeof(GMDLink_s) * 1]);
+        this->links[2]  = reinterpret_cast<GMDLink_s&>(src[sizeof(sEXTHeader_p1_s) + sizeof(GMDLink_s) * 2]);
+        this->links[3]  = reinterpret_cast<GMDLink_s&>(src[sizeof(sEXTHeader_p1_s) + sizeof(GMDLink_s) * 3]);
+        this->links[4]  = reinterpret_cast<GMDLink_s&>(src[sizeof(sEXTHeader_p1_s) + sizeof(GMDLink_s) * 4]);
+    }
+
+    this->header0   = reinterpret_cast<sEXTHeader_p1_s&>(src[0]);
+    this->links[0]  = reinterpret_cast<GMDLink_s&>(src[sizeof(sEXTHeader_p1_s)]);
+    this->header1   = reinterpret_cast<sEXTHeader_p2_s&>(src[sizeof(sEXTHeader_p1_s) + (sizeof(GMDLink_s) * this->linksAmmount)]);
+}
+
 cEXT::~cEXT()
 {
 }
 
-bool cEXT::save(Pair& _pp)
+bool cEXT::save(Pair& _pp, const bool convertToMHXX)
 {
-    if (this->dataSize == EXT::MHXX_EXT_SIZE) this->linksAmmount = 1;
-    else if (this->dataSize == EXT::MHGU_EXT_SIZE) this->linksAmmount = 5;
-    else return false;
+    u32 datasize;
+    u32 gmdlinks;
 
-    _pp.cc.resize(this->dataSize);
+
+    if (convertToMHXX) {
+        datasize = EXT::MHXX_EXT_SIZE;
+        gmdlinks = 1;
+    } else {
+        datasize = this->dataSize;
+        gmdlinks = this->linksAmmount;
+    }
+
+    _pp.cc.resize(datasize);
 
     Utils::copybytes(
                 _pp.cc.data(),
@@ -40,16 +68,16 @@ bool cEXT::save(Pair& _pp)
     Utils::copybytes(
                 _pp.cc.data() + sizeof(sEXTHeader_p1_s),
                 &this->links,
-                sizeof(GMDLink_s));
+                sizeof(GMDLink_s) * gmdlinks);
     Utils::copybytes(
-                _pp.cc.data() + sizeof(sEXTHeader_p1_s) + (sizeof(GMDLink_s) * this->linksAmmount),
+                _pp.cc.data() + sizeof(sEXTHeader_p1_s) + (sizeof(GMDLink_s) * gmdlinks),
                 &this->header1,
                 sizeof(sEXTHeader_p2_s));
 
     if (cEXT::isPairInfoSet()) cEXT::GetPairInfo(_pp);
     else
     {
-        _pp.info.DecSize        = this->dataSize;
+        _pp.info.DecSize        = datasize;
         _pp.info.ResourceHash   = cEXT::getResourceHash();
         _pp.info.XORLock        = MHXX_XORLock;
         _pp.info.isDecompressed = true;
@@ -366,7 +394,7 @@ bool cEXT::read(const Pair &_pp)
     Utils::copybytes(
                 &this->links,
                 _pp.cc.data() + sizeof(sEXTHeader_p1_s),
-                sizeof(GMDLink_s));
+                sizeof(GMDLink_s) * this->linksAmmount);
     Utils::copybytes(
                 &this->header1,
                 _pp.cc.data() + sizeof(sEXTHeader_p1_s) + (sizeof(GMDLink_s) * this->linksAmmount),

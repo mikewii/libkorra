@@ -86,7 +86,7 @@ std::pair<u8*, u8*> FindDiff(u8* _data0, u8* _data1, u32 _size)
 }
 
 
-
+#ifndef N3DS
 std::filesystem::path Get_User_Home(const bool documents)
 {
 #ifdef _WIN32
@@ -248,5 +248,6 @@ bool Filter::Is_InVector(const std::filesystem::__cxx11::path &path, const std::
 
     return true;
 }
+#endif
 
 } // Utils

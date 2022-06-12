@@ -4,6 +4,10 @@
 
 #define MHXX_XORLock 0x40000000
 
+#ifdef N3DS
+extern int printf (const char *__restrict __format, ...){return 0;}
+#endif
+
 template <class T>
 class Export
 {

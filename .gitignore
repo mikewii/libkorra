@@ -1,3 +1,6 @@
 *.user
 assets
 assets/**
+debug/
+release/
+lib/

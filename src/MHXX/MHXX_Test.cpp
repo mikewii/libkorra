@@ -1,10 +1,10 @@
+#ifndef N3DS
 #include "MHXX/MHXX_Test.hpp"
 #include "MHXX/MHXX.hpp"
 #include "Tools/Test.hpp"
 #include "Tools/Folder.hpp"
 #include "Tools/File.hpp"
 #include "Tools/ARC.hpp"
-
 
 namespace MHXX {
 namespace TEST {
@@ -113,41 +113,16 @@ void Extentions(const std::vector<Pair>& vector, const std::filesystem::path& pa
             break;
         }
         case MHXX::EXT::RESOURCE_HASH:{
-            MHXX::EXT::cEXT ext(pair);
+            MHXX::EXT::cEXT ext(pair.cc.data(), false);
 
-            const auto& header0 = ext.GetHeader0();
-            const auto& header1 = ext.GetHeader1();
+            Pair outOriginal, outMHXX;
 
-            //collector.Disable();
-            if (collector.IsActive())
-            {
-                collector.Set_Value(8);
-                collector.Set_Operator(Utils::Collector::Op::Unique);
-                //if (header0.Em[0].EmSetTargetID.idSub == 8)
-                collector.Add
-                ({
-                    header0.questID,
-                    quest_name,
-                    header0.questLv,
+            //ext.save(outOriginal);
+            ext.save(outMHXX, true);
 
-                    header0.acEquipSetNo
-                });
-                //out.push_back(pair);
-            }
-            else
-            {
-                //if (header0.Em[0].EmSetTargetID.idSub == 8)
-                {
-                    printf("q%07d %-3s %s\n", header0.questID, MHXX::QuestLv::GetStr(header0.questLv), quest_name.c_str());
-                    printf("0: %d %d\n", header0.Em[0].EmSetTargetID.id, header0.Em[0].EmSetTargetID.idSub);
-                    printf("1: %d %d\n", header0.Em[1].EmSetTargetID.id, header0.Em[1].EmSetTargetID.idSub);
-//                    ext.print_Em0();
-//                    ext.print_Em0();
-                }
-//                ext.print_Supply0();
-//                ext.print_Supply1();
-            }
-            //pair.cc.writeToFile((fpath + ".ext").c_str());
+            //outOriginal.cc.write_To_File(Utils::Get_User_Home().append("test").append("test_original.ext"));
+            outMHXX.cc.write_To_File(Utils::Get_User_Home().append("test").append("test.ext"));
+
             break;
         }
         } // switch
@@ -171,3 +146,4 @@ void savefile(void)
 
 }
 }
+#endif

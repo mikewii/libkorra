@@ -2,12 +2,15 @@
 #include "Tools/Utils.hpp"
 #include "Tools/File.hpp"
 
+#ifndef N3DS
 CContainer::CContainer(const std::filesystem::path& path)
 {
     auto prefered = path;
 
     CContainer::read_File(prefered.make_preferred());
 }
+#endif
+
 CContainer::CContainer(const CContainer& cc)
 {
     // copy data
@@ -121,5 +124,7 @@ void CContainer::resize(u32 _size, bool _zeroed)
     else this->allocate(_size, _zeroed);
 }
 
+#ifndef N3DS
 void CContainer::read_File(const std::filesystem::path& path) { File::File_To_CC(path, *this); }
 void CContainer::write_To_File(const std::filesystem::path& path) const { File::CC_To_File(path, *this); }
+#endif

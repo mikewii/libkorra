@@ -1,4 +1,5 @@
 #pragma once
+#ifndef N3DS
 #include "types.h"
 #include "Global.hpp"
 #include <filesystem>
@@ -12,3 +13,4 @@ public:
 private:
     std::filesystem::directory_entry __path;
 };
+#endif

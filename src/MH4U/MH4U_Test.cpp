@@ -1,8 +1,11 @@
+#ifndef N3DS
 #include "MH4U/MH4U_Test.hpp"
 #include "Tools/Folder.hpp"
 #include "Tools/File.hpp"
 #include "Tools/ARC.hpp"
+#include "Tools/MCA.hpp"
 #include "MH4U/MH4U.hpp"
+
 
 namespace MH4U {
 namespace TEST {
@@ -119,5 +122,19 @@ void ExtractSave(const std::filesystem::__cxx11::path &path)
     out.write_To_File(outpath);
 }
 
+void mca(const std::filesystem::__cxx11::path &path)
+{
+    CContainer in, out;
+    //std::filesystem::path outpath = path;
+
+    //outpath.replace_extension(".mca");
+
+
+    File::File_To_CC(path, in);
+    MCA mca(in);
+    mca.print();
+}
+
 }
 }
+#endif

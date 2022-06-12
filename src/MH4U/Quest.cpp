@@ -18,6 +18,7 @@ sFlags* sQuest::GetFlags(void)
     return reinterpret_cast<sFlags*>(reinterpret_cast<char*>(this) + this->p_Flags);
 }
 
+#ifndef N3DS
 void sQuest::ExtractQuests_Directory(const std::filesystem::__cxx11::path& dir)
 {
     static const std::string names[] = {
@@ -79,5 +80,6 @@ void sQuest::ExtractQuests_File(const std::filesystem::__cxx11::path& path)
         }
     }
 }
+#endif
 
 }

@@ -98,8 +98,10 @@ struct sQuest {
     bool        check_version(void) const;
     sFlags*     GetFlags(void);
 
+#ifndef N3DS
     static void ExtractQuests_Directory(const std::filesystem::path& dir);
     static void ExtractQuests_File(const std::filesystem::path& path);
+#endif
 };
 
 }

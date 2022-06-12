@@ -14,7 +14,7 @@ u32 GetHeaderRelativePos(const void* const header, const void* const member);
 
 static USED void print_help(const char* name, const u32 item)
 {
-    printf("%-25s%08X | %d\n", name, item, item);
+    printf("%-25s%08X | %u\n", name, item, item);
 }
 
 static USED void print_help_str(const char* name, const char* str, const u32 item)
@@ -54,6 +54,7 @@ struct bool_to_str<false>
 {
     static constexpr const char* value = "false";
 };
+
 
 template <typename T>
 T swap_endianness(T u)
@@ -109,14 +110,13 @@ u32 CalculateChecksum(u8* _data, u32 _size);
 std::pair<u8*, u8*> FindDiff(u8* _data0, u8* _data1, u32 _size);
 
 
+#ifndef N3DS
 std::filesystem::path Get_User_Home(const bool documents = false);
 
 class Filter {
 public:
     static bool Is_InVector(const std::filesystem::path& path, const std::vector<std::string>& vector);
 };
-
-
 
 class Collector {
 public:
@@ -166,5 +166,6 @@ private:
 
     bool Flush(void);
 };
+#endif
 
 } // Utils

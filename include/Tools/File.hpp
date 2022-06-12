@@ -1,8 +1,8 @@
 #pragma once
+#ifndef N3DS
 #include "types.h"
 #include "Global.hpp"
 #include <filesystem>
-
 
 class File
 {
@@ -28,3 +28,4 @@ public:
 private:
     static bool Probe(std::fstream& file, const u32 magic);
 };
+#endif

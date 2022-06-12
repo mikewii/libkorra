@@ -1,13 +1,18 @@
 #pragma once
 #include "types.h"
-#include <filesystem>
+
+#ifndef N3DS
+    #include <filesystem>
+#endif
 
 class CContainer {
 public:
 
+#ifndef N3DS
+    explicit CContainer(const std::filesystem::path& path);
+#endif
+    explicit CContainer(const CContainer& cc);
     CContainer(){};
-    CContainer(const std::filesystem::path& path);
-    CContainer(const CContainer& cc);
     ~CContainer();
 
     CContainer& operator=(const CContainer& _cc);
@@ -15,9 +20,6 @@ public:
 
     u32     size(void) const { return this->__size; }
     void    resize(u32 _size, bool zeroed = false);
-
-    void    read_File(const std::filesystem::path& path);
-    void    write_To_File(const std::filesystem::path& path) const;
 
     /* for in-memory ops */
     void    setData(u8* _ptr) { this->__data = _ptr; }
@@ -29,6 +31,11 @@ public:
 
     bool    subBefore(u32 _size);
     bool    subAfter(u32 _size);
+
+#ifndef N3DS
+    void    read_File(const std::filesystem::path& path);
+    void    write_To_File(const std::filesystem::path& path) const;
+#endif
 
     // Access
     u8*     data(void) const { return this->__data; }

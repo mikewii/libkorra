@@ -1,4 +1,5 @@
 #pragma once
+#ifndef N3DS
 #include "types.h"
 #include "Global.hpp"
 
@@ -10,5 +11,7 @@ void Replace(std::vector<Pair>& vector, const std::filesystem::path& path);
 
 void ExtractQuests(const std::filesystem::path& path);
 void ExtractSave(const std::filesystem::path& path);
+void mca(const std::filesystem::path& path);
 }
 }
+#endif

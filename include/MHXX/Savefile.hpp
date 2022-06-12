@@ -29,7 +29,7 @@ static const u32 SLOT_SIZE = 0x11E7C0;
 struct Header {
     static const u32 VERSION = 0xC6;
 
-    u32     version = VERSION;
+    u32     version;
     u8      isSlotUsed[3];
     Slot    selectedSlot;
     u32     pData;

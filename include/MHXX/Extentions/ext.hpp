@@ -112,12 +112,13 @@ class cEXT : public PairInfoKeeper
 {
 public:
 
-    cEXT(bool isMHGU = false);
-    cEXT(const Pair& _pp);
+    explicit cEXT(bool isMHGU);
+    explicit cEXT(const Pair& _pp);
+    explicit cEXT(u8* src, const bool isMHXX); // in memory initialization
     ~cEXT();
 
     void make(Pair& _pp);
-    bool save(Pair& _pp);
+    bool save(Pair& _pp, const bool convertToMHXX = false);
 
     bool Set_QuestID(const u32 id);
     void Set_QuestType0(const QuestType0::e type);
