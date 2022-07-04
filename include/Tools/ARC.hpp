@@ -23,14 +23,12 @@ public:
     struct Header {
         char            magic[4];
         ARC::Version    version;
-        u16             fileNum;
-
-
+        u16             filesNum;
 
         void BE_Swap(void)
         {
             this->version = Utils::swap_endianness<ARC::Version>(this->version);
-            this->fileNum = Utils::swap_endianness<u16>(this->version);
+            this->filesNum = Utils::swap_endianness<u16>(this->version);
         }
     };
 
@@ -53,7 +51,6 @@ public:
 
     ARC(){};
     explicit ARC(const CContainer& container, std::vector<Pair>& vOut);
-    explicit ARC(u8* src); // need size?
     ~ARC();
 
     const bool  IsARC(void) const;
@@ -70,7 +67,7 @@ public:
     void    print_PairsInfo(void);
     void    print_FileInfo(ARC::File_Header* f, u32 n);
 
-    u32     GetFilesCount(void) const { return ARC::header.fileNum; }
+    u32     GetFilesCount(void) const { return ARC::header.filesNum; }
 
     // Making ARC
     void MakeARC(CContainer& container, std::vector<Pair>& vPair, ARC::Version version = ARC::Version::None);
@@ -87,7 +84,7 @@ private:
     ARC::Header                     header;
     std::vector<ARC::File_Header>   vFile_Header;
 
-    std::vector<Pair>*              __vPair = nullptr;
+    std::vector<Pair>*              __pairVec = nullptr;
     const CContainer*               __container = nullptr;
 
     static ARC::Version             prev_Version;

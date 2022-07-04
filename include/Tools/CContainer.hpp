@@ -7,6 +7,8 @@
 
 class CContainer {
 public:
+#define RESERVED_BEFORE 0x100
+#define RESERVED_AFTER RESERVED_BEFORE
 
 #ifndef N3DS
     explicit CContainer(const std::filesystem::path& path);
@@ -17,13 +19,14 @@ public:
 
     CContainer& operator=(const CContainer& _cc);
 
+    void clear(void);
 
-    const u32   size(void) const { return this->__size; }
+    const u32   size(void) const { return this->m_size; }
     void        resize(u32 _size, bool zeroed = false);
 
     /* for in-memory ops */
-    void    setData(u8* _ptr) { this->__data = _ptr; } // keep __root nullptr to avoid calling free on actuall in-memory data
-    void    setSize(u32 _size) { this->__size = _size; }
+    void    setData(u8* _ptr) { this->m_data = _ptr; } // keep __root nullptr to avoid calling free on actuall in-memory data
+    void    setSize(u32 _size) { this->m_size = _size; }
 
     // Expanding and shrinking
     const bool  addBefore(u32 _size);
@@ -37,33 +40,32 @@ public:
 #endif
 
     // Access
-    u8*     data(void) const { return this->__data; }
+    u8*     data(void) const { return this->m_data; }
 
     template<typename T>
     T&      as(const u32 index)
-    { return reinterpret_cast<T&>(this->__data[index * sizeof(T)]); }
+    { return reinterpret_cast<T&>(this->m_data[index * sizeof(T)]); }
 
     template<typename T>
     const T& as_const_ref(const u32 index) const
-    { return reinterpret_cast<const T&>(this->__data[index * sizeof(T)]); }
+    { return reinterpret_cast<const T&>(this->m_data[index * sizeof(T)]); }
 
     template<typename T>
     const T* at_const(const u32 index) const
-    { return reinterpret_cast<T*>(this->__data[index]); }
+    { return reinterpret_cast<T*>(this->m_data[index]); }
 
     template<typename T>
     const T& at_const_ref(const u32 index) const
-    { return reinterpret_cast<const T&>(this->__data[index]); }
+    { return reinterpret_cast<const T&>(this->m_data[index]); }
 
 
 private:
-    u8*         __data = nullptr;
-    u8*         __root = nullptr;
+    u8*         m_data;
+    u8*         m_root;
 
-    u32         __size = 0; // data size, no need to keep track of root size
-
-    u32         RESERVED_Before  = 0x100;
-    u32         RESERVED_After   = 0x100;
+    u32         m_size;
+    u32         m_reserved_before;
+    u32         m_reserved_after;
 
     const bool  allocate(u32 _size, bool _zeroed = false);
     void        _free(void);

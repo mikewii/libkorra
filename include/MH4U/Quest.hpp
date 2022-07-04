@@ -96,11 +96,37 @@ struct sQuest {
     u32             unk6[4];
 
     bool        check_version(void) const;
-    sFlags*     GetFlags(void);
+    sFlags*         get_flags(void);
+    const sFlags*   get_flags(void) const;
+};
 
+class Quest
+{
 #ifndef N3DS
-    static void ExtractQuests_Directory(const std::filesystem::path& dir);
-    static void ExtractQuests_File(const std::filesystem::path& path);
+public:
+    Quest(const std::filesystem::path& path);
+
+    void extract_all(void);
+
+    void extract_ext_quest_file(void);
+
+    void ExtractQuests_File(const std::filesystem::path& path);
+
+private:
+    CContainer m_out;
+    std::filesystem::path m_current_path;
+    std::filesystem::path m_out_path;
+    std::string m_current_filename;
+    bool m_working_on_folder = false;
+
+    void extract_signature(void);
+    void make_output_dir(void);
+    bool is_quest_ext_file(const std::filesystem::path& path) const;
+    void dump_decoded(void);
+
+    void load_and_decode(void);
+    void mib_to_file(const sQuest* quest);
+
 #endif
 };
 

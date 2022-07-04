@@ -11,6 +11,8 @@
 namespace MH4U {
 
 bool    PostDecode_Save(CContainer& data);
+bool    post_decode_extdata(CContainer& data);
+
 void    PreEncode_Save(CContainer& data);
 void    MHXOR(CContainer& data, u32 seed);
 void    InsertValue(CContainer& data, u32 value);
@@ -73,8 +75,6 @@ void Encode(CContainer& in, CContainer& out, bool isQuest)
         cypher.Encode(in.data(), out.data(), outSize);
     }
 }
-
-
 
 bool PostDecode_Save(CContainer& data)
 {
