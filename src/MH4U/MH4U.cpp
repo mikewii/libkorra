@@ -93,7 +93,6 @@ bool PostDecode_Save(CContainer& data)
 
     if (checksum == checksum2) return true;
     return false;
-
 }
 
 void MHXOR(CContainer& data, u32 seed)

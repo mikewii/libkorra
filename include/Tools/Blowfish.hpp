@@ -18,8 +18,9 @@ private:
     void 	Blowfish_decipher(u32 *xl, u32 *xr);
 
 public:
-        BlowFish();
-        ~BlowFish();
+    BlowFish();
+    ~BlowFish();
+
     void 	Initialize(const u8 key[], int keyu8s);
     u32		GetOutputLength(u32 lInputLong);
     u32		Encode(u8 *pInput, u8 *pOutput, u32 lSize);

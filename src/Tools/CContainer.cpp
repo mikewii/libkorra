@@ -2,7 +2,6 @@
 #include "Tools/Utils.hpp"
 #include "Tools/File.hpp"
 
-
 #ifndef N3DS
 CContainer::CContainer(const std::filesystem::path& path)
     : m_data(nullptr), m_root(nullptr)

@@ -12,6 +12,8 @@ void Replace(std::vector<Pair>& vector, const std::filesystem::path& path);
 void ExtractQuests(const std::filesystem::path& path);
 void ExtractSave(const std::filesystem::path& path);
 void mca(const std::filesystem::path& path);
+
+void quest_prints(const std::filesystem::path& path);
 }
 }
 #endif

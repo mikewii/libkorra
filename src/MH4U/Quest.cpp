@@ -4,24 +4,6 @@
 #include "Tools/File.hpp"
 
 namespace MH4U {
-const char VERSION[5] = "v005";
-
-bool sQuest::check_version(void) const
-{
-    if (std::equal(VERSION, VERSION + 4, this->version))
-        return true;
-    else return false;
-}
-
-sFlags* sQuest::get_flags(void)
-{
-    return reinterpret_cast<sFlags*>(reinterpret_cast<char*>(this) + this->p_Flags);
-}
-
-const sFlags* sQuest::get_flags(void) const
-{
-    return reinterpret_cast<const sFlags*>(reinterpret_cast<const char*>(this) + this->p_Flags);
-}
 
 #ifndef N3DS
 Quest::Quest(const std::filesystem::path &path)
@@ -29,15 +11,16 @@ Quest::Quest(const std::filesystem::path &path)
 {
     this->m_current_path.make_preferred();
 
-    if (std::filesystem::is_directory(this->m_current_path)) {
-        this->make_output_dir();
+    if (std::filesystem::is_directory(this->m_current_path))
         this->m_working_on_folder = true;
-    } else if (std::filesystem::is_regular_file(path)) {
+
+    else if (std::filesystem::is_regular_file(path))
         this->m_working_on_folder = false;
-    }
+
+    this->make_output_dir();
 }
 
-void Quest::extract_all(void)
+void Quest::decrypt_all(void)
 {
     if (this->m_working_on_folder) {
         Folder  folder(this->m_current_path);
@@ -46,17 +29,21 @@ void Quest::extract_all(void)
         for (const auto& filepath : files) {
             if (this->is_quest_ext_file(filepath)) {
                 this->m_current_filename = filepath.filename().string();
-                this->extract_ext_quest_file();
+
+                this->decrypt_ext_quest_file();
             }
         }
     } else {
-
+        this->decrypt_ext_quest_file();
     }
 }
 
-void Quest::extract_ext_quest_file(void)
+void Quest::decrypt_ext_quest_file(const std::string& name)
 {
     int quest_count;
+
+    if (!name.empty())
+        this->m_current_filename = name;
 
     this->load_and_decode();
     this->extract_signature();
@@ -84,6 +71,11 @@ void Quest::extract_signature(void)
 
 void Quest::make_output_dir(void)
 {
+    if (!this->m_working_on_folder) {
+        this->m_current_filename = this->m_current_path.filename();
+        this->m_current_path.remove_filename();
+    }
+
     this->m_out_path = this->m_current_path;
     this->m_out_path.append("quest");
 
@@ -128,6 +120,13 @@ void Quest::load_and_decode(void)
 
     File::File_To_CC(path, in);
 
+    // last 0x100 bytes clean, removing them from size to prevent blowfish writing data there
+    // to avoid confusing checksum check
+    in.set_size(in.size() - 0x100);
+
+    if (in.size() != 0x50300)
+        NotifyError("quest file corrupt!");
+
     Decode(in, this->m_out);
 }
 
@@ -136,8 +135,8 @@ void Quest::mib_to_file(const sQuest *quest)
 #define BUF_SIZE 32
     if (quest->check_version()) {
         char    buffer[BUF_SIZE];
-        auto*   flags = quest->get_flags();
-        auto    id = flags->QuestID;
+        auto*   flags = quest->get_sFlags();
+        auto    id = flags->quest_id;
 
         snprintf(buffer, BUF_SIZE, "q%05d.mib", id);
 
@@ -147,6 +146,30 @@ void Quest::mib_to_file(const sQuest *quest)
         File::Data_To_File(outpath, quest, QUEST_SIZE);
     }
 }
+
+void Quest::id_check(void)
+{
+    /* ranges:
+     * 60000 to 61000 - normal quest
+     * 61000 to 62000 - arena challenge quests
+     * 62000 -> ~ - gq?
+     *
+     * 61200 - 62000
+     *
+     * from ext quests:
+     * quest1: 60001 - 60207
+     * quest2: 60208 - 60251
+     * quest3: empty in mh4u, 60229 - 60259 in mh4g
+     * quest4: 61001 - 61208
+     * quest5: 62101 - 62212
+     *
+     * types:
+     * LR | HR | G
+     * LR/HR Arena | G Arena
+     * Episode events (possibly count as lr|hr|g)
+    */
+}
+
 #endif
 
 }

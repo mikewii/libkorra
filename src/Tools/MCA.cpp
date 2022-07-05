@@ -7,12 +7,12 @@ MCA::MCA()
 
 MCA::MCA(const CContainer &_cc)
 {
-    if (_cc.at_const_ref<u32>(0) != this->MAGIC) {
+    if (_cc.at<u32>(0) != this->MAGIC) {
         NotifyError("Not an MCA");
         return;
     }
 
-    this->h = _cc.at_const_ref<MCA::header>(0);
+    this->h = _cc.at<MCA::header>(0);
 }
 
 MCA::~MCA()

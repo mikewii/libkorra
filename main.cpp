@@ -38,7 +38,8 @@ int main(int argc UNUSED, char *argv[] UNUSED)
 //    MH4U::TEST::mca(Utils::Get_User_Home().append("test/MH4U/mca/test2unpatched.mca"));
     //MH4U::TEST::mca(Utils::Get_User_Home().append("test/MH4U/mca/bgm_em_Named.mca"));
     //MH4U::TEST::ExtractQuests(Utils::Get_User_Home().append("test/MH4U/quest/2022 04 24_04 39 08/quest5"));
-    MH4U::Quest(Utils::Get_User_Home().append("test/MH4U/quest/MH4G DLC/")).extract_all();
+    //MH4U::Quest(Utils::Get_User_Home().append("test/MH4U/quest/MH4U EUR DLC/")).decrypt_all();
+    MH4U::TEST::quest_prints(Utils::Get_User_Home().append("test/MH4U/quest/MH4G DLC/quest/q60001.mib"));
 
 #ifdef USE_GUI
     return GUI_RUN(argc, argv);

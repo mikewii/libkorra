@@ -25,8 +25,8 @@ public:
     void        resize(u32 _size, bool zeroed = false);
 
     /* for in-memory ops */
-    void    setData(u8* _ptr) { this->m_data = _ptr; } // keep __root nullptr to avoid calling free on actuall in-memory data
-    void    setSize(u32 _size) { this->m_size = _size; }
+    void    set_data(u8* _ptr) { this->m_data = _ptr; } // keep __root nullptr to avoid calling free on actuall in-memory data
+    void    set_size(u32 _size) { this->m_size = _size; }
 
     // Expanding and shrinking
     const bool  addBefore(u32 _size);
@@ -55,8 +55,12 @@ public:
     { return reinterpret_cast<T*>(this->m_data[index]); }
 
     template<typename T>
-    const T& at_const_ref(const u32 index) const
+    const T& at(const u32 index) const
     { return reinterpret_cast<const T&>(this->m_data[index]); }
+
+    template<typename T>
+    T& at(const u32 index)
+    { return reinterpret_cast<T&>(this->m_data[index]); }
 
 
 private:

@@ -68,7 +68,7 @@ void ARC::Read(const CContainer& container)
         padding = this->Is_NeedPadding(this->header.version);
     else padding = container.as_const_ref<u32>(2) == 0 ? 4 : 0;
 
-    const auto& file_Header = container.at_const_ref<ARC::File_Header[]>(sizeof(ARC::Header) + padding);
+    const auto& file_Header = container.at<ARC::File_Header[]>(sizeof(ARC::Header) + padding);
 
     this->__pairVec->resize(this->header.filesNum);
 

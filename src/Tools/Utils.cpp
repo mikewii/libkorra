@@ -37,12 +37,12 @@ extern void* Copy_UTF16_String(void* dest, const std::u16string& str)
 
 
 
-u32 CalculateChecksum(CContainer& _data)
+u32 CalculateChecksum(const CContainer& cc)
 {
     u32 i = 0, checksum = 0;
 
-    while (i < _data.size()) {
-        checksum += _data.as<u8>(i) & 0xFF; i++;
+    while (i < cc.size()) {
+        checksum += cc.at<u8>(i) & 0xFF; i++;
     };
 
     return checksum;

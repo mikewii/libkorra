@@ -11,6 +11,19 @@ namespace MH4U {
 namespace TEST {
 Utils::Collector collector("mh4u_collected_data.txt");
 
+void quest_prints(const std::filesystem::path& path)
+{
+    CContainer in(path);
+
+    sQuest* quest = reinterpret_cast<sQuest*>(in.data());
+
+    auto aa = quest->get_supply_box_items(ItemBoxID::SUPPLY_BOX);
+
+    quest->print();
+
+    return;
+}
+
 void ExtractQuests(const std::filesystem::path& path)
 {
     CContainer in, out;
