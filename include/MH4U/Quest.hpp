@@ -234,7 +234,6 @@ public:
     sFlags*                 get_sFlags(void);
     const sFlags*           get_sFlags(void) const;
 
-
     sItemBox*               get_item_box(const ItemBoxID id);
     const sItemBox*         get_item_box(const ItemBoxID id) const;
 
@@ -255,8 +254,7 @@ private:
     const sText*            get_sText(const Language language) const;
 };
 
-// merge with Quest later
-class cQuest
+class QuestEditor
 {
 #define SUPPLY_BOX_MAX_ITEMS 5 * 8
 #define MAIN_REWARD_BOX_A_MAX_ITEMS 2 * 8
@@ -267,12 +265,18 @@ class cQuest
      * reward box screen 2 have 4*1(green, sub) 4*1(grey) 2*8(red, base) 3*8(blue, wound/cap)
     */
 
-    cQuest();
-    cQuest(const std::filesystem::path& path);
+    QuestEditor();
+    QuestEditor(const CContainer& cc);
+    QuestEditor(const std::filesystem::path& path);
+    ~QuestEditor();
 
+    void initialize(void);
 
 
 private:
+    CContainer m_data;
+    sQuest* m_p_header;
+
     sQuest m_header;
     sFlags m_flags;
 
@@ -294,7 +298,7 @@ private:
 
 
 
-
+    void read_header(void);
 };
 
 #ifndef N3DS
