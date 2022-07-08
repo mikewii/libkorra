@@ -35,28 +35,31 @@ Quest::~Quest()
     }
 }
 
-void Quest::create_ext_quest_files(const std::filesystem::path &path)
+void Quest::create_ext_quests_files(const std::filesystem::path &path)
 {
-    auto files = Folder(path).Get_ListOfFiles();
+    std::array<u8, EXT_QUEST_FILES_AMMOUNT> split;
+    size_t  begin = 0, end = 0;
+    auto    files = Folder(path).Get_ListOfFiles();
 
-    this->m_quests.reserve(EXT_QUEST_FILES * EXT_QUEST_DATA_AMMOUNT);
+
+    this->m_quests.reserve(EXT_QUEST_FILES_AMMOUNT * EXT_QUEST_DATA_AMMOUNT);
 
     for (const auto& path : files) {
         const auto& size = std::filesystem::file_size(path);
-        int         res;
+        int res;
 
-        if (size > QUEST_SIZE)
+        if (size > QUEST_SIZE + XOR_MH4U_SIZE)
             continue;
         else
-            res = this->is_quest(path);
+            res = this->is_dlc_probe(path);
 
-        if (res == DLC_DECODED) {
+        if (res == Quest::DLC_DECODED) {
             CContainer* decoded = new CContainer;
 
             decoded->read_file(path);
 
             this->m_quests.push_back(decoded);
-        } else if (res == DLC_ENCODED) {
+        } else if (res == Quest::DLC_ENCODED) {
             CContainer  encoded;
             CContainer* decoded = new CContainer;
 
@@ -70,18 +73,19 @@ void Quest::create_ext_quest_files(const std::filesystem::path &path)
 
     this->sort();
 
-    auto split = this->get_split_values();
+    split = this->split_by_id();
 
-    size_t count = 1;
-    size_t start = 0;
-    size_t end = 0;
+    for (size_t i = 0; i < EXT_QUEST_FILES_AMMOUNT; i++) {
+        CContainer  in, out;
+        const auto& value = split.at(i);
 
-    for (const auto& value : split) {
         end += value;
 
-        this->write_ext_quest_file(count++, start, end);
+        this->populate_ext_quest_file(in, begin, end);
+        this->encode_ext_quest_file(in, out);
+        this->write_ext_quest_file(out, i + 1);
 
-        start += value;
+        begin += value;
     }
 
     return;
@@ -237,7 +241,7 @@ void Quest::id_check(void)
     */
 }
 
-const int Quest::is_quest(const std::filesystem::path &path)
+const int Quest::is_dlc_probe(const std::filesystem::path &path)
 {
 #define PROBE_SIZE sizeof(u32) * 4
     CContainer  probe_data(PROBE_SIZE); // [seed, checksum, data, version]
@@ -249,14 +253,11 @@ const int Quest::is_quest(const std::filesystem::path &path)
     quest = reinterpret_cast<sQuest*>(probe_data.data());
 
     if (quest->check_version())
-        return DLC_DECODED;
-
-    for (size_t key = 0; key < Crypto::Key::LENGTH; key++) {
-        if (Crypto::decode_quest(probe_data, probe_data_decoded))
-            return DLC_ENCODED;
-    }
-
-    return NOT_A_DLC;
+        return Quest::DLC_DECODED;
+    else if (Crypto::decode_quest(probe_data, probe_data_decoded))
+        return Quest::DLC_ENCODED;
+    else
+        return Quest::NOT_A_DLC;
 }
 
 void Quest::sort(void)
@@ -272,9 +273,9 @@ void Quest::sort(void)
     std::sort(this->m_quests.begin(), this->m_quests.end(), filter);
 }
 
-const std::array<u8, 5> Quest::get_split_values(void) const
+const std::array<u8, EXT_QUEST_FILES_AMMOUNT> Quest::split_by_id(void) const
 {
-    std::array<u8, 5> count{0, 0, 0, 0, 0};
+    std::array<u8, EXT_QUEST_FILES_AMMOUNT> count{0, 0, 0, 0, 0};
 
     for (const auto* cc : this->m_quests) {
         const auto* quest = reinterpret_cast<const sQuest*>(cc->data());
@@ -299,49 +300,49 @@ const std::array<u8, 5> Quest::get_split_values(void) const
     return count;
 }
 
-void Quest::write_ext_quest_file(const size_t file_number, const size_t vector_begin_index, const size_t vector_end_index)
+void Quest::populate_ext_quest_file(CContainer &in, const size_t vector_begin_index, const size_t vector_end_index)
 {
 #define BUFFER_SIZE 16
-    CContainer  decoded(EXT_QUEST_DATA_SIZE);
-    CContainer  encoded;
-    char        buffer[BUFFER_SIZE]{0};
-    size_t      offset = 0;
+    char    buffer[BUFFER_SIZE]{0};
+    size_t  offset = 0;
 
-    if (vector_begin_index > vector_end_index) {
+    in.resize(EXT_QUEST_DATA_SIZE);
+
+    if (vector_begin_index > vector_end_index || vector_begin_index == vector_end_index)
         return;
-    } else if (vector_begin_index == vector_end_index ) { // write empty encoded ext quest file
-        Crypto::encode_ext_data(decoded, encoded);
-
-        snprintf(buffer, BUFFER_SIZE, "quest%zu", file_number);
-        auto out_path = this->m_out_path;
-        out_path.append(buffer);
-
-        encoded.add_after(EXT_QUEST_DATA_PADDING);
-        encoded.write_To_File(out_path);
-        return;
-    }
 
     for (size_t i = vector_begin_index; i < vector_end_index; i++) {
         const auto* quest_data = this->m_quests.at(i);
         const auto* quest = reinterpret_cast<const sQuest*>(quest_data->data());
 
-        Utils::copybytes(decoded.data() + offset, quest_data->data(), quest_data->size());
+        Utils::copybytes(in.data() + offset, quest_data->data(), quest_data->size());
 
         offset += QUEST_SIZE;
 
         // write quest name
         snprintf(buffer, BUFFER_SIZE, "m%5d.mib", quest->get_sFlags()->quest_id);
-        Utils::copybytes(decoded.data() + offset - 0x10, buffer, BUFFER_SIZE);
+        Utils::copybytes(in.data() + offset - 0x10, buffer, BUFFER_SIZE);
     }
+}
 
-    Crypto::encode_ext_data(decoded, encoded);
+void Quest::encode_ext_quest_file(CContainer &in, CContainer &out)
+{
+    Crypto::encode_ext_data(in, out);
 
-    snprintf(buffer, BUFFER_SIZE, "quest%zu", file_number);
+    out.add_after(EXT_QUEST_DATA_PADDING);
+}
+
+void Quest::write_ext_quest_file(CContainer &cc, const size_t& file_num)
+{
+#define BUFFER_SIZE 16
+    char buffer[BUFFER_SIZE]{0};
     auto out_path = this->m_out_path;
+
+    snprintf(buffer, BUFFER_SIZE, "quest%zu", file_num);
+
     out_path.append(buffer);
 
-    encoded.add_after(EXT_QUEST_DATA_PADDING);
-    encoded.write_To_File(out_path);
+    cc.write_To_File(out_path);
 }
 
 #endif

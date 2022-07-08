@@ -1,15 +1,16 @@
 #pragma once
 #include "types.h"
-
-#include "MH4U.hpp"
 #include <array>
+
+#include "MH4U/Crypto.hpp"
 
 namespace MH4U {
 #define QUEST_SIZE 0x2010
-#define EXT_QUEST_FILES 5
+#define XOR_MH4U_SIZE 8
+#define EXT_QUEST_FILES_AMMOUNT 5
 #define EXT_QUEST_DATA_AMMOUNT 40
 #define EXT_QUEST_DATA_PADDING 0xf0
-#define EXT_QUEST_DATA_SIZE QUEST_SIZE * EXT_QUEST_DATA_AMMOUNT + 0x88
+#define EXT_QUEST_DATA_SIZE (QUEST_SIZE * EXT_QUEST_DATA_AMMOUNT) + XOR_MH4U_SIZE + 0x80
 
 
 enum Language {
@@ -314,7 +315,7 @@ public:
 
     void set_out_path(const std::filesystem::path& path) { this->m_out_path = path; }
 
-    void create_ext_quest_files(const std::filesystem::path& path);
+    void create_ext_quests_files(const std::filesystem::path& path);
 
 
     void decrypt_all(void);
@@ -348,13 +349,15 @@ private:
 
     void id_check(void);
 
-    const int is_quest(const std::filesystem::path& path);
+    const int is_dlc_probe(const std::filesystem::path& path);
 
     void sort(void);
 
-    const std::array<u8, 5> get_split_values(void) const;
+    const std::array<u8, EXT_QUEST_FILES_AMMOUNT> split_by_id(void) const;
 
-    void write_ext_quest_file(const size_t file_number, const size_t vector_begin_index, const size_t vector_end_index);
+    void populate_ext_quest_file(CContainer& in, const size_t vector_begin_index, const size_t vector_end_index);
+    void encode_ext_quest_file(CContainer& in, CContainer& out);
+    void write_ext_quest_file(CContainer& cc, const size_t& file_num);
 
 #endif
 };
