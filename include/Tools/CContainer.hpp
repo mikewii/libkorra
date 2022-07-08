@@ -7,18 +7,18 @@
 
 class CContainer {
 public:
-#define RESERVED_BEFORE 0x1000
+#define RESERVED_BEFORE 0x100
 #define RESERVED_AFTER RESERVED_BEFORE
 
 #ifndef N3DS
     explicit CContainer(const std::filesystem::path& path);
 #endif
-    explicit CContainer(const CContainer& cc);
     explicit CContainer(const int size);
+    CContainer(const CContainer& cc);
     CContainer();
     ~CContainer();
 
-    CContainer& operator=(const CContainer& _cc);
+    CContainer& operator=(const CContainer& cc);
 
     void clear(void);
 
