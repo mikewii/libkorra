@@ -15,9 +15,15 @@ static const char* KeyDLC_JPN    = "AgK2DYheaCjyHGP8";
 static const char* KeyDLC_KOR    = "AgK2DYheaOjyHGP8";
 static const char* KeyDLC_TW     = "Capcom123 ";
 
+static bool seed_rng_once = false;
+static std::mt19937 rng;
+
 Crypto::Crypto()
-    : m_rng(RNG_SEED)
 {
+    if (!seed_rng_once) {
+        seed_rng_once = true;
+        rng.seed(RNG_SEED);
+    }
 }
 
 const bool Crypto::decode_save(const CContainer &in, CContainer &out)
@@ -30,11 +36,11 @@ const bool Crypto::decode_save(const CContainer &in, CContainer &out)
     return res;
 }
 
-const bool Crypto::encode_save(const CContainer &in, CContainer &out)
+const bool Crypto::encode_save(CContainer &in, CContainer &out)
 {
     bool res = true;
 
-    this->xor_encode(out);
+    this->xor_encode(in);
     res &= this->blowfish_encode(in, out, Crypto::Key::EXT_DATA);
 
     return res;
@@ -55,7 +61,7 @@ const bool Crypto::decode_dlc(const CContainer &in, CContainer &out)
     return false;
 }
 
-const bool Crypto::encode_dlc(const CContainer &in, CContainer &out, const Key key)
+const bool Crypto::encode_dlc(CContainer &in, CContainer &out, const Key key)
 {
     return this->blowfish_encode(in, out, key);
 }
@@ -82,7 +88,7 @@ const bool Crypto::blowfish_decode(const CContainer &in, CContainer &out, const 
     } else return false;
 }
 
-const bool Crypto::blowfish_encode(const CContainer &in, CContainer &out, const Key key)
+const bool Crypto::blowfish_encode(CContainer &in, CContainer &out, const Key key)
 {
     const char* selected_key = nullptr;
     u32 out_size;
@@ -129,7 +135,7 @@ void Crypto::xor_encode(CContainer &cc)
     u32 seed, seed_header;
     u32 checksum;
 
-    random      = this->m_rng();
+    random      = rng();
     seed        = seed_header = random;
     seed_header = (seed_header << 16) + 0x10;
     checksum    = Utils::calculate_checksum(cc);

@@ -23,11 +23,6 @@ CContainer::CContainer(const CContainer& cc)
     this->m_reserved_before = cc.m_reserved_before;
 }
 
-CContainer::CContainer(const CContainer &&cc)
-{
-
-}
-
 CContainer::CContainer(const int size)
     : m_data(nullptr), m_root(nullptr)
     , m_reserved_before(RESERVED_BEFORE), m_reserved_after(RESERVED_AFTER)
@@ -52,6 +47,7 @@ CContainer& CContainer::operator=(const CContainer& _cc)
 
     return *this;
 }
+
 
 void CContainer::clear(void)
 {

@@ -25,21 +25,24 @@ public:
 
     Crypto();
 
+
     const bool decode_save(const CContainer& in, CContainer& out);
-    const bool encode_save(const CContainer& in, CContainer& out);
+    const bool encode_save(CContainer& in, CContainer& out); // maybe dont operate on [in] and do copy?
+
+    const bool decode_ext_data(const CContainer& in, CContainer& out) { return this->decode_save(in, out); }
+    const bool encode_ext_data(CContainer& in, CContainer& out) { return this->encode_save(in, out); }
 
     const bool decode_quest(const CContainer& in, CContainer& out) { return this->decode_dlc(in, out); }
-    const bool encode_quest(const CContainer& in, CContainer& out, const Key key = Key::DLC_EUR_NA) { return this->encode_dlc(in, out, key); }
+    const bool encode_quest(CContainer& in, CContainer& out, const Key key = Key::DLC_EUR_NA) { return this->encode_dlc(in, out, key); }
 
     const bool decode_dlc(const CContainer& in, CContainer& out);
-    const bool encode_dlc(const CContainer& in, CContainer& out, const Key key = Key::DLC_EUR_NA);
+    const bool encode_dlc(CContainer& in, CContainer& out, const Key key = Key::DLC_EUR_NA);
 
     const bool blowfish_decode(const CContainer& in, CContainer& out, const Key key);
-    const bool blowfish_encode(const CContainer& in, CContainer& out, const Key key);
+    const bool blowfish_encode(CContainer& in, CContainer& out, const Key key);
 
 private:
     BlowFish        m_blowfish;
-    std::mt19937    m_rng;
 
     const bool  xor_decode(CContainer& cc);
     void        xor_encode(CContainer& cc);

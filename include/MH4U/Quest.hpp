@@ -8,9 +8,8 @@ namespace MH4U {
 #define QUEST_SIZE 0x2010
 #define EXT_QUEST_FILES 5
 #define EXT_QUEST_DATA_AMMOUNT 40
-#define EXT_QUEST_DATA_PADDING 0x80 + 0x100
-#define EXT_QUEST_DATA_SIZE (QUEST_SIZE * EXT_QUEST_DATA_AMMOUNT) + EXT_QUEST_DATA_PADDING
-
+#define EXT_QUEST_DATA_PADDING 0xf0
+#define EXT_QUEST_DATA_SIZE QUEST_SIZE * EXT_QUEST_DATA_AMMOUNT + 0x88
 
 
 enum Language {
@@ -313,7 +312,9 @@ public:
     Quest(const std::filesystem::path& path);
     ~Quest();
 
-    void create_ext_save(const std::filesystem::path& path, const bool by_extention = false);
+    void set_out_path(const std::filesystem::path& path) { this->m_out_path = path; }
+
+    void create_ext_quest_files(const std::filesystem::path& path);
 
 
     void decrypt_all(void);
@@ -350,6 +351,10 @@ private:
     const int is_quest(const std::filesystem::path& path);
 
     void sort(void);
+
+    const std::array<u8, 5> get_split_values(void) const;
+
+    void write_ext_quest_file(const size_t file_number, const size_t vector_begin_index, const size_t vector_end_index);
 
 #endif
 };

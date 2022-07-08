@@ -7,14 +7,13 @@
 
 class CContainer {
 public:
-#define RESERVED_BEFORE 0x100
+#define RESERVED_BEFORE 0x1000
 #define RESERVED_AFTER RESERVED_BEFORE
 
 #ifndef N3DS
     explicit CContainer(const std::filesystem::path& path);
 #endif
     explicit CContainer(const CContainer& cc);
-    explicit CContainer(const CContainer&& cc);
     explicit CContainer(const int size);
     CContainer();
     ~CContainer();
@@ -42,7 +41,7 @@ public:
 #endif
 
     // Access
-    u8*     data(void) const { return this->m_data; }
+    u8*   data(void) const { return this->m_data; }
 
     template<typename T>
     T&      as(const u32 index)

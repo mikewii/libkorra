@@ -35,43 +35,55 @@ Quest::~Quest()
     }
 }
 
-void Quest::create_ext_save(const std::filesystem::path &path, const bool by_extention)
+void Quest::create_ext_quest_files(const std::filesystem::path &path)
 {
-    CContainer  cc(EXT_QUEST_DATA_SIZE);
-    auto        files = Folder(path).Get_ListOfFiles();
+    auto files = Folder(path).Get_ListOfFiles();
 
     this->m_quests.reserve(EXT_QUEST_FILES * EXT_QUEST_DATA_AMMOUNT);
 
     for (const auto& path : files) {
-        auto        size = std::filesystem::file_size(path);
-        const auto  extention = path.extension();
+        const auto& size = std::filesystem::file_size(path);
         int         res;
 
         if (size > QUEST_SIZE)
             continue;
-
-
-        res = this->is_quest(path);
+        else
+            res = this->is_quest(path);
 
         if (res == DLC_DECODED) {
-            CContainer* mib = new CContainer;
+            CContainer* decoded = new CContainer;
 
-            mib->read_file(path);
+            decoded->read_file(path);
 
-            this->m_quests.push_back(mib);
+            this->m_quests.push_back(decoded);
         } else if (res == DLC_ENCODED) {
-            CContainer in;
-            CContainer* mib = new CContainer;
+            CContainer  encoded;
+            CContainer* decoded = new CContainer;
 
-            in.read_file(path);
+            encoded.read_file(path);
 
-            Crypto::decode_quest(in, *mib);
+            Crypto::decode_quest(encoded, *decoded);
 
-            this->m_quests.push_back(mib);
+            this->m_quests.push_back(decoded);
         }
     }
 
     this->sort();
+
+    auto split = this->get_split_values();
+
+    size_t count = 1;
+    size_t start = 0;
+    size_t end = 0;
+
+    for (const auto& value : split) {
+        end += value;
+
+        this->write_ext_quest_file(count++, start, end);
+
+        start += value;
+    }
+
     return;
 }
 
@@ -102,7 +114,7 @@ void Quest::decrypt_ext_quest_file(const std::string& name)
 
     this->load_and_decode();
     this->extract_signature();
-    //this->dump_decoded();
+    this->dump_decoded();
 
     quest_count = this->m_out.size() / QUEST_SIZE; // drop decimal
 
@@ -182,7 +194,7 @@ void Quest::load_and_decode(void)
     if (in.size() != 0x50300)
         NotifyError("quest file corrupt!");
 
-    Crypto::decode_quest(in, this->m_out);
+    Crypto::decode_ext_data(in, this->m_out);
 }
 
 void Quest::mib_to_file(const sQuest *quest)
@@ -249,7 +261,7 @@ const int Quest::is_quest(const std::filesystem::path &path)
 
 void Quest::sort(void)
 {
-    auto filter = [&] (const CContainer* left, const CContainer* right) -> const bool
+    auto filter = [&](const CContainer* left, const CContainer* right) -> const bool
     {
         sQuest* lquest = reinterpret_cast<sQuest*>(left->data());
         sQuest* rquest = reinterpret_cast<sQuest*>(right->data());
@@ -258,6 +270,78 @@ void Quest::sort(void)
     };
 
     std::sort(this->m_quests.begin(), this->m_quests.end(), filter);
+}
+
+const std::array<u8, 5> Quest::get_split_values(void) const
+{
+    std::array<u8, 5> count{0, 0, 0, 0, 0};
+
+    for (const auto* cc : this->m_quests) {
+        const auto* quest = reinterpret_cast<const sQuest*>(cc->data());
+        const auto& id = quest->get_sFlags()->quest_id;
+
+        if (id >= 60000 && id < 61000) { // quest1 quest2 quest3
+            for (size_t i = 0; i < 3; i++) {
+                if (count[i] < EXT_QUEST_DATA_AMMOUNT) {
+                    count[i]++;
+                    break;
+                } else continue;
+            }
+        } else if (id >= 61000 && id < 62000) { // quest4
+            if (count[3] < EXT_QUEST_DATA_AMMOUNT)
+                count[3]++;
+        } else if (id >= 62000) { // quest5
+            if (count[4] < EXT_QUEST_DATA_AMMOUNT)
+                count[4]++;
+        }
+    }
+
+    return count;
+}
+
+void Quest::write_ext_quest_file(const size_t file_number, const size_t vector_begin_index, const size_t vector_end_index)
+{
+#define BUFFER_SIZE 16
+    CContainer  decoded(EXT_QUEST_DATA_SIZE);
+    CContainer  encoded;
+    char        buffer[BUFFER_SIZE]{0};
+    size_t      offset = 0;
+
+    if (vector_begin_index > vector_end_index) {
+        return;
+    } else if (vector_begin_index == vector_end_index ) { // write empty encoded ext quest file
+        Crypto::encode_ext_data(decoded, encoded);
+
+        snprintf(buffer, BUFFER_SIZE, "quest%zu", file_number);
+        auto out_path = this->m_out_path;
+        out_path.append(buffer);
+
+        encoded.add_after(EXT_QUEST_DATA_PADDING);
+        encoded.write_To_File(out_path);
+        return;
+    }
+
+    for (size_t i = vector_begin_index; i < vector_end_index; i++) {
+        const auto* quest_data = this->m_quests.at(i);
+        const auto* quest = reinterpret_cast<const sQuest*>(quest_data->data());
+
+        Utils::copybytes(decoded.data() + offset, quest_data->data(), quest_data->size());
+
+        offset += QUEST_SIZE;
+
+        // write quest name
+        snprintf(buffer, BUFFER_SIZE, "m%5d.mib", quest->get_sFlags()->quest_id);
+        Utils::copybytes(decoded.data() + offset - 0x10, buffer, BUFFER_SIZE);
+    }
+
+    Crypto::encode_ext_data(decoded, encoded);
+
+    snprintf(buffer, BUFFER_SIZE, "quest%zu", file_number);
+    auto out_path = this->m_out_path;
+    out_path.append(buffer);
+
+    encoded.add_after(EXT_QUEST_DATA_PADDING);
+    encoded.write_To_File(out_path);
 }
 
 #endif

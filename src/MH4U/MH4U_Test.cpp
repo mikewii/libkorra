@@ -131,7 +131,7 @@ void ExtractSave(const std::filesystem::__cxx11::path &path)
 
     File::file_to_cc(path, in);
 
-    MH4U::Crypto().decode_save(in, out);
+    MH4U::Crypto().decode_ext_data(in, out);
 
     out.write_To_File(outpath);
 }
@@ -149,11 +149,12 @@ void mca(const std::filesystem::__cxx11::path &path)
     mca.print();
 }
 
-void quest_ext_create(const std::filesystem::__cxx11::path &path)
+void quest_ext_create(const std::filesystem::path &path)
 {
     MH4U::Quest quest;
 
-    quest.create_ext_save(path);
+    quest.set_out_path(path);
+    quest.create_ext_quest_files(path);
 }
 
 }
