@@ -72,7 +72,7 @@ void BlowFish::Blowfish_decipher (u32 *xl, u32 *xr)
 
 
     // constructs the enctryption sieve
-void BlowFish::Initialize (const u8 key[], int keybytes)
+void BlowFish::initialize(const char key[], const int keybytes)
 {
     int  		i, j;
     u32  		data, datal, datar;
@@ -123,29 +123,29 @@ void BlowFish::Initialize (const u8 key[], int keybytes)
     }
 }
 
-    // get output length, which must be even MOD 8
-u32 BlowFish::GetOutputLength (u32 lInputLong)
+// get output length, which must be even MOD 8
+const size_t BlowFish::get_output_length(const size_t lInputLong)
 {
-    u32 	lVal ;
+    size_t lVal;
 
-    lVal = lInputLong % 8 ;	// find out if uneven number of bytes at the end
+    lVal = lInputLong % 8;	// find out if uneven number of bytes at the end
     if (lVal != 0)
-        return lInputLong + 8 - lVal ;
+        return lInputLong + 8 - lVal;
     else
-        return lInputLong ;
+        return lInputLong;
 }
 
-    // Encode pIntput into pOutput.  Input length in lSize.  Returned value
-    // is length of output which will be even MOD 8 bytes.  Input buffer and
-    // output buffer can be the same, but be sure buffer length is even MOD8.
-u32 BlowFish::Encode (u8 *pInput, u8 *pOutput, u32 lSize)
+// Encode pIntput into pOutput.  Input length in lSize.  Returned value
+// is length of output which will be even MOD 8 bytes.  Input buffer and
+// output buffer can be the same, but be sure buffer length is even MOD8.
+u32 BlowFish::encode (u8 *pInput, u8 *pOutput, u32 lSize)
 {
     u32 	lCount, lOutSize, lGoodBytes ;
     u8      *pi, *po ;
     int		i, j ;
     int		SameDest = (pInput == pOutput ? 1 : 0) ;
 
-    lOutSize = GetOutputLength (lSize) ;
+    lOutSize = get_output_length (lSize) ;
     for (lCount = 0 ; lCount < lOutSize ; lCount += 8)
     {
         if (SameDest)	// if encoded data is being written into input buffer
@@ -198,7 +198,7 @@ u32 BlowFish::Encode (u8 *pInput, u8 *pOutput, u32 lSize)
 
     // Decode pIntput into pOutput.  Input length in lSize.  Input buffer and
     // output buffer can be the same, but be sure buffer length is even MOD8.
-void BlowFish::Decode (u8 *pInput, u8 *pOutput, u32 lSize)
+void BlowFish::decode (u8 *pInput, u8 *pOutput, u32 lSize)
 {
     u32 	lCount;
     u8      *pi, *po;

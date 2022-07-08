@@ -134,7 +134,7 @@ void savefile(void)
     CContainer container;
     CContainer slot;
 
-    File::File_To_CC(Utils::Get_User_Home().append("test").append("system"), container);
+    File::file_to_cc(Utils::Get_User_Home().append("test").append("system"), container);
 
 
     MHXX::Savefile savefile(container);

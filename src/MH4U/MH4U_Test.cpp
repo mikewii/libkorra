@@ -32,9 +32,10 @@ void ExtractQuests(const std::filesystem::path& path)
     outpath.replace_extension(".dec");
 
 
-    File::File_To_CC(path, in);
+    File::file_to_cc(path, in);
 
-    Decode(in, out);
+    //decode(in, out, true);
+    MH4U::blowfish_decode(in, out, Key::DLC_JPN);
 
     out.write_To_File(outpath);
 }
@@ -128,9 +129,9 @@ void ExtractSave(const std::filesystem::__cxx11::path &path)
     outpath.replace_extension(".dec");
 
 
-    File::File_To_CC(path, in);
+    File::file_to_cc(path, in);
 
-    Decode(in, out);
+    decode(in, out);
 
     out.write_To_File(outpath);
 }
@@ -143,9 +144,16 @@ void mca(const std::filesystem::__cxx11::path &path)
     //outpath.replace_extension(".mca");
 
 
-    File::File_To_CC(path, in);
+    File::file_to_cc(path, in);
     MCA mca(in);
     mca.print();
+}
+
+void quest_ext_create(const std::filesystem::__cxx11::path &path)
+{
+    MH4U::Quest quest;
+
+    quest.create_ext_save(path);
 }
 
 }

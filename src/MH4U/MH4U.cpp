@@ -6,6 +6,7 @@
 #include "Tools/Folder.hpp"
 #include "Tools/File.hpp"
 
+#include <cstring>
 #include <random>
 
 namespace MH4U {
@@ -17,62 +18,65 @@ void    PreEncode_Save(CContainer& data);
 void    MHXOR(CContainer& data, u32 seed);
 void    InsertValue(CContainer& data, u32 value);
 
-static const u8 KeyEXTData[]    = "blowfish key iorajegqmrna4itjeangmb agmwgtobjteowhv9mope";
-static const u8 KeyDLC[]         = "AgK2DYheaCjyHGPB";
-static const u8 KeyDLC_TW[]      = "Capcom123 ";
-
-void Decode(CContainer& in, CContainer& out,  bool isQuest)
+static const char KeyEXTData[]    = "blowfish key iorajegqmrna4itjeangmb agmwgtobjteowhv9mope";
+static const char KeyDLC_EUR_NA[] = "AgK2DYheaCjyHGPB";
+static const char KeyDLC_JPN[]    = "AgK2DYheaCjyHGP8";
+static const char KeyDLC_KOR[]    = "AgK2DYheaOjyHGP8";
+static const char KeyDLC_TW[]     = "Capcom123 ";
+static BlowFish cypher_static;
+void decode(CContainer& in, CContainer& out, bool isQuest)
 {
     u32                 outSize;
     BlowFish            cypher;
     bool                good = true;
 
-    outSize = cypher.GetOutputLength(in.size());
+    outSize = cypher.get_output_length(in.size());
 
+    out.clear();
     out.resize(outSize);
 
     if (isQuest)
     {
-        cypher.Initialize(MH4U::KeyDLC, sizeof(MH4U::KeyDLC) -1);
-        cypher.Decode(in.data(), out.data(), outSize);
+        cypher.initialize(MH4U::KeyDLC_JPN, sizeof(MH4U::KeyDLC_JPN) -1);
+        cypher.decode(in.data(), out.data(), outSize);
 
-        good = PostDecode_Save(out);
+        //good = PostDecode_Save(out);
 
         //TODO: check for quest file header for error
     }
     else
     {
-        cypher.Initialize(MH4U::KeyEXTData, sizeof(MH4U::KeyEXTData) -1);
-        cypher.Decode(in.data(), out.data(), outSize);
+        cypher.initialize(MH4U::KeyEXTData, sizeof(MH4U::KeyEXTData) -1);
+        cypher.decode(in.data(), out.data(), outSize);
 
         good = PostDecode_Save(out);
 
-        if (!good) NotifyError("Save file corrupt!");
+        //if (!good) NotifyError("Save file corrupt!");
     }
 }
 
-void Encode(CContainer& in, CContainer& out, bool isQuest)
+void encode(CContainer& in, CContainer& out, bool isQuest)
 {
     u32                 outSize;
     BlowFish            cypher;
 
     if (isQuest)
     {
-        outSize = cypher.GetOutputLength(in.size());
+        outSize = cypher.get_output_length(in.size());
         out.resize(outSize - 4); // why -4? last 4 bytes is checksum?
 
-        cypher.Initialize(MH4U::KeyDLC, sizeof(MH4U::KeyDLC) -1);
-        cypher.Encode(in.data(), out.data(), outSize);
+        cypher.initialize(MH4U::KeyDLC_EUR_NA, sizeof(MH4U::KeyDLC_EUR_NA) -1);
+        cypher.encode(in.data(), out.data(), outSize);
     }
     else
     {
         PreEncode_Save(in);
 
-        outSize = cypher.GetOutputLength(in.size());
+        outSize = cypher.get_output_length(in.size());
         out.resize(outSize);
 
-        cypher.Initialize(MH4U::KeyEXTData, sizeof(MH4U::KeyEXTData) -1);
-        cypher.Encode(in.data(), out.data(), outSize);
+        cypher.initialize(MH4U::KeyEXTData, sizeof(MH4U::KeyEXTData) -1);
+        cypher.encode(in.data(), out.data(), outSize);
     }
 }
 
@@ -137,6 +141,122 @@ void InsertValue(CContainer& data, u32 value)
         data.as<u8>(0) = value;
         i++;
     }
+}
+
+const bool blowfish_decode(const CContainer &in, CContainer &out, const Key key)
+{
+    const char* selected_key = nullptr;
+    u32 out_size;
+
+    out_size = cypher_static.get_output_length(in.size());
+
+    out.clear();
+    out.resize(out_size);
+
+    selected_key = MH4U::get_key(key);
+
+    if (selected_key) {
+        auto size = std::strlen(selected_key);
+
+        cypher_static.initialize(selected_key, size);
+        cypher_static.decode(in.data(), out.data(), out_size);
+
+        return true;
+    } else return false;
+}
+
+const bool blowfish_encode(const CContainer &in, CContainer &out, const Key key)
+{
+    const char* selected_key = nullptr;
+    u32 out_size;
+
+    out_size = cypher_static.get_output_length(in.size());
+
+    out.clear();
+    out.resize(out_size);
+
+    selected_key = MH4U::get_key(key);
+
+    if (selected_key) {
+        auto size = std::strlen(selected_key);
+
+        cypher_static.initialize(selected_key, size);
+        cypher_static.encode(in.data(), out.data(), out_size);
+
+        return true;
+    } else return false;
+}
+
+const bool xor_decode(CContainer &cc)
+{
+    u32 seed;
+    u32 checksum, checksum2;
+
+    seed = cc.as<u32>(0) >> 16;
+    cc.subBefore(sizeof(u32)); // remove seed
+
+    MHXOR(cc, seed);
+
+    checksum = cc.as<u32>(0);
+    cc.subBefore(sizeof(u32)); // remove checksum
+
+    checksum2 = Utils::CalculateChecksum(cc);
+
+    if (checksum == checksum2) return true;
+    return false;
+}
+
+void xor_encode(CContainer &cc)
+{
+    std::mt19937 randomEngine(0x484D); // 0x484D = "MH"
+    u16 random; // must be u16
+    u32 seed, seed_header;
+    u32 checksum;
+
+    random          = randomEngine();
+    seed            = seed_header = random;
+    seed_header     = (seed_header << 16) + 0x10;
+    checksum        = Utils::CalculateChecksum(cc);
+
+    InsertValue(cc, checksum);
+
+    MHXOR(cc, seed);
+
+    InsertValue(cc, seed_header);
+}
+
+const char *get_key(const Key key)
+{
+    switch (key) {
+    case Key::EXT_DATA: return MH4U::KeyEXTData;
+    case Key::DLC_EUR_NA: return MH4U::KeyDLC_EUR_NA;
+    case Key::DLC_JPN: return MH4U::KeyDLC_JPN;
+    case Key::DLC_KOR: return MH4U::KeyDLC_KOR;
+    case Key::DLC_TW: return MH4U::KeyDLC_TW;
+    default:
+    case Key::ENUM_LENGTH: return nullptr;
+    }
+}
+
+const bool decode_save(const CContainer &in, CContainer &out)
+{
+    bool res = true;
+
+    res &= MH4U::blowfish_decode(in, out, MH4U::Key::EXT_DATA);
+    res &= MH4U::xor_decode(out);
+
+    return res;
+}
+
+const bool encode_save(const CContainer &in, CContainer &out)
+{
+    bool res = true;
+
+    MH4U::xor_encode(out);
+    res &= MH4U::blowfish_encode(in, out, MH4U::Key::EXT_DATA);
+
+    return res;
+
 }
 
 } // MH4U

@@ -30,7 +30,7 @@ void gui_lmd::open(const QString &path)
 {
     CContainer container;
 
-    const auto& res = File::File_To_CC(path.toStdString(), container, MH4U::LMD::LMD_MAGIC_HEX);
+    const auto& res = File::file_to_cc(path.toStdString(), container, MH4U::LMD::LMD_MAGIC_HEX);
 
     if (res)
     {

@@ -14,6 +14,7 @@ public:
     explicit CContainer(const std::filesystem::path& path);
 #endif
     explicit CContainer(const CContainer& cc);
+    explicit CContainer(const int size);
     CContainer();
     ~CContainer();
 

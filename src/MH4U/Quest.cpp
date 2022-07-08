@@ -20,6 +20,25 @@ Quest::Quest(const std::filesystem::path &path)
     this->make_output_dir();
 }
 
+void Quest::create_ext_save(const std::filesystem::path &path, const bool by_extention)
+{
+    CContainer  cc(EXT_QUEST_DATA_SIZE);
+    auto        file_list = Folder(path).Get_ListOfFiles();
+
+    for (const auto& file_path : file_list) {
+        auto size = std::filesystem::file_size(file_path);
+        const auto extention = file_path.extension();
+
+        if (size > QUEST_SIZE)
+            continue;
+
+
+        auto res = this->is_quest(file_path);
+
+        continue;
+    }
+}
+
 void Quest::decrypt_all(void)
 {
     if (this->m_working_on_folder) {
@@ -118,7 +137,7 @@ void Quest::load_and_decode(void)
 
     this->m_out.clear();
 
-    File::File_To_CC(path, in);
+    File::file_to_cc(path, in);
 
     // last 0x100 bytes clean, removing them from size to prevent blowfish writing data there
     // to avoid confusing checksum check
@@ -127,7 +146,7 @@ void Quest::load_and_decode(void)
     if (in.size() != 0x50300)
         NotifyError("quest file corrupt!");
 
-    Decode(in, this->m_out);
+    decode(in, this->m_out);
 }
 
 void Quest::mib_to_file(const sQuest *quest)
@@ -168,6 +187,32 @@ void Quest::id_check(void)
      * LR/HR Arena | G Arena
      * Episode events (possibly count as lr|hr|g)
     */
+}
+
+bool Quest::is_quest(const std::filesystem::path &path) const
+{
+#define PROBE_SIZE sizeof(u32) * 4
+    CContainer  probe_data(PROBE_SIZE); // [seed, checksum, data, version]
+    CContainer  probe_data_decoded;
+    sQuest*     quest = nullptr;
+
+    File::file_to_cc_size(path, probe_data, PROBE_SIZE);
+
+    quest = reinterpret_cast<sQuest*>(probe_data.data());
+
+    if (quest->check_version())
+        return true;
+
+    for (size_t key = 0; key < MH4U::Key::ENUM_LENGTH; key++) {
+        MH4U::blowfish_decode(probe_data, probe_data_decoded, static_cast<MH4U::Key>(key));
+
+        quest = reinterpret_cast<sQuest*>(probe_data_decoded.data());
+
+        if (quest->check_version())
+            return true;
+    }
+
+    return false;
 }
 
 #endif

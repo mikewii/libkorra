@@ -6,6 +6,9 @@
 
 namespace MH4U {
 #define QUEST_SIZE 0x2010
+#define EXT_QUEST_DATA_AMMOUNT 40
+#define EXT_QUEST_DATA_PADDING 0x80 + 0x100
+#define EXT_QUEST_DATA_SIZE (QUEST_SIZE * EXT_QUEST_DATA_AMMOUNT) + EXT_QUEST_DATA_PADDING
 
 
 
@@ -307,7 +310,11 @@ class Quest
 public:
     struct quest_raw { char raw[QUEST_SIZE]; };
 
+    Quest(){};
     Quest(const std::filesystem::path& path);
+
+    void create_ext_save(const std::filesystem::path& path, const bool by_extention = false);
+
 
     void decrypt_all(void);
     void encrypt_all(void);
@@ -333,6 +340,8 @@ private:
     void mib_to_file(const sQuest* quest);
 
     void id_check(void);
+
+    bool is_quest(const std::filesystem::path& path) const;
 
 #endif
 };

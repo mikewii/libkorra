@@ -23,6 +23,13 @@ CContainer::CContainer(const CContainer& cc)
     this->m_reserved_before = cc.m_reserved_before;
 }
 
+CContainer::CContainer(const int size)
+    : m_data(nullptr), m_root(nullptr)
+    , m_reserved_before(RESERVED_BEFORE), m_reserved_after(RESERVED_AFTER)
+{
+    this->resize(size, true);
+}
+
 CContainer::CContainer()
     : m_data(nullptr), m_root(nullptr)
     , m_size(0), m_reserved_before(0), m_reserved_after(0)
@@ -146,6 +153,6 @@ void CContainer::resize(u32 _size, bool _zeroed)
 }
 
 #ifndef N3DS
-void CContainer::read_File(const std::filesystem::path& path) { File::File_To_CC(path, *this); }
+void CContainer::read_File(const std::filesystem::path& path) { File::file_to_cc(path, *this); }
 void CContainer::write_To_File(const std::filesystem::path& path) const { File::CC_To_File(path, *this); }
 #endif

@@ -21,10 +21,10 @@ public:
     BlowFish();
     ~BlowFish();
 
-    void 	Initialize(const u8 key[], int keyu8s);
-    u32		GetOutputLength(u32 lInputLong);
-    u32		Encode(u8 *pInput, u8 *pOutput, u32 lSize);
-    void	Decode(u8 *pInput, u8 *pOutput, u32 lSize);
+    void            initialize(const char key[], const int keyu8s);
+    const size_t    get_output_length(const size_t lInputLong);
+    u32             encode(u8 *pInput, u8 *pOutput, u32 lSize);
+    void            decode(u8 *pInput, u8 *pOutput, u32 lSize);
 
 } ;
 

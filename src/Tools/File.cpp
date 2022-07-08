@@ -3,7 +3,7 @@
 
 CContainer File::oneFile;
 
-bool File::File_To_CC(const std::filesystem::path& path, CContainer& cc, const u32 magic)
+bool File::file_to_cc(const std::filesystem::path& path, CContainer& cc, const u32 magic)
 {    
     std::filesystem::path prefered(path); prefered = prefered.make_preferred();
 
@@ -25,6 +25,22 @@ bool File::File_To_CC(const std::filesystem::path& path, CContainer& cc, const u
 
         file.close();
         return proceed;
+    }
+
+    return false;
+}
+
+bool File::file_to_cc_size(const std::filesystem::path &path, CContainer &cc, const int size)
+{
+    std::filesystem::path prefered(path); prefered = prefered.make_preferred();
+    std::fstream    file(prefered, std::ios::binary | std::ios::in);
+    const auto      fsize = std::filesystem::file_size(prefered);
+
+    if (file.is_open() && fsize >= size) {
+        file.read(&cc.as<char>(0), size);
+
+        file.close();
+        return true;
     }
 
     return false;

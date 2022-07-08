@@ -50,7 +50,7 @@ void MainWindow::on_btn_arcOpen_clicked(void)
     if (fileName.isEmpty())
         return;
 
-    File::File_To_CC(fileName.toStdString(), File::oneFile);
+    File::file_to_cc(fileName.toStdString(), File::oneFile);
 
     std::vector<Pair> vector;
 

@@ -12,7 +12,8 @@ public:
      * @param _fpath    Path with filename
      * @param _cc       CContainer to hold data
      */
-    static bool File_To_CC(const std::filesystem::path& path, CContainer& cc, const u32 magic = 0);
+    static bool file_to_cc(const std::filesystem::path& path, CContainer& cc, const u32 magic = 0);
+    static bool file_to_cc_size(const std::filesystem::path& path, CContainer& cc, const int size);
 
     /**
      * @brief Write data from CContainer to file

@@ -14,6 +14,8 @@ void ExtractSave(const std::filesystem::path& path);
 void mca(const std::filesystem::path& path);
 
 void quest_prints(const std::filesystem::path& path);
+void quest_ext_create(const std::filesystem::path& path);
+
 }
 }
 #endif
