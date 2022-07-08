@@ -1,4 +1,4 @@
-#include "MH4U/MH4U.hpp"
+#include "MH4U/Crypto.hpp"
 #include "MH4U/Quest.hpp"
 
 #include "Tools/Utils.hpp"
@@ -20,6 +20,7 @@ static std::mt19937 rng;
 
 Crypto::Crypto()
 {
+    // guard in case virtual inheritance fails
     if (!seed_rng_once) {
         seed_rng_once = true;
         rng.seed(RNG_SEED);
@@ -36,12 +37,13 @@ const bool Crypto::decode_save(const CContainer &in, CContainer &out)
     return res;
 }
 
-const bool Crypto::encode_save(CContainer &in, CContainer &out)
+const bool Crypto::encode_save(const CContainer &in, CContainer &out)
 {
-    bool res = true;
+    CContainer temp = in;
+    bool res;
 
-    this->xor_encode(in);
-    res &= this->blowfish_encode(in, out, Crypto::Key::EXT_DATA);
+    this->xor_encode(temp);
+    res &= this->blowfish_encode(temp, out, Crypto::Key::EXT_DATA);
 
     return res;
 
@@ -49,7 +51,7 @@ const bool Crypto::encode_save(CContainer &in, CContainer &out)
 
 const bool Crypto::decode_dlc(const CContainer &in, CContainer &out)
 {
-    for (size_t i = 0; i < Key::LENGTH; i++) {
+    for (size_t i = Key::DLC_EUR_NA; i < Key::LENGTH; i++) {
         this->blowfish_decode(in, out, static_cast<Key>(i));
 
         sQuest* quest = reinterpret_cast<sQuest*>(out.data());
@@ -61,7 +63,7 @@ const bool Crypto::decode_dlc(const CContainer &in, CContainer &out)
     return false;
 }
 
-const bool Crypto::encode_dlc(CContainer &in, CContainer &out, const Key key)
+const bool Crypto::encode_dlc(const CContainer &in, CContainer &out, const Key key)
 {
     return this->blowfish_encode(in, out, key);
 }
@@ -88,7 +90,7 @@ const bool Crypto::blowfish_decode(const CContainer &in, CContainer &out, const 
     } else return false;
 }
 
-const bool Crypto::blowfish_encode(CContainer &in, CContainer &out, const Key key)
+const bool Crypto::blowfish_encode(const CContainer &in, CContainer &out, const Key key)
 {
     const char* selected_key = nullptr;
     u32 out_size;

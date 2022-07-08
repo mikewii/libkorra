@@ -8,7 +8,7 @@
 #include "Tools/File.hpp"
 #include "Tools/Folder.hpp"
 #include "Tools/ARC.hpp"
-#include "MH4U/MH4U.hpp"
+#include "MH4U/Crypto.hpp"
 
 QList<QStandardItem *> itemList;
 QStandardItemModel model;

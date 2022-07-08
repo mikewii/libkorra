@@ -4,7 +4,7 @@
 #include "Tools/File.hpp"
 #include "Tools/ARC.hpp"
 #include "Tools/MCA.hpp"
-#include "MH4U/MH4U.hpp"
+#include "MH4U/Crypto.hpp"
 #include "MH4U/Quest.hpp"
 
 
@@ -154,7 +154,7 @@ void quest_ext_create(const std::filesystem::path &path)
     MH4U::Quest quest;
 
     quest.set_out_path(path);
-    quest.create_ext_quest_files(path);
+    quest.create_ext_quests_files(path);
 }
 
 }
