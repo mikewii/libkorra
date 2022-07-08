@@ -5,6 +5,7 @@
 #include "Tools/ARC.hpp"
 #include "Tools/MCA.hpp"
 #include "MH4U/MH4U.hpp"
+#include "MH4U/Quest.hpp"
 
 
 namespace MH4U {
@@ -34,8 +35,7 @@ void ExtractQuests(const std::filesystem::path& path)
 
     File::file_to_cc(path, in);
 
-    //decode(in, out, true);
-    MH4U::blowfish_decode(in, out, Key::DLC_JPN);
+    MH4U::Crypto().decode_quest(in, out);
 
     out.write_To_File(outpath);
 }
@@ -131,7 +131,7 @@ void ExtractSave(const std::filesystem::__cxx11::path &path)
 
     File::file_to_cc(path, in);
 
-    decode(in, out);
+    MH4U::Crypto().decode_save(in, out);
 
     out.write_To_File(outpath);
 }

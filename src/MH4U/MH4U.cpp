@@ -1,105 +1,147 @@
 #include "MH4U/MH4U.hpp"
+#include "MH4U/Quest.hpp"
 
-#include "Tools/Blowfish.hpp"
 #include "Tools/Utils.hpp"
 
 #include "Tools/Folder.hpp"
 #include "Tools/File.hpp"
 
 #include <cstring>
-#include <random>
 
 namespace MH4U {
+static const char* KeyEXTData    = "blowfish key iorajegqmrna4itjeangmb agmwgtobjteowhv9mope";
+static const char* KeyDLC_EUR_NA = "AgK2DYheaCjyHGPB";
+static const char* KeyDLC_JPN    = "AgK2DYheaCjyHGP8";
+static const char* KeyDLC_KOR    = "AgK2DYheaOjyHGP8";
+static const char* KeyDLC_TW     = "Capcom123 ";
 
-bool    PostDecode_Save(CContainer& data);
-bool    post_decode_extdata(CContainer& data);
-
-void    PreEncode_Save(CContainer& data);
-void    MHXOR(CContainer& data, u32 seed);
-void    InsertValue(CContainer& data, u32 value);
-
-static const char KeyEXTData[]    = "blowfish key iorajegqmrna4itjeangmb agmwgtobjteowhv9mope";
-static const char KeyDLC_EUR_NA[] = "AgK2DYheaCjyHGPB";
-static const char KeyDLC_JPN[]    = "AgK2DYheaCjyHGP8";
-static const char KeyDLC_KOR[]    = "AgK2DYheaOjyHGP8";
-static const char KeyDLC_TW[]     = "Capcom123 ";
-static BlowFish cypher_static;
-void decode(CContainer& in, CContainer& out, bool isQuest)
+Crypto::Crypto()
+    : m_rng(RNG_SEED)
 {
-    u32                 outSize;
-    BlowFish            cypher;
-    bool                good = true;
+}
 
-    outSize = cypher.get_output_length(in.size());
+const bool Crypto::decode_save(const CContainer &in, CContainer &out)
+{
+    bool res = true;
+
+    res &= this->blowfish_decode(in, out, Crypto::Key::EXT_DATA);
+    res &= this->xor_decode(out);
+
+    return res;
+}
+
+const bool Crypto::encode_save(const CContainer &in, CContainer &out)
+{
+    bool res = true;
+
+    this->xor_encode(out);
+    res &= this->blowfish_encode(in, out, Crypto::Key::EXT_DATA);
+
+    return res;
+
+}
+
+const bool Crypto::decode_dlc(const CContainer &in, CContainer &out)
+{
+    for (size_t i = 0; i < Key::LENGTH; i++) {
+        this->blowfish_decode(in, out, static_cast<Key>(i));
+
+        sQuest* quest = reinterpret_cast<sQuest*>(out.data());
+
+        if (quest->check_version())
+            return true;
+    }
+
+    return false;
+}
+
+const bool Crypto::encode_dlc(const CContainer &in, CContainer &out, const Key key)
+{
+    return this->blowfish_encode(in, out, key);
+}
+
+const bool Crypto::blowfish_decode(const CContainer &in, CContainer &out, const Key key)
+{
+    const char* selected_key = nullptr;
+    u32 out_size;
+
+    out_size = this->m_blowfish.get_output_length(in.size());
 
     out.clear();
-    out.resize(outSize);
+    out.resize(out_size);
 
-    if (isQuest)
-    {
-        cypher.initialize(MH4U::KeyDLC_JPN, sizeof(MH4U::KeyDLC_JPN) -1);
-        cypher.decode(in.data(), out.data(), outSize);
+    selected_key = this->get_key(key);
 
-        //good = PostDecode_Save(out);
+    if (selected_key) {
+        auto size = std::strlen(selected_key);
 
-        //TODO: check for quest file header for error
-    }
-    else
-    {
-        cypher.initialize(MH4U::KeyEXTData, sizeof(MH4U::KeyEXTData) -1);
-        cypher.decode(in.data(), out.data(), outSize);
+        this->m_blowfish.initialize(selected_key, size);
+        this->m_blowfish.decode(in.data(), out.data(), out_size);
 
-        good = PostDecode_Save(out);
-
-        //if (!good) NotifyError("Save file corrupt!");
-    }
+        return true;
+    } else return false;
 }
 
-void encode(CContainer& in, CContainer& out, bool isQuest)
+const bool Crypto::blowfish_encode(const CContainer &in, CContainer &out, const Key key)
 {
-    u32                 outSize;
-    BlowFish            cypher;
+    const char* selected_key = nullptr;
+    u32 out_size;
 
-    if (isQuest)
-    {
-        outSize = cypher.get_output_length(in.size());
-        out.resize(outSize - 4); // why -4? last 4 bytes is checksum?
+    out_size = this->m_blowfish.get_output_length(in.size());
 
-        cypher.initialize(MH4U::KeyDLC_EUR_NA, sizeof(MH4U::KeyDLC_EUR_NA) -1);
-        cypher.encode(in.data(), out.data(), outSize);
-    }
-    else
-    {
-        PreEncode_Save(in);
+    out.clear();
+    out.resize(out_size);
 
-        outSize = cypher.get_output_length(in.size());
-        out.resize(outSize);
+    selected_key = this->get_key(key);
 
-        cypher.initialize(MH4U::KeyEXTData, sizeof(MH4U::KeyEXTData) -1);
-        cypher.encode(in.data(), out.data(), outSize);
-    }
+    if (selected_key) {
+        auto size = std::strlen(selected_key);
+
+        this->m_blowfish.initialize(selected_key, size);
+        this->m_blowfish.encode(in.data(), out.data(), out_size);
+
+        return true;
+    } else return false;
 }
 
-bool PostDecode_Save(CContainer& data)
+const bool Crypto::xor_decode(CContainer &cc)
 {
     u32 seed;
     u32 checksum, checksum2;
 
-    seed = data.as<u32>(0) >> 16;
-    data.subBefore(sizeof(u32)); // remove seed
+    seed = cc.as<u32>(0) >> 16;
+    cc.sub_before(sizeof(u32)); // remove seed
 
-    MHXOR(data, seed);
+    this->xor_mh4u(cc, seed);
 
-    checksum = data.as<u32>(0);
-    data.subBefore(sizeof(u32)); // remove checksum
+    checksum = cc.as<u32>(0);
+    cc.sub_before(sizeof(u32)); // remove checksum
 
-    checksum2 = Utils::CalculateChecksum(data);
+    checksum2 = Utils::calculate_checksum(cc);
 
     if (checksum == checksum2) return true;
     return false;
 }
 
-void MHXOR(CContainer& data, u32 seed)
+void Crypto::xor_encode(CContainer &cc)
+{
+    u16 random; // must be u16
+    u32 seed, seed_header;
+    u32 checksum;
+
+    random      = this->m_rng();
+    seed        = seed_header = random;
+    seed_header = (seed_header << 16) + 0x10;
+    checksum    = Utils::calculate_checksum(cc);
+
+    this->insert_value(cc, checksum);
+
+    this->xor_mh4u(cc, seed);
+
+    this->insert_value(cc, seed_header);
+}
+
+void Crypto::xor_mh4u(CContainer &data, u32 seed)
 {
     u32 i = 0;
 
@@ -112,120 +154,7 @@ void MHXOR(CContainer& data, u32 seed)
     };
 }
 
-void PreEncode_Save(CContainer& data)
-{
-    std::mt19937 randomEngine(0x484D); // 0x484D = "MH"
-    u16 random; // must be u16
-    u32 seed, seed_header;
-    u32 checksum;
-
-    random          = randomEngine();
-    seed            = seed_header = random;
-    seed_header     = (seed_header << 16) + 0x10;
-    checksum        = Utils::CalculateChecksum(data);
-
-    InsertValue(data, checksum);
-
-    MHXOR(data, seed);
-
-    InsertValue(data, seed_header);
-}
-
-void InsertValue(CContainer& data, u32 value)
-{
-    u8 i = 0;
-    value = Utils::swap_endianness<u32>(value);
-    while (i < 4){
-        if (i != 0) {value >>= 8;}
-        data.addBefore(1);
-        data.as<u8>(0) = value;
-        i++;
-    }
-}
-
-const bool blowfish_decode(const CContainer &in, CContainer &out, const Key key)
-{
-    const char* selected_key = nullptr;
-    u32 out_size;
-
-    out_size = cypher_static.get_output_length(in.size());
-
-    out.clear();
-    out.resize(out_size);
-
-    selected_key = MH4U::get_key(key);
-
-    if (selected_key) {
-        auto size = std::strlen(selected_key);
-
-        cypher_static.initialize(selected_key, size);
-        cypher_static.decode(in.data(), out.data(), out_size);
-
-        return true;
-    } else return false;
-}
-
-const bool blowfish_encode(const CContainer &in, CContainer &out, const Key key)
-{
-    const char* selected_key = nullptr;
-    u32 out_size;
-
-    out_size = cypher_static.get_output_length(in.size());
-
-    out.clear();
-    out.resize(out_size);
-
-    selected_key = MH4U::get_key(key);
-
-    if (selected_key) {
-        auto size = std::strlen(selected_key);
-
-        cypher_static.initialize(selected_key, size);
-        cypher_static.encode(in.data(), out.data(), out_size);
-
-        return true;
-    } else return false;
-}
-
-const bool xor_decode(CContainer &cc)
-{
-    u32 seed;
-    u32 checksum, checksum2;
-
-    seed = cc.as<u32>(0) >> 16;
-    cc.subBefore(sizeof(u32)); // remove seed
-
-    MHXOR(cc, seed);
-
-    checksum = cc.as<u32>(0);
-    cc.subBefore(sizeof(u32)); // remove checksum
-
-    checksum2 = Utils::CalculateChecksum(cc);
-
-    if (checksum == checksum2) return true;
-    return false;
-}
-
-void xor_encode(CContainer &cc)
-{
-    std::mt19937 randomEngine(0x484D); // 0x484D = "MH"
-    u16 random; // must be u16
-    u32 seed, seed_header;
-    u32 checksum;
-
-    random          = randomEngine();
-    seed            = seed_header = random;
-    seed_header     = (seed_header << 16) + 0x10;
-    checksum        = Utils::CalculateChecksum(cc);
-
-    InsertValue(cc, checksum);
-
-    MHXOR(cc, seed);
-
-    InsertValue(cc, seed_header);
-}
-
-const char *get_key(const Key key)
+const char *Crypto::get_key(const Key key) const
 {
     switch (key) {
     case Key::EXT_DATA: return MH4U::KeyEXTData;
@@ -234,29 +163,25 @@ const char *get_key(const Key key)
     case Key::DLC_KOR: return MH4U::KeyDLC_KOR;
     case Key::DLC_TW: return MH4U::KeyDLC_TW;
     default:
-    case Key::ENUM_LENGTH: return nullptr;
+    case Key::LENGTH: return nullptr;
     }
 }
 
-const bool decode_save(const CContainer &in, CContainer &out)
+void Crypto::insert_value(CContainer& data, u32 value)
 {
-    bool res = true;
+    data.add_before(sizeof(u32));
+    data.as<u32>(0) = value;
 
-    res &= MH4U::blowfish_decode(in, out, MH4U::Key::EXT_DATA);
-    res &= MH4U::xor_decode(out);
+//    size_t i = 0;
+//    value = Utils::swap_endianness<u32>(value);
 
-    return res;
-}
 
-const bool encode_save(const CContainer &in, CContainer &out)
-{
-    bool res = true;
-
-    MH4U::xor_encode(out);
-    res &= MH4U::blowfish_encode(in, out, MH4U::Key::EXT_DATA);
-
-    return res;
-
+//    while (i < 4){
+//        if (i != 0) {value >>= 8;}
+//        data.add_before(1);
+//        data.as<u8>(0) = value;
+//        i++;
+//    }
 }
 
 } // MH4U

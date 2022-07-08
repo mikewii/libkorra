@@ -14,6 +14,7 @@ public:
     explicit CContainer(const std::filesystem::path& path);
 #endif
     explicit CContainer(const CContainer& cc);
+    explicit CContainer(const CContainer&& cc);
     explicit CContainer(const int size);
     CContainer();
     ~CContainer();
@@ -30,13 +31,13 @@ public:
     void    set_size(u32 _size) { this->m_size = _size; }
 
     // Expanding and shrinking
-    const bool  addBefore(u32 _size);
-    const bool  addAfter(u32 _size);
-    const bool  subBefore(u32 _size);
-    const bool  subAfter(u32 _size);
+    const bool  add_before(u32 _size);
+    const bool  add_after(u32 _size);
+    const bool  sub_before(u32 _size);
+    const bool  sub_after(u32 _size);
 
 #ifndef N3DS
-    void    read_File(const std::filesystem::path& path);
+    void    read_file(const std::filesystem::path& path);
     void    write_To_File(const std::filesystem::path& path) const;
 #endif
 

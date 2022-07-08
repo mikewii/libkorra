@@ -6,6 +6,7 @@
 
 namespace MH4U {
 #define QUEST_SIZE 0x2010
+#define EXT_QUEST_FILES 5
 #define EXT_QUEST_DATA_AMMOUNT 40
 #define EXT_QUEST_DATA_PADDING 0x80 + 0x100
 #define EXT_QUEST_DATA_SIZE (QUEST_SIZE * EXT_QUEST_DATA_AMMOUNT) + EXT_QUEST_DATA_PADDING
@@ -257,7 +258,7 @@ private:
     const sText*            get_sText(const Language language) const;
 };
 
-class QuestEditor
+class QuestEditor : virtual public Crypto
 {
 #define SUPPLY_BOX_MAX_ITEMS 5 * 8
 #define MAIN_REWARD_BOX_A_MAX_ITEMS 2 * 8
@@ -305,13 +306,12 @@ private:
 };
 
 #ifndef N3DS
-class Quest
+class Quest : virtual public Crypto
 {
 public:
-    struct quest_raw { char raw[QUEST_SIZE]; };
-
-    Quest(){};
+    Quest();
     Quest(const std::filesystem::path& path);
+    ~Quest();
 
     void create_ext_save(const std::filesystem::path& path, const bool by_extention = false);
 
@@ -322,12 +322,18 @@ public:
     void decrypt_ext_quest_file(const std::string& name = "");
 
 private:
+    enum {
+        NOT_A_DLC = 0,
+        DLC_DECODED,
+        DLC_ENCODED
+    };
+
     CContainer m_out;
     std::filesystem::path m_current_path;
     std::filesystem::path m_out_path;
     std::string m_current_filename;
 
-    std::vector<quest_raw> m_quests;
+    std::vector<CContainer*> m_quests;
 
     bool m_working_on_folder = false;
 
@@ -341,7 +347,9 @@ private:
 
     void id_check(void);
 
-    bool is_quest(const std::filesystem::path& path) const;
+    const int is_quest(const std::filesystem::path& path);
+
+    void sort(void);
 
 #endif
 };

@@ -2,10 +2,15 @@
 
 #include "Tools/Folder.hpp"
 #include "Tools/File.hpp"
+#include <algorithm>
 
 namespace MH4U {
 
 #ifndef N3DS
+Quest::Quest()
+{
+}
+
 Quest::Quest(const std::filesystem::path &path)
     : m_current_path(path)
 {
@@ -20,23 +25,54 @@ Quest::Quest(const std::filesystem::path &path)
     this->make_output_dir();
 }
 
+Quest::~Quest()
+{
+    for (auto* handle : this->m_quests) {
+        if (handle) {
+            delete handle;
+            handle = nullptr;
+        }
+    }
+}
+
 void Quest::create_ext_save(const std::filesystem::path &path, const bool by_extention)
 {
     CContainer  cc(EXT_QUEST_DATA_SIZE);
-    auto        file_list = Folder(path).Get_ListOfFiles();
+    auto        files = Folder(path).Get_ListOfFiles();
 
-    for (const auto& file_path : file_list) {
-        auto size = std::filesystem::file_size(file_path);
-        const auto extention = file_path.extension();
+    this->m_quests.reserve(EXT_QUEST_FILES * EXT_QUEST_DATA_AMMOUNT);
+
+    for (const auto& path : files) {
+        auto        size = std::filesystem::file_size(path);
+        const auto  extention = path.extension();
+        int         res;
 
         if (size > QUEST_SIZE)
             continue;
 
 
-        auto res = this->is_quest(file_path);
+        res = this->is_quest(path);
 
-        continue;
+        if (res == DLC_DECODED) {
+            CContainer* mib = new CContainer;
+
+            mib->read_file(path);
+
+            this->m_quests.push_back(mib);
+        } else if (res == DLC_ENCODED) {
+            CContainer in;
+            CContainer* mib = new CContainer;
+
+            in.read_file(path);
+
+            Crypto::decode_quest(in, *mib);
+
+            this->m_quests.push_back(mib);
+        }
     }
+
+    this->sort();
+    return;
 }
 
 void Quest::decrypt_all(void)
@@ -146,7 +182,7 @@ void Quest::load_and_decode(void)
     if (in.size() != 0x50300)
         NotifyError("quest file corrupt!");
 
-    decode(in, this->m_out);
+    Crypto::decode_quest(in, this->m_out);
 }
 
 void Quest::mib_to_file(const sQuest *quest)
@@ -189,7 +225,7 @@ void Quest::id_check(void)
     */
 }
 
-bool Quest::is_quest(const std::filesystem::path &path) const
+const int Quest::is_quest(const std::filesystem::path &path)
 {
 #define PROBE_SIZE sizeof(u32) * 4
     CContainer  probe_data(PROBE_SIZE); // [seed, checksum, data, version]
@@ -201,18 +237,27 @@ bool Quest::is_quest(const std::filesystem::path &path) const
     quest = reinterpret_cast<sQuest*>(probe_data.data());
 
     if (quest->check_version())
-        return true;
+        return DLC_DECODED;
 
-    for (size_t key = 0; key < MH4U::Key::ENUM_LENGTH; key++) {
-        MH4U::blowfish_decode(probe_data, probe_data_decoded, static_cast<MH4U::Key>(key));
-
-        quest = reinterpret_cast<sQuest*>(probe_data_decoded.data());
-
-        if (quest->check_version())
-            return true;
+    for (size_t key = 0; key < Crypto::Key::LENGTH; key++) {
+        if (Crypto::decode_quest(probe_data, probe_data_decoded))
+            return DLC_ENCODED;
     }
 
-    return false;
+    return NOT_A_DLC;
+}
+
+void Quest::sort(void)
+{
+    auto filter = [&] (const CContainer* left, const CContainer* right) -> const bool
+    {
+        sQuest* lquest = reinterpret_cast<sQuest*>(left->data());
+        sQuest* rquest = reinterpret_cast<sQuest*>(right->data());
+
+        return lquest->get_sFlags()->quest_id < rquest->get_sFlags()->quest_id;
+    };
+
+    std::sort(this->m_quests.begin(), this->m_quests.end(), filter);
 }
 
 #endif

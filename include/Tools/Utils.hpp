@@ -90,7 +90,7 @@ extern void* Copy_UTF16_String(void* dest, const std::u16string& str);
  * @param _data     CContainer to work on
  * @return          Sum of bytes
  */
-u32 CalculateChecksum(const CContainer& cc);
+u32 calculate_checksum(const CContainer& cc);
 
 /**
  * @brief Calculate sum of bytes

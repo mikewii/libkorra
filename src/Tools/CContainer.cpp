@@ -9,7 +9,7 @@ CContainer::CContainer(const std::filesystem::path& path)
 {
     auto prefered = path;
 
-    CContainer::read_File(prefered.make_preferred());
+    CContainer::read_file(prefered.make_preferred());
 }
 #endif
 
@@ -21,6 +21,11 @@ CContainer::CContainer(const CContainer& cc)
 
     this->m_reserved_after = cc.m_reserved_after;
     this->m_reserved_before = cc.m_reserved_before;
+}
+
+CContainer::CContainer(const CContainer &&cc)
+{
+
 }
 
 CContainer::CContainer(const int size)
@@ -84,7 +89,7 @@ const bool CContainer::allocate(u32 _size, bool _zeroed)
     return true;
 }
 
-const bool CContainer::addBefore(u32 _size)
+const bool CContainer::add_before(u32 _size)
 {
     if (this->m_root == nullptr)
         return false;
@@ -102,7 +107,7 @@ const bool CContainer::addBefore(u32 _size)
     return false;
 }
 
-const bool CContainer::addAfter(u32 _size)
+const bool CContainer::add_after(u32 _size)
 {
     if (this->m_root == nullptr)
         return false;
@@ -118,7 +123,7 @@ const bool CContainer::addAfter(u32 _size)
     return true;
 }
 
-const bool CContainer::subBefore(u32 _size)
+const bool CContainer::sub_before(u32 _size)
 {
     if (this->m_root == nullptr)
         return false;
@@ -132,7 +137,7 @@ const bool CContainer::subBefore(u32 _size)
     } else return false;
 }
 
-const bool CContainer::subAfter(u32 _size)
+const bool CContainer::sub_after(u32 _size)
 {
     if (this->m_root == nullptr)
         return false;
@@ -148,11 +153,11 @@ const bool CContainer::subAfter(u32 _size)
 void CContainer::resize(u32 _size, bool _zeroed)
 {
     if (this->m_root == nullptr) this->allocate(_size, _zeroed);
-    else if (this->m_root != nullptr && !_zeroed) this->addAfter(_size);
+    else if (this->m_root != nullptr && !_zeroed) this->add_after(_size);
     else this->allocate(_size, _zeroed);
 }
 
 #ifndef N3DS
-void CContainer::read_File(const std::filesystem::path& path) { File::file_to_cc(path, *this); }
+void CContainer::read_file(const std::filesystem::path& path) { File::file_to_cc(path, *this); }
 void CContainer::write_To_File(const std::filesystem::path& path) const { File::CC_To_File(path, *this); }
 #endif
