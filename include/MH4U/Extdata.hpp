@@ -26,7 +26,7 @@ public:
     void set_ext_quest_data(CContainer* data) { this->m_ext_quest_data = data; }
 
     void get_decoded(CContainer* output);
-    void get_all_mib(std::vector<CContainer*>* output);
+    void get_all_mib(std::vector<CContainer>& output);
 
 private:
     CContainer* m_ext_quest_data;
@@ -38,7 +38,6 @@ class DLCExtractor_Helper : protected DLCExtractor
 public:
     DLCExtractor_Helper();
     DLCExtractor_Helper(const std::filesystem::path& path);
-    ~DLCExtractor_Helper();
 
     void extract(const bool dump_decoded = false);
 
@@ -49,12 +48,11 @@ public:
     const std::filesystem::path&    get_out_folder(void) const { return this->m_out_folder; }
 
 private:
-    std::filesystem::path       m_data_path;
-    std::filesystem::path       m_out_folder;
-    std::vector<CContainer*>    m_dlc_vector;
+    std::filesystem::path   m_data_path;
+    std::filesystem::path   m_out_folder;
+    std::vector<CContainer> m_dlc_vector;
 
     bool is_quest_ext_file(const std::filesystem::path &path) const;
-    void clear_dlc_vector(void);
 
     void write(void) const;
 };
@@ -66,15 +64,15 @@ class DLCRepacker : virtual protected Crypto
 {
 public:
     DLCRepacker();
-    DLCRepacker(std::vector<CContainer*>* dlc_vector);
+    DLCRepacker(std::vector<CContainer>* dlc_vector);
     ~DLCRepacker();
 
     void perform(std::array<CContainer, EXT_QUEST_FILES_AMMOUNT>* output);
 
-    void set_dlc_vector(std::vector<CContainer*>* vector) { this->m_dlc_vector = vector; }
+    void set_dlc_vector(std::vector<CContainer>* vector) { this->m_dlc_vector = vector; }
 
 private:
-    std::vector<CContainer*>* m_dlc_vector;
+    std::vector<CContainer>* m_dlc_vector;
 
     void quest_file_populate(CContainer& in, const size_t vector_begin_index, const size_t vector_end_index);
     void quest_file_encode(CContainer& in, CContainer& out);
@@ -88,7 +86,6 @@ class DLCRepacker_Helper : protected DLCRepacker
 public:
     DLCRepacker_Helper();
     DLCRepacker_Helper(const std::filesystem::path& path);
-    ~DLCRepacker_Helper();
 
     void repack(void);
     void write(void) const;
@@ -100,9 +97,9 @@ public:
     const std::filesystem::path&    get_out_folder(void) const { return this->m_out_folder; }
 
 private:
-    std::filesystem::path       m_data_path;
-    std::filesystem::path       m_out_folder;
-    std::vector<CContainer*>    m_dlc_vector;
+    std::filesystem::path   m_data_path;
+    std::filesystem::path   m_out_folder;
+    std::vector<CContainer> m_dlc_vector;
     std::array<CContainer, EXT_QUEST_FILES_AMMOUNT> m_encoded_ext_quests;
 
 

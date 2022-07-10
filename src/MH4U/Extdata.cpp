@@ -4,8 +4,6 @@
 #include "Tools/File.hpp"
 #include "Tools/Folder.hpp"
 
-#include <algorithm>
-
 namespace MH4U {
 namespace extdata {
 #define BUFFER_SIZE 16
@@ -32,7 +30,7 @@ void DLCExtractor::get_decoded(CContainer* output)
     Crypto::decode_ext_data(*this->m_ext_quest_data, *output);
 }
 
-void DLCExtractor::get_all_mib(std::vector<CContainer*>* output)
+void DLCExtractor::get_all_mib(std::vector<CContainer>& output)
 {
     CContainer temp;
     size_t quest_count = 0;
@@ -48,11 +46,9 @@ void DLCExtractor::get_all_mib(std::vector<CContainer*>* output)
         const sQuest* quest = reinterpret_cast<sQuest*>(temp.data() + i * QUEST_SIZE);
 
         if (quest->check_version()) {
-            CContainer* mib = new CContainer;
+            output.push_back({});
 
-            mib->copy(quest, QUEST_SIZE);
-
-            output->push_back(mib);
+            output.back().copy(quest, QUEST_SIZE);
         }
     }
 }
@@ -67,11 +63,6 @@ DLCExtractor_Helper::DLCExtractor_Helper(const std::filesystem::path &path)
 {
 }
 
-DLCExtractor_Helper::~DLCExtractor_Helper()
-{
-    this->clear_dlc_vector();
-}
-
 void DLCExtractor_Helper::extract(const bool dump_decoded)
 {
     auto files = Folder(this->m_data_path).Get_ListOfFiles();
@@ -80,7 +71,7 @@ void DLCExtractor_Helper::extract(const bool dump_decoded)
         if (this->is_quest_ext_file(filepath)) {
             CContainer encrypted_ext_quest;
 
-            this->clear_dlc_vector();
+            this->m_dlc_vector.clear();
 
             if (std::filesystem::file_size(filepath) != 0x50400)
                 NotifyError("DLCExtractor_Helper:: quest file corrupt!");
@@ -100,7 +91,7 @@ void DLCExtractor_Helper::extract(const bool dump_decoded)
             }
 
             DLCExtractor::set_ext_quest_data(&encrypted_ext_quest);
-            DLCExtractor::get_all_mib(&m_dlc_vector);
+            DLCExtractor::get_all_mib(m_dlc_vector);
 
             this->write();
         }
@@ -109,8 +100,8 @@ void DLCExtractor_Helper::extract(const bool dump_decoded)
 
 void DLCExtractor_Helper::write(void) const
 {
-    for (const auto* cc : this->m_dlc_vector) {
-        const sQuest* quest = reinterpret_cast<const sQuest*>(cc->data());
+    for (const auto& cc : this->m_dlc_vector) {
+        const sQuest* quest = reinterpret_cast<const sQuest*>(cc.data());
 
         // no need to check, but we do it anyway
         if (quest->check_version()) {
@@ -144,18 +135,6 @@ bool DLCExtractor_Helper::is_quest_ext_file(const std::filesystem::path &path) c
     }
     return false;
 }
-
-void DLCExtractor_Helper::clear_dlc_vector()
-{
-    for (auto* handle : this->m_dlc_vector) {
-        if (handle) {
-            delete handle;
-            handle = nullptr;
-        }
-    }
-
-    this->m_dlc_vector.clear();
-}
 #endif
 
 DLCRepacker::DLCRepacker()
@@ -163,7 +142,7 @@ DLCRepacker::DLCRepacker()
 {
 }
 
-DLCRepacker::DLCRepacker(std::vector<CContainer*> *dlc_vector)
+DLCRepacker::DLCRepacker(std::vector<CContainer> *dlc_vector)
     : m_dlc_vector(dlc_vector)
 {
 }
@@ -204,9 +183,9 @@ void DLCRepacker::quest_file_populate(CContainer &in, const size_t vector_begin_
 
     for (size_t i = vector_begin_index; i < vector_end_index; i++) {
         const auto& quest_data = this->m_dlc_vector->at(i);
-        const auto* quest = reinterpret_cast<const sQuest*>(quest_data->data());
+        const auto* quest = reinterpret_cast<const sQuest*>(quest_data.data());
 
-        Utils::copybytes(in.data() + offset, quest_data->data(), quest_data->size());
+        Utils::copybytes(in.data() + offset, quest_data.data(), quest_data.size());
 
         offset += QUEST_SIZE;
 
@@ -249,7 +228,7 @@ const std::array<u8, 5> DLCRepacker::split_by_id(void) const
     std::array<u8, EXT_QUEST_FILES_AMMOUNT> arr{0, 0, 0, 0, 0};
 
     for (const auto& cc : *this->m_dlc_vector) {
-        const auto* quest = reinterpret_cast<const sQuest*>(cc->data());
+        const auto* quest = reinterpret_cast<const sQuest*>(cc.data());
         const auto& id = quest->get_sFlags()->quest_id;
 
         if (id >= 60000 && id < 61000) { // quest1 quest2 quest3
@@ -276,18 +255,6 @@ const std::array<u8, 5> DLCRepacker::split_by_id(void) const
 DLCRepacker_Helper::DLCRepacker_Helper(const std::filesystem::path &path)
     : m_data_path(path), m_out_folder(path)
 {
-}
-
-DLCRepacker_Helper::~DLCRepacker_Helper()
-{
-    for (auto* handle : this->m_dlc_vector) {
-        if (handle) {
-            delete handle;
-            handle = nullptr;
-        }
-    }
-
-    this->m_dlc_vector.clear();
 }
 
 void DLCRepacker_Helper::repack(void)
@@ -318,20 +285,16 @@ void DLCRepacker_Helper::read_files(void)
             res = this->is_dlc_file(path);
 
         if (res == DLCRepacker_Helper::DLC_DECODED) {
-            CContainer* decoded = new CContainer;
-
-            decoded->read_file(path);
-
-            this->m_dlc_vector.push_back(decoded);
+            this->m_dlc_vector.push_back({});
+            this->m_dlc_vector.back().read_file(path);
         } else if (res == DLCRepacker_Helper::DLC_ENCODED) {
             CContainer  encoded;
-            CContainer* decoded = new CContainer;
 
             encoded.read_file(path);
 
-            Crypto::decode_quest(encoded, *decoded);
+            this->m_dlc_vector.push_back({});
 
-            this->m_dlc_vector.push_back(decoded);
+            Crypto::decode_quest(encoded, this->m_encoded_ext_quests.back());
         }
     }
 }
@@ -350,17 +313,21 @@ void DLCRepacker_Helper::write(void) const
     }
 }
 
+
 void DLCRepacker_Helper::dlc_vector_sort(void)
 {
-    auto filter = [&](const CContainer* left, const CContainer* right) -> const bool
+    auto filter = [&](const CContainer& left, const CContainer& right) -> const bool
     {
-        sQuest* lquest = reinterpret_cast<sQuest*>(left->data());
-        sQuest* rquest = reinterpret_cast<sQuest*>(right->data());
+        sQuest* lquest = reinterpret_cast<sQuest*>(left.data());
+        sQuest* rquest = reinterpret_cast<sQuest*>(right.data());
 
-        return lquest->get_sFlags()->quest_id < rquest->get_sFlags()->quest_id;
+        return lquest->get_sFlags()->quest_id > rquest->get_sFlags()->quest_id;
     };
 
-    std::sort(this->m_dlc_vector.begin(), this->m_dlc_vector.end(), filter);
+    // default sort move whole container, wasting a lot of time
+    //std::sort(this->m_dlc_vector.begin(), this->m_dlc_vector.end(), filter);
+
+    sort_swap_only(this->m_dlc_vector.begin(), this->m_dlc_vector.end(), filter);
 }
 
 const int DLCRepacker_Helper::is_dlc_file(const std::filesystem::path &file_path)

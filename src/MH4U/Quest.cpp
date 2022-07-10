@@ -9,9 +9,6 @@
 
 namespace MH4U {
 
-#ifndef N3DS
 
-
-#endif
 
 }
