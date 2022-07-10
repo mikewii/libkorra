@@ -15,7 +15,7 @@ CContainer::CContainer(const std::filesystem::path& path)
 
 CContainer::CContainer(const CContainer& cc)
     : m_data(nullptr), m_root(nullptr)
-    , m_size(0), m_reserved_before(RESERVED_BEFORE), m_reserved_after(RESERVED_AFTER)
+    , m_reserved_before(RESERVED_BEFORE), m_reserved_after(RESERVED_AFTER)
 {
     if (cc.m_reserved_before != 0)
         this->m_reserved_before = cc.m_reserved_before;
@@ -26,7 +26,7 @@ CContainer::CContainer(const CContainer& cc)
     Utils::copybytes(this->data(), cc.data(), cc.size());
 }
 
-CContainer::CContainer(const int size)
+CContainer::CContainer(const size_t size)
     : m_data(nullptr), m_root(nullptr)
     , m_reserved_before(RESERVED_BEFORE), m_reserved_after(RESERVED_AFTER)
 {
@@ -64,48 +64,57 @@ void CContainer::clear(void)
     this->_free();
 }
 
+void CContainer::copy(const void *data, const size_t data_size)
+{
+    if (this->m_size < data_size)
+        this->resize(data_size);
+
+    Utils::copybytes(this->m_data, data, data_size);
+}
+
 void CContainer::_free(void)
 {
     if (this->m_root != nullptr)
     {
         free(this->m_root);
         this->m_root = nullptr;
+        this->m_data = nullptr;
         this->m_size = 0;
-        this->m_reserved_before = RESERVED_BEFORE;
-        this->m_reserved_after = RESERVED_AFTER;
+        this->m_reserved_before = 0;
+        this->m_reserved_after = 0;
     }
 }
 
-const bool CContainer::allocate(u32 _size, bool _zeroed)
+const bool CContainer::allocate(size_t size, bool zeroed)
 {
     if (this->m_root != nullptr) this->_free();
 
-    u32 extra       = this->m_reserved_before + this->m_reserved_after;
-    u32 allocSize   = _size + extra;
+    u32 extra = this->m_reserved_before + this->m_reserved_after;
+    u32 alloc_size = size + extra;
 
-    this->m_size    = _size;
+    this->m_size = size;
 
-    if (_zeroed)
-        this->m_root    = static_cast<u8*>( ::calloc(allocSize, sizeof(u8)) );
+    if (zeroed)
+        this->m_root = static_cast<u8*>( ::calloc(alloc_size, sizeof(u8)) );
     else
-        this->m_root    = static_cast<u8*>( ::malloc(allocSize) );
+        this->m_root = static_cast<u8*>( ::malloc(alloc_size) );
 
-    this->m_data    = this->m_root + this->m_reserved_before;
+    this->m_data = this->m_root + this->m_reserved_before;
 
     return true;
 }
 
-const bool CContainer::add_before(u32 _size)
+const bool CContainer::add_before(size_t size)
 {
     if (this->m_root == nullptr)
         return false;
 
-    if (_size <= this->m_reserved_before && this->m_reserved_before != 0)
+    if (size <= this->m_reserved_before && this->m_reserved_before != 0)
     {
-        this->m_reserved_before -= _size;
-        this->m_data            -= _size;
+        this->m_reserved_before -= size;
+        this->m_data            -= size;
 
-        this->m_size            += _size;
+        this->m_size            += size;
 
         return true;
     }
@@ -113,23 +122,23 @@ const bool CContainer::add_before(u32 _size)
     return false;
 }
 
-const bool CContainer::add_after(u32 _size)
+const bool CContainer::add_after(size_t size)
 {
     if (this->m_root == nullptr)
         return false;
 
-    if (_size <= this->m_reserved_after && this->m_reserved_after != 0) {
-        this->m_reserved_after  -= _size;
-        this->m_size            += _size;
+    if (size <= this->m_reserved_after && this->m_reserved_after != 0) {
+        this->m_reserved_after  -= size;
+        this->m_size            += size;
     } else {
-        this->m_root = static_cast<u8*>( ::realloc(this->m_root, this->m_size += _size) );
+        this->m_root = static_cast<u8*>( ::realloc(this->m_root, this->m_size += size) );
         this->m_data = this->m_root + this->m_reserved_before;
     }
 
     return true;
 }
 
-const bool CContainer::sub_before(u32 _size)
+const bool CContainer::sub_before(size_t _size)
 {
     if (this->m_root == nullptr)
         return false;
@@ -143,27 +152,27 @@ const bool CContainer::sub_before(u32 _size)
     } else return false;
 }
 
-const bool CContainer::sub_after(u32 _size)
+const bool CContainer::sub_after(size_t size)
 {
     if (this->m_root == nullptr)
         return false;
 
-    if (_size < this->m_size) {
-        this->m_reserved_after  += _size;
-        this->m_size            -= _size;
+    if (size < this->m_size) {
+        this->m_reserved_after  += size;
+        this->m_size            -= size;
 
         return true;
     } else return false;
 }
 
-void CContainer::resize(u32 _size, bool _zeroed)
+void CContainer::resize(size_t size, bool zeroed)
 {
-    if (this->m_root == nullptr) this->allocate(_size, _zeroed);
-    else if (this->m_root != nullptr && !_zeroed) this->add_after(_size);
-    else this->allocate(_size, _zeroed);
+    if (this->m_root == nullptr) this->allocate(size, zeroed);
+    else if (this->m_root != nullptr && !zeroed) this->add_after(size);
+    else this->allocate(size, zeroed);
 }
 
 #ifndef N3DS
 void CContainer::read_file(const std::filesystem::path& path) { File::file_to_cc(path, *this); }
-void CContainer::write_To_File(const std::filesystem::path& path) const { File::CC_To_File(path, *this); }
+void CContainer::write_to_file(const std::filesystem::path& path) const { File::CC_To_File(path, *this); }
 #endif
