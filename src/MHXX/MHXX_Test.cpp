@@ -121,7 +121,7 @@ void Extentions(const std::vector<Pair>& vector, const std::filesystem::path& pa
             ext.save(outMHXX, true);
 
             //outOriginal.cc.write_To_File(Utils::Get_User_Home().append("test").append("test_original.ext"));
-            outMHXX.cc.write_To_File(Utils::Get_User_Home().append("test").append("test.ext"));
+            outMHXX.cc.write_to_file(Utils::Get_User_Home().append("test").append("test.ext"));
 
             break;
         }
@@ -141,7 +141,7 @@ void savefile(void)
 
     savefile.savefile.slot[0].extract(slot);
 
-    slot.write_To_File(Utils::Get_User_Home().append("test").append("slot0"));
+    slot.write_to_file(Utils::Get_User_Home().append("test").append("slot0"));
 }
 
 }

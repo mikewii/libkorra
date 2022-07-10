@@ -41,8 +41,8 @@ int main(int argc UNUSED, char *argv[] UNUSED)
     //MH4U::Quest(Utils::Get_User_Home().append("test/MH4U/quest/MH4U EUR DLC/")).decrypt_all();
     //MH4U::TEST::quest_prints(Utils::Get_User_Home().append("test/MH4U/quest/MH4G DLC/quest/q60001.mib"));
 
+    MH4U::TEST::quest_ext_extract(Utils::Get_User_Home().append("test/MH4U/quest/Quests_MIB/mikewii/"));
     MH4U::TEST::quest_ext_create(Utils::Get_User_Home().append("test/MH4U/quest/Quests_MIB/mikewii/"));
-    MH4U::Quest(Utils::Get_User_Home().append("test/MH4U/quest/Quests_MIB/mikewii/")).decrypt_all();
     //MH4U::TEST::ExtractQuests(Utils::Get_User_Home().append("test/MH4U/quest/Quests_MIB/jdlc/m60005.mib"));
     //MH4U::Quest(Utils::Get_User_Home().append("test/MH4U/quest/test/")).decrypt_all();
 

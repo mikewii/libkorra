@@ -300,66 +300,7 @@ private:
     std::array<sSupplyBoxItem, MAIN_REWARD_BOX_B_MAX_ITEMS> m_main_reward_box_b_items;
     std::array<sSupplyBoxItem, SUB_REWARD_BOX_MAX_ITEMS> m_sub_reward_box_items;
 
-
-
     void read_header(void);
-};
-
-#ifndef N3DS
-class Quest : virtual public Crypto
-{
-public:
-    Quest();
-    Quest(const std::filesystem::path& path);
-    ~Quest();
-
-    void set_out_path(const std::filesystem::path& path) { this->m_out_path = path; }
-
-    void create_ext_quests_files(const std::filesystem::path& path);
-
-
-    void decrypt_all(void);
-    void encrypt_all(void);
-
-    void decrypt_ext_quest_file(const std::string& name = "");
-
-private:
-    enum {
-        NOT_A_DLC = 0,
-        DLC_DECODED,
-        DLC_ENCODED
-    };
-
-    CContainer m_out;
-    std::filesystem::path m_current_path;
-    std::filesystem::path m_out_path;
-    std::string m_current_filename;
-
-    std::vector<CContainer*> m_quests;
-
-    bool m_working_on_folder = false;
-
-    void extract_signature(void);
-    void make_output_dir(void);
-    bool is_quest_ext_file(const std::filesystem::path& path) const;
-    void dump_decoded(void);
-
-    void load_and_decode(void);
-    void mib_to_file(const sQuest* quest);
-
-    void id_check(void);
-
-    const int is_dlc_probe(const std::filesystem::path& path);
-
-    void sort(void);
-
-    const std::array<u8, EXT_QUEST_FILES_AMMOUNT> split_by_id(void) const;
-
-    void populate_ext_quest_file(CContainer& in, const size_t vector_begin_index, const size_t vector_end_index);
-    void encode_ext_quest_file(CContainer& in, CContainer& out);
-    void write_ext_quest_file(CContainer& cc, const size_t& file_num);
-
-#endif
 };
 
 }

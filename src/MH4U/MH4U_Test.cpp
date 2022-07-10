@@ -6,6 +6,7 @@
 #include "Tools/MCA.hpp"
 #include "MH4U/Crypto.hpp"
 #include "MH4U/Quest.hpp"
+#include "MH4U/Extdata.hpp"
 
 
 namespace MH4U {
@@ -37,7 +38,7 @@ void ExtractQuests(const std::filesystem::path& path)
 
     MH4U::Crypto().decode_quest(in, out);
 
-    out.write_To_File(outpath);
+    out.write_to_file(outpath);
 }
 
 void runTests(void)
@@ -80,7 +81,7 @@ void runTests(void)
 
         arc_out.MakeARC(container_out, vector);
 
-        container_out.write_To_File(Utils::Get_User_Home().append("test/MH4U/arc.arc"));
+        container_out.write_to_file(Utils::Get_User_Home().append("test/MH4U/arc.arc"));
     }
 
     collector.Show();
@@ -133,7 +134,7 @@ void ExtractSave(const std::filesystem::__cxx11::path &path)
 
     MH4U::Crypto().decode_ext_data(in, out);
 
-    out.write_To_File(outpath);
+    out.write_to_file(outpath);
 }
 
 void mca(const std::filesystem::__cxx11::path &path)
@@ -151,10 +152,19 @@ void mca(const std::filesystem::__cxx11::path &path)
 
 void quest_ext_create(const std::filesystem::path &path)
 {
-    MH4U::Quest quest;
+    MH4U::extdata::DLCRepacker_Helper repacker(path);
 
-    quest.set_out_path(path);
-    quest.create_ext_quests_files(path);
+    repacker.repack();
+    repacker.write();
+}
+
+void quest_ext_extract(const std::filesystem::path &path)
+{
+    MH4U::extdata::DLCExtractor_Helper extractor(path);
+    auto out_path = path;
+
+    extractor.set_out_folder(out_path.append("quest"));
+    extractor.extract();
 }
 
 }

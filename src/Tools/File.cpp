@@ -22,11 +22,8 @@ bool File::file_to_cc(const std::filesystem::path& path, CContainer& cc, const u
 
             file.read(&cc.as<char>(0), fsize);
         }
-
-        file.close();
         return proceed;
     }
-
     return false;
 }
 
