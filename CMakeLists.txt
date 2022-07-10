@@ -22,7 +22,7 @@ find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
-    qt_add_executable(untitled
+    qt_add_executable(${PROJECT_NAME}
         MANUAL_FINALIZATION
         main.cpp
         Makefile
@@ -71,7 +71,7 @@ set_target_properties(${PROJECT_NAME} PROPERTIES
 )
 
 if(QT_VERSION_MAJOR EQUAL 6)
-    qt_finalize_executable(untitled)
+    qt_finalize_executable(${PROJECT_NAME})
 endif()
 ##### /qt stuff #####
 
