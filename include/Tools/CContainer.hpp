@@ -1,5 +1,6 @@
 #pragma once
 #include "types.h"
+#include "Tools/Sort.hpp"
 
 #ifndef N3DS
     #include <filesystem>
@@ -19,6 +20,28 @@ public:
     ~CContainer();
 
     CContainer& operator=(const CContainer& cc);
+
+    void swap(CContainer& right);
+    friend void swap(CContainer& left, CContainer& right)
+    {
+        auto data   = left.m_data;
+        auto root   = left.m_root;
+        auto size   = left.m_size;
+        auto before = left.m_reserved_before;
+        auto after  = left.m_reserved_after;
+
+        left.m_data = right.m_data;
+        left.m_root = right.m_root;
+        left.m_size = right.m_size;
+        left.m_reserved_before = right.m_reserved_before;
+        left.m_reserved_after = right.m_reserved_after;
+
+        right.m_data = data;
+        right.m_root = root;
+        right.m_size = size;
+        right.m_reserved_before = before;
+        right.m_reserved_after = after;
+    }
 
     void clear(void);
 
@@ -67,12 +90,12 @@ public:
 
 
 private:
-    u8*         m_data;
-    u8*         m_root;
+    u8*     m_data;
+    u8*     m_root;
 
-    size_t      m_size;
-    size_t      m_reserved_before;
-    size_t      m_reserved_after;
+    size_t  m_size;
+    size_t  m_reserved_before;
+    size_t  m_reserved_after;
 
     const bool  allocate(size_t size, bool zeroed = false);
     void        _free(void);

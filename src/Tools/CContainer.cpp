@@ -14,7 +14,7 @@ CContainer::CContainer(const std::filesystem::path& path)
 #endif
 
 CContainer::CContainer(const CContainer& cc)
-    : m_data(nullptr), m_root(nullptr)
+    : m_data(nullptr), m_root(nullptr), m_size(0)
     , m_reserved_before(RESERVED_BEFORE), m_reserved_after(RESERVED_AFTER)
 {
     if (cc.m_reserved_before != 0)
@@ -22,8 +22,10 @@ CContainer::CContainer(const CContainer& cc)
     if (cc.m_reserved_after != 0)
         this->m_reserved_after = cc.m_reserved_after;
 
-    this->resize(cc.size(), true);
-    Utils::copybytes(this->data(), cc.data(), cc.size());
+    if (cc.size() > 0) {
+        this->resize(cc.size(), true);
+        Utils::copybytes(this->data(), cc.data(), cc.size());
+    }
 }
 
 CContainer::CContainer(const size_t size)
@@ -52,11 +54,37 @@ CContainer& CContainer::operator=(const CContainer& cc)
         this->m_reserved_after = cc.m_reserved_after;
     else this->m_reserved_after = RESERVED_AFTER;
 
-    this->resize(cc.size(), true);
-
-    Utils::copybytes(this->data(), cc.data(), cc.size());
+    if (cc.size() > 0) {
+        this->resize(cc.size(), true);
+        Utils::copybytes(this->data(), cc.data(), cc.size());
+    } else {
+        this->m_data = nullptr;
+        this->m_root = nullptr;
+        this->m_size = 0;
+    }
 
     return *this;
+}
+
+void CContainer::swap(CContainer &right)
+{
+    auto data   = right.m_data;
+    auto root   = right.m_root;
+    auto size   = right.m_size;
+    auto before = right.m_reserved_before;
+    auto after  = right.m_reserved_after;
+
+    right.m_data = this->m_data;
+    right.m_root = this->m_root;
+    right.m_size = this->m_size;
+    right.m_reserved_before = this->m_reserved_before;
+    right.m_reserved_after = this->m_reserved_after;
+
+    this->m_data = data;
+    this->m_root = root;
+    this->m_size = size;
+    this->m_reserved_before = before;
+    this->m_reserved_after = after;
 }
 
 void CContainer::clear(void)
