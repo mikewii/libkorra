@@ -336,7 +336,8 @@ const int DLCRepacker_Helper::is_dlc_file(const std::filesystem::path &file_path
     CContainer  input_decoded;
     sQuest*     quest = nullptr;
 
-    File::file_to_cc_size(file_path, input, PROBE_SIZE);
+    if (!File::file_to_cc_size(file_path, input, PROBE_SIZE))
+        return DLCRepacker_Helper::NOT_A_DLC;
 
     quest = reinterpret_cast<sQuest*>(input.data());
 
